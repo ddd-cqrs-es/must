@@ -10,12 +10,12 @@ namespace Nohros.Metrics.Reporting
   /// A user-defined object that qualifies or contains information about the
   /// reporting operation.
   /// </param>
-  /// <param name="metric_name">
-  /// The name of the metric.
+  /// <param name="metric_id">
+  /// The id of the metric.
   /// </param>
-  /// <param name="metric_values">
+  /// <param name="values">
   /// The values associated with a <see cref="IMetric"/>.
   /// </param>
-  public delegate void MetricsReportCallback<in T>(MetricName metric_name,
+  public delegate void MetricsReportCallback<in T>(MetricId metric_id,
     MetricValue[] values, T context);
 }

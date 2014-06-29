@@ -25,11 +25,11 @@ namespace Nohros.Metrics.Reporting
       registry.Report(Report, now);
     }
 
-    void Report(MetricName metric_name, MetricValue[] metrics,
+    void Report(MetricId metric_id, MetricValue[] metrics,
       DateTime timestamp) {
       foreach (MetricValue mtc in metrics) {
         Console.Write(timestamp.ToString("yyyy-MM-ddTHH:mm:ssZ") + ":"
-          + metric_name + ".");
+          + metric_id + ".");
         Console.Write(GetMetricName(mtc.Type) + "=" + mtc.Value.ToString("f4"));
         Console.WriteLine(" " + mtc.Unit);
       }

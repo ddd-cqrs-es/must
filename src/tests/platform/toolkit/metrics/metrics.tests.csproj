@@ -76,10 +76,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\base\common\common.net40.csproj">
-      <Project>{EA6B35FF-1A1B-46D8-A599-4F9A467C75D1}</Project>
-      <Name>common.net40</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\platform\toolkit\metrics\library\metrics.csproj">
       <Project>{EE140ABF-C917-44D7-B89F-D6946332F507}</Project>
       <Name>metrics</Name>

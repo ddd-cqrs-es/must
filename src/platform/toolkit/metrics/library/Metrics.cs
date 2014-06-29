@@ -60,41 +60,41 @@ namespace Nohros.Metrics
     }
 
     /// <summary>
-    /// Adds an metric to the metrics collection using the metrics name.
+    /// Adds an metric to the metrics collection using the metrics id.
     /// </summary>
     /// <param name="name">
-    /// The name of the metric.
+    /// The id of the metric.
     /// </param>
     /// <param name="metric">
     /// The metric to be added.
     /// </param>
     /// <exception cref="ArgumentException">
-    /// A metric with the same name already exists in the
+    /// A metric with the same id already exists in the
     /// <see cref="IMetricsRegistry"/>.
     /// </exception>
     public static void AddMetric(string name, IMetric metric) {
       registry_.Add(name, metric);
     }
 
-    public static bool HasMetric(MetricName name) {
-      return registry_.HasMetric(name);
+    public static bool HasMetric(MetricId id) {
+      return registry_.HasMetric(id);
     }
 
     /// <summary>
-    /// Adds an metric to the metrics collection using the metrics name.
+    /// Adds an metric to the metrics collection using the metrics id.
     /// </summary>
-    /// <param name="name">
-    /// The name of the metric.
+    /// <param name="id">
+    /// The id of the metric.
     /// </param>
     /// <param name="metric">
     /// The metric to be added.
     /// </param>
     /// <exception cref="ArgumentException">
-    /// A metric with the same name already exists in the
+    /// A metric with the same id already exists in the
     /// <see cref="IMetricsRegistry"/>.
     /// </exception>
-    public static void AddMetric(MetricName name, IMetric metric) {
-      registry_.Add(name, metric);
+    public static void AddMetric(MetricId id, IMetric metric) {
+      registry_.Add(id, metric);
     }
 
     /// <summary>
