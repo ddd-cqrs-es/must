@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Transactions;
@@ -30,7 +31,8 @@ namespace Nohros.Data.SqlServer
         using (SqlConnection conn = sql_connection_provider_.CreateConnection())
         using (var builder = new CommandBuilder(conn)) {
           IDbCommand cmd = builder
-            .SetText("select state from " + table_name + " where state_name=@name")
+            .SetText("select state from " + table_name +
+              " where state_name=@name")
             .SetType(CommandType.Text)
             .AddParameter("@name", state_name)
             .Build();
@@ -44,6 +46,40 @@ namespace Nohros.Data.SqlServer
             state = (T) obj;
             scope.Complete();
             return true;
+          } catch (SqlException e) {
+            logger_.Error(
+              StringResources.Log_MethodThrowsException.Fmt("Execute",
+                kClassName),
+              e);
+            throw e.AsProviderException();
+          }
+        }
+      }
+    }
+
+    public IEnumerable<T> Execute<T>(string state_name, string table_name) {
+      using (var scope =
+        new TransactionScope(SupressTransactions
+          ? TransactionScopeOption.Suppress
+          : TransactionScopeOption.Required)) {
+        using (SqlConnection conn = sql_connection_provider_.CreateConnection())
+        using (var builder = new CommandBuilder(conn)) {
+          IDbCommand cmd = builder
+            .SetText("select state from " + table_name +
+              " where state_name like @name")
+            .SetType(CommandType.Text)
+            .AddParameter("@name", state_name)
+            .Build();
+          try {
+            conn.Open();
+            var list = new List<T>();
+            using (IDataReader reader = cmd.ExecuteReader()) {
+              while (reader.Read()) {
+                list.Add((T) reader.GetValue(0));
+              }
+              scope.Complete();
+            }
+            return list;
           } catch (SqlException e) {
             logger_.Error(
               StringResources.Log_MethodThrowsException.Fmt("Execute",

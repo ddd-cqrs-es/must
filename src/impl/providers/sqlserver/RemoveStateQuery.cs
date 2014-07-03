@@ -2,46 +2,50 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Transactions;
+using Nohros.Data.SqlServer.Extensions;
 using Nohros.Logging;
+using Nohros.Resources;
+using Nohros.Extensions;
 
 namespace Nohros.Data.SqlServer
 {
-  internal class UpdateStateQuery
+  public class RemoveStateQuery
   {
-    const string kClassName = "Nohros.Data.SqlServer.UpdateStateQuery";
+    const string kClassName = "Nohros.Data.SqlServer.RemoveStateQuery";
 
     readonly MustLogger logger_ = MustLogger.ForCurrentProcess;
     readonly SqlConnectionProvider sql_connection_provider_;
 
-    public UpdateStateQuery(SqlConnectionProvider sql_connection_provider) {
+    public RemoveStateQuery(SqlConnectionProvider sql_connection_provider) {
       sql_connection_provider_ = sql_connection_provider;
       logger_ = MustLogger.ForCurrentProcess;
       SupressTransactions = true;
     }
 
-    public bool Execute(string name, string table_name, object state) {
+    public bool Execute<T>(string state_name, string table_name) {
       using (var scope =
         new TransactionScope(SupressTransactions
           ? TransactionScopeOption.Suppress
           : TransactionScopeOption.Required)) {
-        using (
-          SqlConnection conn = sql_connection_provider_.CreateConnection())
+        using (SqlConnection conn = sql_connection_provider_.CreateConnection())
         using (var builder = new CommandBuilder(conn)) {
           IDbCommand cmd = builder
-            .SetText(@"
-update " + table_name + @"
-set state = @state" + @"
-where state_name = @name")
+            .SetText("delete from " + table_name +
+              " where state_name=@name")
             .SetType(CommandType.Text)
-            .AddParameter("@name", name)
-            .AddParameterWithValue("@state", state)
+            .AddParameter("@name", state_name)
             .Build();
           try {
             conn.Open();
+            int affected = cmd.ExecuteNonQuery();
             scope.Complete();
-            return cmd.ExecuteNonQuery() > 0;
+            return affected != 0;
           } catch (SqlException e) {
-            throw new ProviderException(e);
+            logger_.Error(
+              StringResources.Log_MethodThrowsException.Fmt("Execute",
+                kClassName),
+              e);
+            throw e.AsProviderException();
           }
         }
       }

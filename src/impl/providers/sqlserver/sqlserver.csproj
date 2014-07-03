@@ -42,6 +42,7 @@
     <Compile Include="AddStateQuery.cs" />
     <Compile Include="GetStateQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoveStateQuery.cs" />
     <Compile Include="repositories\AbstractSqlDaoFactory.cs" />
     <Compile Include="repositories\HiLoRangeDto.cs" />
     <Compile Include="repositories\NextHiQuery.cs" />

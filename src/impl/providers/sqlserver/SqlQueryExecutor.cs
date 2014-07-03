@@ -172,5 +172,96 @@ namespace Nohros.Data.SqlServer
         }
       }
     }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// runs the number of rows affected.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <returns>
+    /// The number of rows affected.
+    /// </returns>
+    public int ExecuteNonQuery(string query) {
+      return ExecuteNonQuery(query, builder => { }, default_command_type_);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// runs the number of rows affected.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <returns>
+    /// The number of rows affected.
+    /// </returns>
+    public int ExecuteNonQuery(string query, CommandType command_type) {
+      return ExecuteNonQuery(query, builder => { }, command_type);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// runs the number of rows affected.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <returns>
+    /// The number of rows affected.
+    /// </returns>
+    public int ExecuteNonQuery(string query,
+      Action<CommandBuilder> set_parameters) {
+      return ExecuteNonQuery(query, set_parameters, default_command_type_);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// runs the number of rows affected.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <returns>
+    /// The number of rows affected.
+    /// </returns>
+    public int ExecuteNonQuery(string query,
+      Action<CommandBuilder> set_parameters, CommandType command_type) {
+      using (SqlConnection conn = sql_connection_provider_.CreateConnection())
+      using (var builder = new CommandBuilder(conn)) {
+        IDbCommand cmd = builder
+          .SetText(query)
+          .SetType(command_type)
+          .Set(set_parameters)
+          .Build();
+        try {
+          conn.Open();
+          return cmd.ExecuteNonQuery();
+        } catch (SqlException e) {
+          logger_.Error(
+            StringResources
+              .Log_MethodThrowsException
+              .Fmt("ExecuteNonQuery", kClassName), e);
+          throw e.AsProviderException();
+        }
+      }
+    }
   }
 }

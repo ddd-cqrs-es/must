@@ -110,6 +110,14 @@ namespace Nohros.Data
       return this;
     }
 
+    /// <summary>
+    /// Executes the given <see cref="Action{T}"/> in the context of the
+    /// current <see cref="CommandBuilder"/>
+    /// </summary>
+    /// <param name="action">
+    /// The method to be executed.
+    /// </param>
+    /// <returns></returns>
     public CommandBuilder Set(Action<CommandBuilder> action) {
       action(this);
       return this;

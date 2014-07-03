@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nohros.Data
 {
@@ -26,6 +27,22 @@ namespace Nohros.Data
     /// </exception>
     /// </exception>
     T Get<T>(string name);
+
+    /// <summary>
+    /// Get all the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the states to get.
+    /// </typeparam>
+    /// <param name="prefix">
+    /// A string that a key should starts with in order to be returned.
+    /// </param>
+    /// <returns>
+    /// All the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </returns>
+    IEnumerable<T> GetForPrefix<T>(string prefix);
 
     /// <summary>
     /// Returns the state associated with the key <paramref name="name"/> or
@@ -149,5 +166,16 @@ namespace Nohros.Data
     /// The local database does not support the type <see cref="long"/>
     /// </exception>
     void SetIfLessThan(string name, long state);
+
+    /// <summary>
+    /// Removes the state associated with the given <paramref name="name"/>.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the state to be removed.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if a key was found and removed; otherwise, <c>false</c>.
+    /// </returns>
+    bool Remove<T>(string name);
   }
 }
