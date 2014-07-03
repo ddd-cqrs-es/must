@@ -23,6 +23,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{269BDC37-B279-47C2-A3C3-14DB577BE5C7}"
 	ProjectSection(SolutionItems) = preProject
 		nuget\must-common.nuspec = nuget\must-common.nuspec
+		nuget\must-data-mysql.nuspec = nuget\must-data-mysql.nuspec
+		nuget\must-data-sqlce.nuspec = nuget\must-data-sqlce.nuspec
+		nuget\must-data-sqlserver.nuspec = nuget\must-data-sqlserver.nuspec
 		nuget\must-desktop.nuspec = nuget\must-desktop.nuspec
 		nuget\must-logging-log4net.nuspec = nuget\must-logging-log4net.nuspec
 		nuget\must-logging-log4net.ps1 = nuget\must-logging-log4net.ps1

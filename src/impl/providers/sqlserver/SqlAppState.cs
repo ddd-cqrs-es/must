@@ -27,31 +27,14 @@ namespace Nohros.Data.SqlServer
 
     public SqlAppState(SqlConnectionProvider sql_connection_provider,
       bool supress_dtc = false) {
+      update_state_ = new UpdateStateQuery(sql_connection_provider);
+      get_state_ = new GetStateQuery(sql_connection_provider);
+      add_state_ = new AddStateQuery(sql_connection_provider);
+      if_greater_than_query_ = new SetIfGreaterThanQuery(sql_connection_provider);
+      if_less_than_query_ = new SetIfLessThanQuery(sql_connection_provider);
+      remove_state_ = new RemoveStateQuery(sql_connection_provider);
+
       SupressTransactions = supress_dtc;
-
-      update_state_ = new UpdateStateQuery(sql_connection_provider) {
-        SupressTransactions = supress_dtc
-      };
-
-      get_state_ = new GetStateQuery(sql_connection_provider) {
-        SupressTransactions = supress_dtc
-      };
-
-      add_state_ = new AddStateQuery(sql_connection_provider) {
-        SupressTransactions = supress_dtc
-      };
-
-      if_greater_than_query_ = new SetIfGreaterThanQuery(sql_connection_provider) {
-        SupressTransactions = supress_dtc
-      };
-
-      if_less_than_query_ = new SetIfLessThanQuery(sql_connection_provider) {
-        SupressTransactions = supress_dtc
-      };
-
-      remove_state_ = new RemoveStateQuery(sql_connection_provider) {
-        SupressTransactions = supress_dtc
-      };
     }
 
     /// <inheritdoc/>
