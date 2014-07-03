@@ -38,11 +38,14 @@ namespace Nohros.Data
     /// <param name="prefix">
     /// A string that a key should starts with in order to be returned.
     /// </param>
+    /// <param name="limit">
+    /// The maximum number of states to return.
+    /// </param>
     /// <returns>
     /// All the states that is associated with a key that starts with
     /// the given <paramref name="prefix"/>.
     /// </returns>
-    IEnumerable<T> GetForPrefix<T>(string prefix);
+    IEnumerable<T> GetForPrefix<T>(string prefix, int limit = -1);
 
     /// <summary>
     /// Returns the state associated with the key <paramref name="name"/> or

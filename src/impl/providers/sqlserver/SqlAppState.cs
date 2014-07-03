@@ -78,8 +78,10 @@ namespace Nohros.Data.SqlServer
     }
 
     /// <inheritdoc/>
-    public IEnumerable<T> GetForPrefix<T>(string prefix) {
-      return get_state_.Execute<T>(prefix + '%', GetTableNameForType<T>());
+    public IEnumerable<T> GetForPrefix<T>(string prefix, int limit = -1) {
+      return limit < 0
+        ? get_state_.Execute<T>(prefix + '%', GetTableNameForType<T>())
+        : get_state_.Execute<T>(prefix + '%', GetTableNameForType<T>(), limit);
     }
 
     /// <inheritdoc/>
