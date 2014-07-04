@@ -440,16 +440,26 @@ namespace Nohros.Data
     /// <see cref="AppDomain"/>.
     /// </remarks>
     Type MakeDynamicType(string dynamic_type_name) {
-      TypeBuilder builder = Dynamics_.ModuleBuilder.DefineType(
-        dynamic_type_name,
-        TypeAttributes.Public |
-          TypeAttributes.Class |
-          TypeAttributes.AutoClass |
-          TypeAttributes.AutoLayout,
-        typeof (DataReaderMapper<T>),
-        new Type[] {
-          typeof (IDataReaderMapper<T>)
-        });
+      TypeBuilder builder;
+      try {
+        builder = Dynamics_.ModuleBuilder.DefineType(
+          dynamic_type_name,
+          TypeAttributes.Public |
+            TypeAttributes.Class |
+            TypeAttributes.AutoClass |
+            TypeAttributes.AutoLayout,
+          typeof (DataReaderMapper<T>),
+          new Type[] {
+            typeof (IDataReaderMapper<T>)
+          });
+      } catch(ArgumentException) {
+        // Check if the type was created by another thread.
+        Type type = Dynamics_.ModuleBuilder.GetType(dynamic_type_name);
+        if (type == null) {
+          throw;
+        }
+        return type;
+      }
 
       PropertyInfo[] properties = GetProperties();
 
@@ -465,16 +475,7 @@ namespace Nohros.Data
 
       OnPreCreateType(builder);
 
-      try {
-        return builder.CreateType();
-      } catch {
-        // Check if the type was created by another thread.
-        Type type = Dynamics_.ModuleBuilder.GetType(dynamic_type_name);
-        if (type == null) {
-          throw;
-        }
-        return type;
-      }
+      return builder.CreateType();
     }
 
     void OnPreCreateType(TypeBuilder builder) {
