@@ -17,7 +17,20 @@ namespace Nohros.Data
     /// <param name="value">
     /// The name of the column to use as data source for the map operation.
     /// </param>
-    public StringTypeMap(string value) : base(value, TypeMapType.String) {
+    public StringTypeMap(string value) : this(value, null) {
+      RawType = null;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StringTypeMap"/> class
+    /// using the specified column name.
+    /// </summary>
+    /// <param name="value">
+    /// The name of the column to use as data source for the map operation.
+    /// </param>
+    public StringTypeMap(string value, Type raw_type)
+      : base(value, TypeMapType.String) {
+      RawType = raw_type;
     }
     #endregion
 
@@ -34,5 +47,10 @@ namespace Nohros.Data
     public static implicit operator StringTypeMap(string str) {
       return new StringTypeMap(str);
     }
+
+    /// <summary>
+    /// Gets or sets the type of the underlying column data.
+    /// </summary>
+    public Type RawType { get; set; }
   }
 }

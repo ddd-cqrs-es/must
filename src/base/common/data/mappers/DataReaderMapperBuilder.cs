@@ -5,14 +5,9 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Nohros.Dynamics;
 using PropertyAttributes = System.Reflection.PropertyAttributes;
-using ValueMap =
-  System.Collections.Generic.KeyValuePair
-    <string, System.Reflection.PropertyInfo>;
 using ConstantMap =
   System.Collections.Generic.KeyValuePair
     <Nohros.Data.ITypeMap, System.Reflection.PropertyInfo>;
-using OrdinalMap =
-  System.Collections.Generic.KeyValuePair<int, System.Reflection.PropertyInfo>;
 #if NET40
 using System.Linq.Expressions;
 
@@ -22,6 +17,32 @@ namespace Nohros.Data
 {
   public class DataReaderMapperBuilder<T>
   {
+    class ValueMap
+    {
+      public ValueMap(string key, PropertyInfo value, Type raw_type) {
+        Key = key;
+        Value = value;
+        RawType = raw_type;
+      }
+
+      public string Key { get; set; }
+      public PropertyInfo Value { get; set; }
+      public Type RawType { get; set; }
+    }
+
+    class OrdinalMap
+    {
+      public OrdinalMap(int key, PropertyInfo value, Type raw_type) {
+        Key = key;
+        Value = value;
+        RawType = raw_type;
+      }
+
+      public int Key { get; set; }
+      public PropertyInfo Value { get; set; }
+      public Type RawType { get; set; }
+    }
+
     class MappingResult
     {
       public FieldBuilder OrdinalsField { get; set; }
@@ -287,7 +308,7 @@ namespace Nohros.Data
 
 #if NET40
     public DataReaderMapperBuilder<T> Map<TProperty>(
-      Expression<Func<T, TProperty>> expression, string source) {
+      Expression<Func<T, TProperty>> expression, string source, Type type) {
       MemberExpression member;
       if (expression.Body is UnaryExpression) {
         member = ((UnaryExpression) expression.Body).Operand as MemberExpression;
@@ -299,6 +320,11 @@ namespace Nohros.Data
         throw new ArgumentException("[member] should be a class property");
       }
       return Map(member.Member.Name, source);
+    }
+
+    public DataReaderMapperBuilder<T> Map<TProperty>(
+      Expression<Func<T, TProperty>> expression, string source) {
+      return Map(expression, source, null);
     }
 #endif
 
@@ -411,7 +437,8 @@ namespace Nohros.Data
       string dynamic_type_name =
         Dynamics_.GetDynamicTypeName(prefix, type_t_);
       return Dynamics_.ModuleBuilder
-        .GetType(dynamic_type_name) ?? MakeDynamicType(dynamic_type_name);
+                      .GetType(dynamic_type_name) ??
+        MakeDynamicType(dynamic_type_name);
     }
 
     /// <summary>
@@ -452,7 +479,7 @@ namespace Nohros.Data
           new Type[] {
             typeof (IDataReaderMapper<T>)
           });
-      } catch(ArgumentException) {
+      } catch (ArgumentException) {
         // Check if the type was created by another thread.
         Type type = Dynamics_.ModuleBuilder.GetType(dynamic_type_name);
         if (type == null) {
@@ -567,7 +594,7 @@ namespace Nohros.Data
         il.Emit(OpCodes.Newarr, typeof (int));
         il.Emit(OpCodes.Stfld, result.OrdinalsField);
 
-        result.OrdinalsMapping = new KeyValuePair<int, PropertyInfo>[0];
+        result.OrdinalsMapping = new OrdinalMap[0];
       } else {
         // check if the ordinals is not already got.
         il.Emit(OpCodes.Ldarg_0);
@@ -629,12 +656,14 @@ namespace Nohros.Data
       // Set the value of the properties of the newly created T object.
       OrdinalMap[] fields = result.OrdinalsMapping;
       for (int i = 0, j = fields.Length; i < j; i++) {
-        int ordinal = fields[i].Key;
-        PropertyInfo property = fields[i].Value;
+        OrdinalMap field = fields[i];
+        int ordinal = field.Key;
+        PropertyInfo property = field.Value;
 
         MethodInfo get_x_method =
           Dynamics_.GetDataReaderMethod(
-            Dynamics_.GetDataReaderMethodName(property.PropertyType));
+            Dynamics_.GetDataReaderMethodName(field.RawType ??
+              property.PropertyType));
 
         // Get the set method of the current property. If the property does
         // not have a set method ignores it.
@@ -802,11 +831,9 @@ namespace Nohros.Data
       il.Emit(OpCodes.Ldc_I4, value);
     }
 
-    KeyValuePair<int, PropertyInfo>[] EmitOrdinals(ILGenerator il,
-      MappingResult result) {
-      KeyValuePair<string, PropertyInfo>[] fields = result.ValueMappings;
-      KeyValuePair<int, PropertyInfo>[] ordinals_mapping =
-        new KeyValuePair<int, PropertyInfo>[fields.Length];
+    OrdinalMap[] EmitOrdinals(ILGenerator il, MappingResult result) {
+      ValueMap[] fields = result.ValueMappings;
+      OrdinalMap[] ordinals_mapping = new OrdinalMap[fields.Length];
 
       if (fields.Length > 0) {
         MethodInfo get_ordinal_method =
@@ -827,7 +854,7 @@ namespace Nohros.Data
           il.Emit(OpCodes.Stelem_I4);
 
           ordinals_mapping[i] =
-            new KeyValuePair<int, PropertyInfo>(i, fields[i].Value);
+            new OrdinalMap(i, fields[i].Value, fields[i].RawType);
         }
       }
       return ordinals_mapping;
@@ -891,7 +918,9 @@ namespace Nohros.Data
           mapping = new IgnoreMapType(GetDefaultValue(property.PropertyType));
           const_mappings.Add(new ConstantMap(mapping, property));
         } else if (mapping.MapType == TypeMapType.String) {
-          value_mappings.Add(new ValueMap((string) mapping.Value, property));
+          var map = mapping as StringTypeMap;
+          value_mappings.Add(
+            new ValueMap((string) map.Value, property, map.RawType));
         } else {
           const_mappings.Add(new ConstantMap(mapping, property));
         }
