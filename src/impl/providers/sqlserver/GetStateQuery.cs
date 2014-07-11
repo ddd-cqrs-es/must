@@ -77,8 +77,8 @@ namespace Nohros.Data.SqlServer
               while (reader.Read()) {
                 list.Add((T) reader.GetValue(0));
               }
-              scope.Complete();
             }
+            scope.Complete();
             return list;
           } catch (SqlException e) {
             logger_.Error(
@@ -113,8 +113,8 @@ namespace Nohros.Data.SqlServer
               while (reader.Read()) {
                 list.Add((T) reader.GetValue(0));
               }
-              scope.Complete();
             }
+            scope.Complete();
             return list;
           } catch (SqlException e) {
             logger_.Error(
