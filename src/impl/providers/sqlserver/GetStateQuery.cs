@@ -41,6 +41,7 @@ namespace Nohros.Data.SqlServer
             object obj = cmd.ExecuteScalar();
             if (obj == null) {
               state = default(T);
+              scope.Complete();
               return false;
             }
             state = (T) obj;
