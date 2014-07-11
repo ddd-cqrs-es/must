@@ -38,6 +38,12 @@ namespace Nohros.Data.SqlServer
     }
 
     /// <inheritdoc/>
+    public bool Contains<T>(string name) {
+      T @out;
+      return Get(name, out @out);
+    }
+
+    /// <inheritdoc/>
     public T Get<T>(string name) {
       T state;
       if (!Get(name, out state)) {
@@ -69,7 +75,12 @@ namespace Nohros.Data.SqlServer
 
     /// <inheritdoc/>
     public bool Remove<T>(string name) {
-      return remove_state_.Execute<T>(name, GetTableNameForType<T>());
+      return remove_state_.Execute(name, GetTableNameForType<T>()) != 0;
+    }
+
+    /// <inheritdoc/>
+    public int RemoveForPrefix<T>(string prefix) {
+      return remove_state_.Execute(prefix, GetTableNameForType<T>(), true);
     }
 
     /// <inheritdoc/>

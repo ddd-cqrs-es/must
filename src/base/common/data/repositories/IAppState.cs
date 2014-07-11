@@ -10,6 +10,18 @@ namespace Nohros.Data
   public interface IAppState
   {
     /// <summary>
+    /// Determines whether the state's collection contains a specific state.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the state to locate in the <see cref="IAppState"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the <paramref name="name"/> is found; otherwise,
+    /// <c>false</c>.
+    /// </returns>
+    bool Contains<T>(string name);
+
+    /// <summary>
     /// Gets the state associated with the key <paramref name="name"/>.
     /// </summary>
     /// <param name="name">
@@ -180,5 +192,17 @@ namespace Nohros.Data
     /// <c>true</c> if a key was found and removed; otherwise, <c>false</c>.
     /// </returns>
     bool Remove<T>(string name);
+
+    /// <summary>
+    /// Removes all the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </summary>
+    /// <param name="prefix">
+    /// A string that a key should starts with in order to be returned.
+    /// </param>
+    /// <returns>
+    /// The number of states that was removed.
+    /// </returns>
+    int RemoveForPrefix<T>(string prefix);
   }
 }

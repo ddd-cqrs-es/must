@@ -14,7 +14,7 @@ namespace Nohros.Data.SqlServer
   {
     const string kClassName = "Nohros.Data.SqlServer.GetStateQuery";
 
-    readonly MustLogger logger_ = MustLogger.ForCurrentProcess;
+    readonly MustLogger logger_;
     readonly SqlConnectionProvider sql_connection_provider_;
 
     public GetStateQuery(SqlConnectionProvider sql_connection_provider) {
