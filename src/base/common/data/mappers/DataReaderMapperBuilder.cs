@@ -8,10 +8,7 @@ using PropertyAttributes = System.Reflection.PropertyAttributes;
 using ConstantMap =
   System.Collections.Generic.KeyValuePair
     <Nohros.Data.ITypeMap, System.Reflection.PropertyInfo>;
-#if NET40
 using System.Linq.Expressions;
-
-#endif
 
 namespace Nohros.Data
 {
@@ -154,10 +151,54 @@ namespace Nohros.Data
     /// to the property named <paramref source="destination"/>.
     /// </returns>
     public DataReaderMapperBuilder<T> Map(string destination, string source) {
+      return Map(destination, source, null);
+    }
+
+    /// <summary>
+    /// Maps the source column <paramref source="source"/> to the interface
+    /// property <paramref source="destination"/>.
+    /// </summary>
+    /// <param name="source">
+    /// The source of the source column.
+    /// </param>
+    /// <param name="destination">
+    /// The source of the property that will be mapped to the column
+    /// <paramref name="source"/>.
+    /// </param>
+    /// <returns>
+    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
+    /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
+    /// to the property named <paramref source="destination"/>.
+    /// </returns>
+    public DataReaderMapperBuilder<T> Map<TMap>(string destination,
+      string source) {
+      return Map(destination, source, typeof (TMap));
+    }
+
+    /// <summary>
+    /// Maps the source column <paramref source="source"/> to the interface
+    /// property <paramref source="destination"/>.
+    /// </summary>
+    /// <param name="source">
+    /// The source of the source column.
+    /// </param>
+    /// <param name="destination">
+    /// The source of the property that will be mapped to the column
+    /// <paramref name="source"/>.
+    /// </param>
+    /// <returns>
+    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
+    /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
+    /// to the property named <paramref source="destination"/>.
+    /// </returns>
+    public DataReaderMapperBuilder<T> Map(string destination, string source,
+      Type type) {
       if (source == null) {
         return Map(destination, new IgnoreMapType());
       }
-      return Map(destination, new StringTypeMap(source));
+      return Map(destination, new StringTypeMap(source) {
+        RawType = type
+      });
     }
 
     /// <summary>
@@ -306,7 +347,6 @@ namespace Nohros.Data
       return this;
     }
 
-#if NET40
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
       MemberExpression member;
@@ -326,7 +366,6 @@ namespace Nohros.Data
       Expression<Func<T, TProperty>> expression, string source) {
       return Map(expression, source, null);
     }
-#endif
 
     /// <summary>
     /// Defines the factory that shoud be used to create an instance of the
