@@ -175,7 +175,7 @@ namespace Nohros.Data.SqlServer
 
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
-    /// runs the number of rows affected.
+    /// returns the number of rows affected.
     /// </summary>
     /// <param name="query">
     /// The query to be executed on the server.
@@ -189,7 +189,7 @@ namespace Nohros.Data.SqlServer
 
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
-    /// runs the number of rows affected.
+    /// returns the number of rows affected.
     /// </summary>
     /// <param name="query">
     /// The query to be executed on the server.
@@ -207,7 +207,7 @@ namespace Nohros.Data.SqlServer
 
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
-    /// runs the number of rows affected.
+    /// returns the number of rows affected.
     /// </summary>
     /// <param name="query">
     /// The query to be executed on the server.
@@ -226,7 +226,7 @@ namespace Nohros.Data.SqlServer
 
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
-    /// runs the number of rows affected.
+    /// returns the number of rows affected.
     /// </summary>
     /// <param name="query">
     /// The query to be executed on the server.
@@ -254,6 +254,221 @@ namespace Nohros.Data.SqlServer
         try {
           conn.Open();
           return cmd.ExecuteNonQuery();
+        } catch (SqlException e) {
+          logger_.Error(
+            StringResources
+              .Log_MethodThrowsException
+              .Fmt("ExecuteNonQuery", kClassName), e);
+          throw e.AsProviderException();
+        }
+      }
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <returns>
+    /// The value of the first column of the first row of the recordset
+    /// resulted from the execution of the <paramref name="query"/>.
+    /// </returns>
+    public T ExecuteScalar<T>(string query) {
+      return ExecuteScalar<T>(query, builder => { }, default_command_type_);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="t">
+    /// When this method returns contains the value of the first column of
+    /// the first row of the recordset resulted from the execution of the
+    /// <paramref name="query"/> if the recordset is not empty; otherwise,
+    /// the default value for the type <typeparamref name="T"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the recordset resulted from the execution of the
+    /// <paramref name="query"/> is not empty; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ExecuteScalar<T>(string query, out T t) {
+      return ExecuteScalar(query, builder => { }, default_command_type_, out t);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <returns>
+    /// The value of the first column of the first row of the recordset
+    /// resulted from the execution of the <paramref name="query"/>.
+    /// </returns>
+    public T ExecuteScalar<T>(string query, CommandType command_type) {
+      return ExecuteScalar<T>(query, builder => { }, command_type);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <param name="t">
+    /// When this method returns contains the value of the first column of
+    /// the first row of the recordset resulted from the execution of the
+    /// <paramref name="query"/> if the recordset is not empty; otherwise,
+    /// the default value for the type <typeparamref name="T"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the recordset resulted from the execution of the
+    /// <paramref name="query"/> is not empty; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ExecuteScalar<T>(string query, CommandType command_type, out T t) {
+      return ExecuteScalar(query, builder => { }, command_type, out t);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <returns>
+    /// The value of the first column of the first row of the recordset
+    /// resulted from the execution of the <paramref name="query"/>.
+    /// </returns>
+    public T ExecuteScalar<T>(string query,
+      Action<CommandBuilder> set_parameters) {
+      return ExecuteScalar<T>(query, set_parameters, default_command_type_);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <param name="t">
+    /// When this method returns contains the value of the first column of
+    /// the first row of the recordset resulted from the execution of the
+    /// <paramref name="query"/> if the recordset is not empty; otherwise,
+    /// the default value for the type <typeparamref name="T"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the recordset resulted from the execution of the
+    /// <paramref name="query"/> is not empty; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ExecuteScalar<T>(string query,
+      Action<CommandBuilder> set_parameters, out T t) {
+      return ExecuteScalar(query, set_parameters, default_command_type_, out t);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <returns>
+    /// The value of the first column of the first row of the recordset
+    /// resulted from the execution of the <paramref name="query"/>.
+    /// </returns>
+    public T ExecuteScalar<T>(string query,
+      Action<CommandBuilder> set_parameters, CommandType command_type) {
+      T t;
+      if (ExecuteScalar(query, set_parameters, command_type, out t)) {
+        return t;
+      }
+      return default(T);
+    }
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// returned the value of the first column of the first row of the
+    /// resulting recordset.
+    /// </summary>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <param name="t">
+    /// When this method returns contains the value of the first column of
+    /// the first row of the recordset resulted from the execution of the
+    /// <paramref name="query"/> if the recordset is not empty; otherwise,
+    /// the default value for the type <typeparamref name="T"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the recordset resulted from the execution of the
+    /// <paramref name="query"/> is not empty; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ExecuteScalar<T>(string query,
+      Action<CommandBuilder> set_parameters, CommandType command_type, out T t) {
+      using (SqlConnection conn = sql_connection_provider_.CreateConnection())
+      using (var builder = new CommandBuilder(conn)) {
+        IDbCommand cmd = builder
+          .SetText(query)
+          .SetType(command_type)
+          .Set(set_parameters)
+          .Build();
+        try {
+          conn.Open();
+          object obj = cmd.ExecuteScalar();
+          if (obj != null) {
+            t = (T) obj;
+            return true;
+          }
+          t = default(T);
+          return false;
         } catch (SqlException e) {
           logger_.Error(
             StringResources
