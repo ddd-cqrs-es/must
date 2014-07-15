@@ -186,6 +186,9 @@ namespace Nohros.Data
     /// The source of the property that will be mapped to the column
     /// <paramref name="source"/>.
     /// </param>
+    /// <param name="type">
+    /// The type of source column.
+    /// </param>
     /// <returns>
     /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
@@ -359,7 +362,7 @@ namespace Nohros.Data
       if (member == null) {
         throw new ArgumentException("[member] should be a class property");
       }
-      return Map(member.Member.Name, source);
+      return Map(member.Member.Name, source, type);
     }
 
     public DataReaderMapperBuilder<T> Map<TProperty>(
