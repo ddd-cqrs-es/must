@@ -32,7 +32,7 @@ namespace Nohros.Data.SqlServer
         using (SqlConnection conn = sql_connection_provider_.CreateConnection())
         using (var builder = new CommandBuilder(conn)) {
           IDbCommand cmd = builder
-            .SetText(GetText(table_name, false, remove))
+            .SetText(GetText(table_name, false, remove, false))
             .SetType(CommandType.Text)
             .AddParameter("@name", state_name)
             .Build();
@@ -72,7 +72,7 @@ namespace Nohros.Data.SqlServer
         using (SqlConnection conn = sql_connection_provider_.CreateConnection())
         using (var builder = new CommandBuilder(conn)) {
           IDbCommand cmd = builder
-            .SetText(GetText(table_name, true, remove))
+            .SetText(GetText(table_name, true, remove, limit > 0))
             .SetType(CommandType.Text)
             .AddParameter("@name", state_name)
             .Set(x => {
