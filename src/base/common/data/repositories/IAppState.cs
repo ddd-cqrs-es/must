@@ -53,11 +53,15 @@ namespace Nohros.Data
     /// <param name="limit">
     /// The maximum number of states to return.
     /// </param>
+    /// <param name="remove">
+    /// A valu
+    /// </param>
     /// <returns>
     /// All the states that is associated with a key that starts with
     /// the given <paramref name="prefix"/>.
     /// </returns>
-    IEnumerable<T> GetForPrefix<T>(string prefix, int limit = -1);
+    IEnumerable<T> GetForPrefix<T>(string prefix, int limit = -1,
+      bool remove = false);
 
     /// <summary>
     /// Returns the state associated with the key <paramref name="name"/> or

@@ -93,7 +93,7 @@ namespace Nohros.Data.SqlServer
     }
 
     public IEnumerable<T> Execute<T>(string state_name, string table_name,
-      int limit) {
+      int limit, bool remove) {
       using (var scope =
         new TransactionScope(SupressTransactions
           ? TransactionScopeOption.Suppress
@@ -101,8 +101,7 @@ namespace Nohros.Data.SqlServer
         using (SqlConnection conn = sql_connection_provider_.CreateConnection())
         using (var builder = new CommandBuilder(conn)) {
           IDbCommand cmd = builder
-            .SetText("select top(@limite) state from " + table_name +
-              " where state_name like @name")
+            .SetText(GetText(table_name, true, remove))
             .SetType(CommandType.Text)
             .AddParameter("@name", state_name)
             .AddParameter("@limite", limit)
@@ -126,6 +125,14 @@ namespace Nohros.Data.SqlServer
           }
         }
       }
+    }
+
+    string GetText(string table_name, bool likely, bool remove) {
+      return remove
+        ? "delete top(@limite) from " + table_name
+          + " where state_name " + (likely ? "like" : "=") + " @name"
+        : "select top(@limite) state from " + table_name
+          + " where state_name " + (likely ? "like" : "=") + " @name";
     }
 
     public bool SupressTransactions { get; set; }
