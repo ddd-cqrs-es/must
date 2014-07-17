@@ -50,18 +50,73 @@ namespace Nohros.Data
     /// <param name="prefix">
     /// A string that a key should starts with in order to be returned.
     /// </param>
+    /// <returns>
+    /// All the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </returns>
+    IEnumerable<T> GetForPrefix<T>(string prefix);
+
+    /// <summary>
+    /// Get all the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the states to get.
+    /// </typeparam>
+    /// <param name="prefix">
+    /// A string that a key should starts with in order to be returned.
+    /// </param>
     /// <param name="limit">
     /// The maximum number of states to return.
-    /// </param>
-    /// <param name="remove">
-    /// A valu
     /// </param>
     /// <returns>
     /// All the states that is associated with a key that starts with
     /// the given <paramref name="prefix"/>.
     /// </returns>
-    IEnumerable<T> GetForPrefix<T>(string prefix, int limit = -1,
-      bool remove = false);
+    IEnumerable<T> GetForPrefix<T>(string prefix, int limit);
+
+    /// <summary>
+    /// Get all the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the states to get.
+    /// </typeparam>
+    /// <param name="prefix">
+    /// A string that a key should starts with in order to be returned.
+    /// </param>
+    /// <param name="remove">
+    /// A value that indicates if the returned states should be automatically
+    /// removed.
+    /// </param>
+    /// <returns>
+    /// All the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </returns>
+    IEnumerable<T> GetForPrefix<T>(string prefix, bool remove);
+
+    /// <summary>
+    /// Get all the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the states to get.
+    /// </typeparam>
+    /// <param name="prefix">
+    /// A string that a key should starts with in order to be returned.
+    /// </param>
+    /// <param name="limit">
+    /// The maximum number of states to return.
+    /// </param>
+    /// <param name="remove">
+    /// A value that indicates if the returned states should be automatically
+    /// removed.
+    /// </param>
+    /// <returns>
+    /// All the states that is associated with a key that starts with
+    /// the given <paramref name="prefix"/>.
+    /// </returns>
+    IEnumerable<T> GetForPrefix<T>(string prefix, int limit, bool remove);
 
     /// <summary>
     /// Returns the state associated with the key <paramref name="name"/> or

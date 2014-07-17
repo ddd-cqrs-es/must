@@ -45,8 +45,13 @@ namespace Nohros.Data.SqlServer
 
     /// <inheritdoc/>
     public T Get<T>(string name) {
+      return Get<T>(name, false);
+    }
+
+    /// <inheritdoc/>
+    public T Get<T>(string name, bool remove) {
       T state;
-      if (!Get(name, out state)) {
+      if (!Get(name, remove, out state)) {
         throw new NoResultException();
       }
       return state;
@@ -63,16 +68,33 @@ namespace Nohros.Data.SqlServer
 
     /// <inheritdoc/>
     public bool Get<T>(string name, out T state) {
-      return get_state_.Execute(name, GetTableNameForType<T>(), out state);
+      return Get(name, false, out state);
+    }
+
+    bool Get<T>(string name, bool remove, out T state) {
+      return get_state_.Execute(name, GetTableNameForType<T>(), out state,
+        remove);
     }
 
     /// <inheritdoc/>
-    public IEnumerable<T> GetForPrefix<T>(string prefix, int limit = -1,
-      bool remove = true) {
-      return limit < 0
-        ? get_state_.Execute<T>(prefix + '%', GetTableNameForType<T>())
-        : get_state_.Execute<T>(prefix + '%', GetTableNameForType<T>(), limit,
-          remove);
+    public IEnumerable<T> GetForPrefix<T>(string prefix) {
+      return GetForPrefix<T>(prefix, -1, false);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<T> GetForPrefix<T>(string prefix, int limit) {
+      return GetForPrefix<T>(prefix, limit, false);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<T> GetForPrefix<T>(string prefix, bool remove) {
+      return GetForPrefix<T>(prefix, -1, remove);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<T> GetForPrefix<T>(string prefix, int limit, bool remove) {
+      return get_state_.Execute<T>(prefix + '%', GetTableNameForType<T>(),
+        limit, remove);
     }
 
     /// <inheritdoc/>
