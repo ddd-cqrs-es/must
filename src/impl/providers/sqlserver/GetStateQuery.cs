@@ -102,12 +102,14 @@ namespace Nohros.Data.SqlServer
       }
     }
 
-    string GetText(string table_name, bool likely, bool remove) {
+    string GetText(string table_name, bool likely, bool remove, bool limit) {
       return remove
-        ? "delete top(@limite) from " + table_name
+        ? "delete " + (limit ? "top(@limite)" : "")
+          + " from " + table_name
           + " output deleted.state"
           + " where state_name " + (likely ? "like" : "=") + " @name"
-        : "select top(@limite) state from " + table_name
+        : "select " + (limit ? "top(@limite)" : "") + " state "
+          + "from " + table_name
           + " where state_name " + (likely ? "like" : "=") + " @name";
     }
 
