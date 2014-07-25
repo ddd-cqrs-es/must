@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Collections.Generic;
 using Nohros.Resources;
 
 namespace Nohros.Concurrent
@@ -18,7 +17,7 @@ namespace Nohros.Concurrent
   {
     class Chunk
     {
-      public long distance;
+      //public long distance;
       public volatile int head_pos;
       public volatile Chunk next;
       public volatile int tail_pos;
@@ -37,7 +36,7 @@ namespace Nohros.Concurrent
         head_pos = 0;
         tail_pos = 0;
         next = null;
-        distance = 0;
+        //distance = 0;
       }
       #endregion
     }
@@ -45,6 +44,8 @@ namespace Nohros.Concurrent
     const int kDefaultCapacity = 32;
     volatile Chunk divider_;
     readonly int granularity_;
+
+    // |tail_chunk_| should be modified only by the consumer thread.
     volatile Chunk tail_chunk_;
 
     #region .ctor
@@ -108,7 +109,7 @@ namespace Nohros.Concurrent
       chunk.head_pos = 0;
       chunk.next = null;
       chunk.values[0] = element;
-      chunk.distance = tail_chunk_.distance + 1;
+      //chunk.distance = tail_chunk_.distance + 1;
 
       // Make sure that the new chunk is fully initialized before it is
       // assigned to the tail chunk.
@@ -133,7 +134,8 @@ namespace Nohros.Concurrent
     /// will not be cleared.
     /// </para>
     /// This operation should be sychronized with the <see cref="Dequeue()"/>
-    /// and <see cref="Dequeue(out T)"/> operations.
+    /// and <see cref="Dequeue(out T)"/> operations. The clear method should
+    /// be called only by the producer thread.
     /// </remarks>
     public void Clear() {
       // Save the current tail chunk to ensure that the future elements are
@@ -228,6 +230,7 @@ namespace Nohros.Concurrent
     /// thread will modify the collection after <see cref="IsEmpty"/> returns,
     /// thus invalidatind the result.
     /// </remarks>
+    [Obsolete("IsEmpty was deprecated, since it is does not always return an up to date result.")]
     public bool IsEmpty {
       get {
         Chunk divider = divider_;
