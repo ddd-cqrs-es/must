@@ -72,7 +72,7 @@ namespace Nohros.Metrics
       ewma_1_rate_ = ExponentialWeightedMovingAverages.OneMinute();
       ewma_5_rate_ = ExponentialWeightedMovingAverages.FiveMinute();
       ewma_15_rate_ = ExponentialWeightedMovingAverages.FifteenMinute();
-      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(Run, executor);
+      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(Run);
     }
 
     /// <inheritdoc/>

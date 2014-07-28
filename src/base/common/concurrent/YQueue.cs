@@ -13,45 +13,65 @@ namespace Nohros.Concurrent
   /// The type of the objects in the queue.
   /// </typeparam>
   /// </summary>
-  public class YQueue<T>
+  internal class YQueue<T>
   {
+    class Entry
+    {
+      public readonly T value;
+      public readonly bool sentinel;
+
+      public Entry(T value, bool sentinel = false) {
+        this.value = value;
+        this.sentinel = sentinel;
+      }
+    }
+
     class Chunk
     {
-      //public long distance;
-      public volatile int head_pos;
-      public volatile Chunk next;
-      public volatile int tail_pos;
-      public T[] values;
+      public Chunk next;
+      public readonly Entry[] values;
 
       #region .ctor
       /// <summary>
       /// Initializes a new instance of the <see cref="Chunk"/> class by using
-      /// the specified capacity.
+      /// the specified granularity.
       /// </summary>
-      /// <param name="capacity">
+      /// <param name="granularity">
       /// The number of elements that the chunk can hold.
       /// </param>
-      public Chunk(int capacity) {
-        values = new T[capacity];
-        head_pos = 0;
-        tail_pos = 0;
+      public Chunk(int granularity) {
+        values = new Entry[granularity];
         next = null;
-        //distance = 0;
       }
       #endregion
     }
 
     const int kDefaultCapacity = 32;
-    volatile Chunk divider_;
     readonly int granularity_;
 
-    // |tail_chunk_| should be modified only by the consumer thread.
-    volatile Chunk tail_chunk_;
+    // Head position should accessed exclusively by queue reader, while
+    // back and end positions should be acessed exclusively by queue writer.
+    Chunk head_chunk_, tail_chunk_, back_chunk_, spare_chunk_;
+    int head_pos_, tail_pos_, back_pos_;
 
-    #region .ctor
+    // Points to the last enqueued item. This variable is used exclusively
+    // by the writer thread.
+    Entry writer_;
+
+    // Point to the next item to be dequeued. This varibale is used
+    // exclusively by the reader thread.
+    Entry reader_;
+
+    // The single point of contention between writer and reader threads.
+    // Points past the last enqueued item. It if is NULL, reader is asleep.
+    // This variable should always be acessed using atomic operations.
+    Entry divider_;
+
+    static readonly Entry sentinel_ = new Entry(default(T));
+
     /// <summary>
     /// Initializes a new instance of the <see cref="YQueue{T}"/> class
-    /// that has the default capacity.
+    /// that has the default granularity.
     /// </summary>
     public YQueue() : this(kDefaultCapacity) {
     }
@@ -66,15 +86,20 @@ namespace Nohros.Concurrent
     /// </param>
     public YQueue(int granularity) {
       granularity_ = granularity;
-      divider_ = new Chunk(granularity);
 
-      // make sure that the divider will not be used to store elements.
-      divider_.tail_pos = granularity - 1;
-      divider_.head_pos = granularity;
+      head_chunk_ = new Chunk(granularity);
+      head_pos_ = 0;
+      back_chunk_ = tail_chunk_;
+      back_pos_ = 0;
+      tail_chunk_ = head_chunk_;
+      tail_pos_ = 0;
 
-      tail_chunk_ = divider_;
+      // Insert terminator element into the queue.
+      Produce();
+
+      // Lets point everything to the terminator.
+      divider_ = reader_ = writer_ = back_chunk_.values[back_pos_];
     }
-    #endregion
 
     /// <summary>
     /// Adds an element to the back end of the queue.
@@ -82,45 +107,56 @@ namespace Nohros.Concurrent
     /// <param name="element">
     /// The element to be added to the back end of the queue.
     /// </param>
-    public void Enqueue(T element) {
-      int tail_pos = tail_chunk_.tail_pos;
+    /// <returns>
+    /// <c>true</c> if the reader thread is alive; otherwise, <c>false</c>.
+    /// </returns>
+    /// <remarks>
+    /// If the reader thread is sleeping this method returns <c>false</c> and
+    /// the caller should wake up the reader to restart the message processing.
+    /// </remarks>
+    public bool Enqueue(T element) {
+      // Place the value to the queue, add new terminator element.
+      Entry entry = new Entry(element);
+      back_chunk_.values[back_pos_] = entry;
+      Produce();
 
-      // If either the queue is not empty or the tail chunk is not full, adds
-      // the specified element to the back end of the current tail chunk.
-      if (tail_chunk_ != divider_ && ++tail_pos < granularity_) {
-        tail_chunk_.values[tail_pos] = element;
+      // Lets make the produced item visible to the consumer thread, by
+      // pointing the divider to the produced slot in an atomic fashion.
+      if (Interlocked.Exchange(ref divider_, entry) != writer_) {
+        // Exchange was unseccessul because |divider_| was  modified by
+        // the reader thread. This means that the reader thread is asleep.
+        writer_ = entry;
+        return false;
+      }
 
-        // Prevents any kind of instruction reorderring or caching.
-        Thread.MemoryBarrier();
+      // Reader is alive. Nothing special to do now. Just point the writter
+      // to the wrote slot.
+      writer_ = entry;
+      return true;
+    }
 
-        // "Commit" the newly added item and "publish" it atomically
-        // to the consumer thread.
-        tail_chunk_.tail_pos = tail_pos;
+    /// <summary>
+    /// Prepare the queue to enqueue a item by adding a slot to its back
+    /// end. The added slot will be referenced by the |back_chunk_| at the
+    /// position |back_pos_|.
+    /// </summary>
+    void Produce() {
+      back_chunk_ = tail_chunk_;
+      back_pos_ = tail_pos_;
+
+      // Ensure that the back slot points to something.
+      back_chunk_.values[back_pos_] = new Entry(default(T), true);
+
+      if (++tail_pos_ != granularity_) {
         return;
       }
 
-      // Create a new chunk if a cached one does not exists and links it
-      // to the current last node.
-      Chunk chunk = new Chunk(granularity_);
-      tail_chunk_.next = chunk;
+      // reuse the spare chunk as the new tail if it is set.
+      Chunk previous_spare_chunk = Interlocked.Exchange(ref spare_chunk_, null);
+      tail_chunk_.next = previous_spare_chunk ?? new Chunk(granularity_);
 
-      // Reset the chunk and append the specified element to the first slot.
-      chunk.tail_pos = 0; // An unconsumed element is added to the first slot.
-      chunk.head_pos = 0;
-      chunk.next = null;
-      chunk.values[0] = element;
-      //chunk.distance = tail_chunk_.distance + 1;
-
-      // Make sure that the new chunk is fully initialized before it is
-      // assigned to the tail chunk.
-      Thread.MemoryBarrier();
-
-      // At this point the newly created chunk(or the last cached chunk) is
-      // not yet shared, but still private to the producer; the consumer will
-      // not follow the linked chunk unless the value of |tail_chunk_| says
-      // it may follow. The line above "commit" the update and publish it
-      // atomically to the consumer thread.
       tail_chunk_ = tail_chunk_.next;
+      tail_pos_ = 0;
     }
 
     /// <summary>
@@ -138,12 +174,6 @@ namespace Nohros.Concurrent
     /// be called only by the producer thread.
     /// </remarks>
     public void Clear() {
-      // Save the current tail chunk to ensure that the future elements are
-      // not cleared.
-      Chunk current_tail_chunk = tail_chunk_;
-      while (divider_ != current_tail_chunk) {
-        divider_ = divider_.next;
-      }
     }
 
     /// <summary>
@@ -176,68 +206,61 @@ namespace Nohros.Concurrent
     /// beginning of it was successfully removed; otherwise, false.
     /// </returns>
     public bool Dequeue(out T t) {
-      // checks if the queue is empty
-      while (divider_ != tail_chunk_) {
-        // The chunks that sits between the |divider_| and the |tail_chunk_|,
-        // excluding the |divider_| and including the |tail_chunk_|, are
-        // unconsumed.
-        Chunk current_chunk = divider_.next;
+      // Ensure that the queue is not empty.
+      Entry entry = head_chunk_.values[head_pos_];
+      if (entry == reader_) {
+        // The queue is probably empty, so lets check it by comparing the
+        // value of the |divider_| with the value of the next entry to be
+        // dequeued in an atomic fashion. If the queue is really empty, which
+        // is true if the |divider_| is pointing to the next entry to be
+        // dequeued, set the divider to |sentinel_|.
+        reader_ = Interlocked.CompareExchange(ref divider_, sentinel_, entry);
 
-        // We need to compare the current chunk |tail_pos| with the |head_pos|
-        // and |granularity|. Since, the |tail_pos| can be modified by the
-        // producer thread we need to cache it instantaneous value.
-        int tail_pos;
-        tail_pos = current_chunk.tail_pos;
+        // If the consumer thread has been changed the value of divider right
+        // before or after the CAS operation, the entry will be different than
+        // the reader or the entry will be different than the value stored
+        // on the entry's slot. We should re-read the entry value.
+        entry = head_chunk_.values[head_pos_];
+        if (entry == reader_) {
+          t = default(T);
+          return false;
+        }
 
-        if (current_chunk.head_pos > tail_pos) {
-          if (tail_pos == granularity_ - 1) {
-            // we have reached the end of the chunk, go to the next chunk and
-            // frees the unused chunk.
-            divider_ = current_chunk;
-            //head_chunk_ = head_chunk_.next;
-          } else {
-            // we already consume all the available itens.
-            t = default(T);
-            return false;
-          }
-        } else {
-          // Ensure that we are reading the freshness value from the chunk
-          // values array.
-          Thread.MemoryBarrier();
-
-          // Here the |head_pos| is less than or equals to |tail_pos|, get
-          // the first unconsumed element and increments |head_pos| to publish
-          // the queue item removal.
-          t = current_chunk.values[current_chunk.head_pos];
-
-          // keep the order between assignment and publish operations.
-          Thread.MemoryBarrier();
-
-          current_chunk.head_pos++;
-          return true;
+        // The value of entry could be the value fetched from the processor
+        // cache (in which it you be equals to the first readed entry) or a
+        // JIT/CPU optmization should prevent us to see the most
+        // up to date value of entry. Lets ensure that we are not returning
+        // the value of a sentinel to the caller.
+        //
+        // TODO (neylor.silva) Check if we an remove this when compiling
+        // for processors with strong memory models.
+        if (entry.sentinel) {
+          t = default(T);
+          return false;
         }
       }
-      t = default(T);
-      return false;
+
+      t = entry.value;
+      Consume();
+      return true;
     }
 
     /// <summary>
-    /// Gets a value indicating whether the <see cref="YQueue{T}"/> is empty.
+    /// Mark an element as consumed by advancing the head pointer of the
+    /// head chunk by one position.
     /// </summary>
-    /// <remarks>
-    /// Since this collection is intended to be accessed concurrently by two
-    /// threads in a producer/consumer pattern, it may be the case that another
-    /// thread will modify the collection after <see cref="IsEmpty"/> returns,
-    /// thus invalidatind the result.
-    /// </remarks>
-    [Obsolete("IsEmpty was deprecated, since it is does not always return an up to date result.")]
-    public bool IsEmpty {
-      get {
-        Chunk divider = divider_;
-        Chunk tail = tail_chunk_;
+    void Consume() {
+      if (++head_pos_ == granularity_) {
+        Chunk previous_head_chunk = head_chunk_;
+        head_chunk_ = head_chunk_.next;
+        head_pos_ = 0;
 
-        return (divider.next == tail || divider == tail) &&
-          tail.head_pos > tail.tail_pos;
+        // |previous_head_chunk| has been more recently used than
+        // |spare_chunk|, so for cache reasons we'll get rid of the spare and
+        // use |previous_head_chunk| as the spare.This reduces the chances
+        // of the spare object to reach the gen1 or gen2 GC level, minimizing
+        // the work that needs to be done by the garbage collector.
+        Interlocked.Exchange(ref spare_chunk_, previous_head_chunk);
       }
     }
   }

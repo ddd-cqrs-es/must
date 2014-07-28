@@ -9,11 +9,10 @@ namespace Nohros.Metrics
     protected readonly Mailbox<RunnableDelegate> async_tasks_mailbox_;
     readonly ISyncHistogram histogram_;
 
-    protected AbstractAsyncHistogram(IExecutor executor,
-      ISyncHistogram histogram) {
+    protected AbstractAsyncHistogram(ISyncHistogram histogram) {
       histogram_ = histogram;
-      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(
-        runnable => runnable(), executor);
+      async_tasks_mailbox_ = new ThreadMailbox<RunnableDelegate>(
+        runnable => runnable(), new BackgroundThreadFactory());
 
       Tags = new Dictionary<string, string>();
     }

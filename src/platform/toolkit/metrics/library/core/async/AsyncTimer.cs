@@ -22,16 +22,17 @@ namespace Nohros.Metrics
     /// The scale unit for this timer's duration metrics.
     /// </param>
     public AsyncTimer(TimeUnit duration_unit, Meter meter,
-      BiasedHistogram histogram, IExecutor executor)
-      : this(duration_unit, meter, histogram, executor, new UserTimeClock()) {
+      BiasedHistogram histogram)
+      : this(duration_unit, meter, histogram, new UserTimeClock()) {
     }
 
     public AsyncTimer(TimeUnit duration_unit, Meter meter,
-      BiasedHistogram histogram, IExecutor executor, Clock clock) {
+      BiasedHistogram histogram, Clock clock) {
       duration_unit_ = duration_unit;
       meter_ = meter;
       histogram_ = histogram;
-      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(Run, executor);
+      async_tasks_mailbox_ = new ThreadMailbox<RunnableDelegate>(Run,
+        new BackgroundThreadFactory());
       clock_ = clock;
     }
 
@@ -164,21 +165,35 @@ namespace Nohros.Metrics
       string duration_unit = UnitHelper.FromTimeUnit(duration_unit_);
       string rate_unit = UnitHelper.FromRate(EventType, RateUnit);
       var values = new[] {
-        new MetricValue(MetricValueType.Min, ConvertFromNs(histogram_.Min),duration_unit),
-        new MetricValue(MetricValueType.Max, ConvertFromNs(histogram_.Max),duration_unit),
-        new MetricValue(MetricValueType.Mean, ConvertFromNs(histogram_.Mean),duration_unit),
-        new MetricValue(MetricValueType.StandardDeviation,ConvertFromNs(histogram_.StandardDeviation),duration_unit),
-        new MetricValue(MetricValueType.Median, ConvertFromNs(snapshot.Median),duration_unit),
-        new MetricValue(MetricValueType.Percentile75,ConvertFromNs(snapshot.Percentile75),duration_unit),
-        new MetricValue(MetricValueType.Percentile95,ConvertFromNs(snapshot.Percentile95),duration_unit),
-        new MetricValue(MetricValueType.Percentile98, ConvertFromNs(snapshot.Percentile98),duration_unit),
-        new MetricValue(MetricValueType.Percentile99, ConvertFromNs(snapshot.Percentile99),duration_unit),
-        new MetricValue(MetricValueType.Percentile999, ConvertFromNs(snapshot.Percentile999),duration_unit),
+        new MetricValue(MetricValueType.Min, ConvertFromNs(histogram_.Min),
+          duration_unit),
+        new MetricValue(MetricValueType.Max, ConvertFromNs(histogram_.Max),
+          duration_unit),
+        new MetricValue(MetricValueType.Mean, ConvertFromNs(histogram_.Mean),
+          duration_unit),
+        new MetricValue(MetricValueType.StandardDeviation,
+          ConvertFromNs(histogram_.StandardDeviation), duration_unit),
+        new MetricValue(MetricValueType.Median, ConvertFromNs(snapshot.Median),
+          duration_unit),
+        new MetricValue(MetricValueType.Percentile75,
+          ConvertFromNs(snapshot.Percentile75), duration_unit),
+        new MetricValue(MetricValueType.Percentile95,
+          ConvertFromNs(snapshot.Percentile95), duration_unit),
+        new MetricValue(MetricValueType.Percentile98,
+          ConvertFromNs(snapshot.Percentile98), duration_unit),
+        new MetricValue(MetricValueType.Percentile99,
+          ConvertFromNs(snapshot.Percentile99), duration_unit),
+        new MetricValue(MetricValueType.Percentile999,
+          ConvertFromNs(snapshot.Percentile999), duration_unit),
         new MetricValue(MetricValueType.Count, meter_.Count, EventType),
-        new MetricValue(MetricValueType.MeanRate, meter_.GetMeanRate(timestamp),rate_unit),
-        new MetricValue(MetricValueType.OneMinuteRate, meter_.OneMinuteRate,rate_unit),
-        new MetricValue(MetricValueType.FiveMinuteRate, meter_.FiveMinuteRate,rate_unit),
-        new MetricValue(MetricValueType.FifteenMinuteRate,meter_.FifteenMinuteRate, rate_unit)
+        new MetricValue(MetricValueType.MeanRate, meter_.GetMeanRate(timestamp),
+          rate_unit),
+        new MetricValue(MetricValueType.OneMinuteRate, meter_.OneMinuteRate,
+          rate_unit),
+        new MetricValue(MetricValueType.FiveMinuteRate, meter_.FiveMinuteRate,
+          rate_unit),
+        new MetricValue(MetricValueType.FifteenMinuteRate,
+          meter_.FifteenMinuteRate, rate_unit)
       };
       return new MetricValueSet(this, values);
     }

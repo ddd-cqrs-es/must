@@ -24,7 +24,7 @@ namespace Nohros.Metrics
 
     AsyncUniformHistogram(UniformSample sample, IExecutor executor,
       Histogram histogram)
-      : base(executor, histogram) {
+      : base(histogram) {
       histogram_ = histogram;
       sample_ = sample;
       last_updated_ = DateTime.Now;

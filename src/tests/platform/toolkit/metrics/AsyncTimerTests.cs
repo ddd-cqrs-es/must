@@ -134,11 +134,10 @@ namespace Nohros.Metrics
 
     public AsyncTimer AsyncTimer {
       get {
-        var executor = Executors.SameThreadExecutor();
         return new AsyncTimer(TimeUnit.Milliseconds,
           new Meter("calls", TimeUnit.Seconds),
           Histograms.Biased(),
-          executor, new ClockMock());
+          new ClockMock());
       }
     }
   }

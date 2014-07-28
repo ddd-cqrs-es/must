@@ -18,13 +18,12 @@ namespace Nohros.Metrics
     readonly ExponentiallyDecayingSample sample_;
     DateTime last_updated_;
 
-    public AsyncBiasedHistogram(ExponentiallyDecayingSample sample,
-      IExecutor executor) : this(sample, executor, new Histogram()) {
+    public AsyncBiasedHistogram(ExponentiallyDecayingSample sample)
+      : this(sample, new Histogram()) {
     }
 
-    AsyncBiasedHistogram(ExponentiallyDecayingSample sample,
-      IExecutor executor, Histogram histogram)
-      : base(executor, histogram) {
+    AsyncBiasedHistogram(ExponentiallyDecayingSample sample, Histogram histogram)
+      : base(histogram) {
       sample_ = sample;
       histogram_ = histogram;
       last_updated_ = DateTime.Now;

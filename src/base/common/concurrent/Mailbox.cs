@@ -34,7 +34,7 @@ namespace Nohros.Concurrent
   /// <typeparam name="T">
   /// The type of the messages that the mailbox can receive.
   /// </typeparam>
-  public class Mailbox<T>
+  public partial class Mailbox<T>
   {
     protected const int kDefaultCapacity = 32;
 
