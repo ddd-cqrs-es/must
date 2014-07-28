@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 
 namespace Nohros.Concurrent
@@ -34,7 +35,7 @@ namespace Nohros.Concurrent
   /// <typeparam name="T">
   /// The type of the messages that the mailbox can receive.
   /// </typeparam>
-  public partial class Mailbox<T>
+  public class Mailbox<T>
   {
     protected const int kDefaultCapacity = 32;
 
@@ -55,9 +56,12 @@ namespace Nohros.Concurrent
     // The synchronization context of the thread that creates the mailbox.
     protected readonly SynchronizationContext synchronization_context_;
 
-    Action receive_;
+    // the producer thread.
+    readonly Thread thread_;
 
-    volatile bool active_;
+    readonly AutoResetEvent sync_;
+
+    volatile bool running_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Mailbox{T}"/> class by
@@ -96,26 +100,15 @@ namespace Nohros.Concurrent
       message_queue_ = new YQueue<T>(capacity);
       callback_ = callback;
       synchronization_context_ = SynchronizationContext.Current;
-
-      receive_ = DefaultReceiver;
+      sync_ = new AutoResetEvent(false);
 
       // Get the pipe into passive state. That way, if the user starts by
       // polling on the associated queue, it will be woken up when
       // new message is posted.
-      active_ = false;
-    }
+      running_ = true;
 
-    internal Action Receiver {
-      get { return receive_; }
-      set { receive_ = value; }
-    }
-
-    Action DefaultReceiver {
-      get {
-        return synchronization_context_ == null
-          ? (Action) (Receive)
-          : () => Receive(synchronization_context_);
-      }
+      thread_ = new Thread(ThreadMain);
+      thread_.Start(synchronization_context_);
     }
 
     /// <summary>
@@ -127,22 +120,19 @@ namespace Nohros.Concurrent
     public void Send(T message) {
       bool active;
       lock (mutex_) {
-        message_queue_.Enqueue(message);
-
-        // Cache the current value of the active flag locally, so we can
-        // exit the lock block as soon as possible and perform remaining
-        // tasks outside of it.
-        active = active_;
-
-        if (!active_) {
-          active_ = true;
-        }
+        active = message_queue_.Enqueue(message);
       }
 
-      // If we are not already processing messages, request a thread to do it.
+      // Wake up the producer if it is sleeping.
       if (!active) {
-        receive_();
+        //sync_.Set();
       }
+    }
+
+    public void Shutdown() {
+      running_ = false;
+      sync_.Set();
+      thread_.Join();
     }
 
     /// <summary>
@@ -151,7 +141,7 @@ namespace Nohros.Concurrent
     /// <remarks>
     /// This method runs into a single dedicated thread.
     /// </remarks>
-    protected void Receive() {
+    void Receive() {
       T message;
       while (GetMessage(out message)) {
         callback_(message);
@@ -163,7 +153,7 @@ namespace Nohros.Concurrent
     /// using the context of the thread that creates the
     /// <see cref="Mailbox{T}"/> object.
     /// </summary>
-    protected void Receive(SynchronizationContext context) {
+    void Receive(SynchronizationContext context) {
       T message;
       while (GetMessage(out message)) {
         context.Send(state => callback_((T) state), message);
@@ -180,9 +170,9 @@ namespace Nohros.Concurrent
     /// If there are no incoming messages available at the mailbox, this
     /// method switch to passive state and returns <c>false</c>.
     /// </remarks>
-    protected bool GetMessage(out T message) {
+    bool GetMessage(out T message) {
       // try to get message straight away.
-      if (!message_queue_.Dequeue(out message)) {
+      /*if (!message_queue_.Dequeue(out message)) {
         // If there are no more messages available, switch into passive mode.
         // We need to synchronize the state change with the sender, because
         // it uses it to ensure that no more that one thread runs the receive
@@ -192,12 +182,27 @@ namespace Nohros.Concurrent
           // need to recheck to make sure that no messages are sent to the
           // queue between the first check and the lock operation.
           if (!message_queue_.Dequeue(out message)) {
-            active_ = false;
             return false;
           }
         }
       }
-      return true;
+      return true;*/
+      return message_queue_.Dequeue(out message);
+    }
+
+    void ThreadMain(object obj) {
+      var context = obj as SynchronizationContext;
+      if (context == null) {
+        while (running_) {
+          //Receive();
+          //sync_.WaitOne();
+        }
+      } else {
+        while (running_) {
+          //Receive(context);
+          //sync_.WaitOne();
+        }
+      }
     }
   }
 }

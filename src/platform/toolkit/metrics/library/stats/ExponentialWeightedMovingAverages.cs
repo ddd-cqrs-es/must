@@ -10,24 +10,26 @@ namespace Nohros.Metrics
     const int kFiveMinutes = 5;
     const int kFifteenMinutes = 15;
 
-    static readonly double kM1Alpha = 1 - Math.Exp(-kInterval / kMinutesPerSecond / kOneMinute);
-    static readonly double kM5Alpha = 1 - Math.Exp(-kInterval / kMinutesPerSecond / kFiveMinutes);
-    static readonly double kM15Alpha = 1 - Math.Exp(-kInterval / kMinutesPerSecond / kFifteenMinutes);
+    static readonly double kM1Alpha = 1 -
+      Math.Exp(-kInterval/kMinutesPerSecond/kOneMinute);
 
-    public static ExponentialWeightedMovingAverage OneMinute()
-    {
+    static readonly double kM5Alpha = 1 -
+      Math.Exp(-kInterval/kMinutesPerSecond/kFiveMinutes);
+
+    static readonly double kM15Alpha = 1 -
+      Math.Exp(-kInterval/kMinutesPerSecond/kFifteenMinutes);
+
+    public static ExponentialWeightedMovingAverage OneMinute() {
       return new ExponentialWeightedMovingAverage(
         kM1Alpha, kInterval, TimeUnit.Seconds);
     }
 
-    public static ExponentialWeightedMovingAverage FiveMinute()
-    {
+    public static ExponentialWeightedMovingAverage FiveMinute() {
       return new ExponentialWeightedMovingAverage(
         kM5Alpha, kInterval, TimeUnit.Seconds);
     }
 
-    public static ExponentialWeightedMovingAverage FifteenMinute()
-    {
+    public static ExponentialWeightedMovingAverage FifteenMinute() {
       return new ExponentialWeightedMovingAverage(
         kM15Alpha, kInterval, TimeUnit.Seconds);
     }

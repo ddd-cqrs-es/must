@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{876848CE-99F0-4AA1-8468-365204B77123}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nohros.Metrics.Tests</RootNamespace>
     <AssemblyName>nohros.toolkit.metrics.tests</AssemblyName>
@@ -48,6 +48,7 @@
     <Compile Include="ListClock.cs" />
     <Compile Include="ManualMeterTests.cs" />
     <Compile Include="MeterTests.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="TimerTests.cs" />
   </ItemGroup>
   <ItemGroup>

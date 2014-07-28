@@ -96,7 +96,6 @@
     <Compile Include="concurrent\AtomicLongArray.cs" />
     <Compile Include="concurrent\AtomicReference.cs" />
     <Compile Include="concurrent\BackgroundThreadFactory.cs" />
-    <Compile Include="concurrent\ThreadMailbox.cs" />
     <Compile Include="concurrent\Executors.cs" />
     <Compile Include="concurrent\Future.cs" />
     <Compile Include="concurrent\Futures.cs" />
@@ -110,12 +109,11 @@
     <Compile Include="concurrent\SettableFuture.cs" />
     <Compile Include="concurrent\SingleThreadExecutor.cs" />
     <Compile Include="concurrent\TaskFuture.cs" />
-    <Compile Include="concurrent\ThreadPoolExecutor.cs" />
     <Compile Include="concurrent\ExecutorState.cs" />
     <Compile Include="concurrent\IExecutor.cs" />
     <Compile Include="concurrent\IFuture.cs" />
     <Compile Include="concurrent\Mailbox.cs" />
-    <Compile Include="concurrent\ThreadPoolMailbox.cs" />
+    <Compile Include="concurrent\ThreadPoolExecutor.cs" />
     <Compile Include="concurrent\YBlockingQueue.cs" />
     <Compile Include="configuration\AbstractConfigurationNode.cs" />
     <Compile Include="configuration\builders\CallableConfigurationBuilder.cs" />
@@ -424,7 +422,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

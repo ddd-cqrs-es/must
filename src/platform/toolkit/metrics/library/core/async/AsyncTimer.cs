@@ -31,8 +31,7 @@ namespace Nohros.Metrics
       duration_unit_ = duration_unit;
       meter_ = meter;
       histogram_ = histogram;
-      async_tasks_mailbox_ = new ThreadMailbox<RunnableDelegate>(Run,
-        new BackgroundThreadFactory());
+      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(Run);
       clock_ = clock;
     }
 

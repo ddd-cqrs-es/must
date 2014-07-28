@@ -11,8 +11,8 @@ namespace Nohros.Metrics
 
     protected AbstractAsyncHistogram(ISyncHistogram histogram) {
       histogram_ = histogram;
-      async_tasks_mailbox_ = new ThreadMailbox<RunnableDelegate>(
-        runnable => runnable(), new BackgroundThreadFactory());
+      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(
+        runnable => runnable());
 
       Tags = new Dictionary<string, string>();
     }
@@ -62,11 +62,12 @@ namespace Nohros.Metrics
 
     protected MetricValueSet Report() {
       Snapshot snapshot = histogram_.Snapshot;
-      var values= new[] {
+      var values = new[] {
         new MetricValue(MetricValueType.Min, histogram_.Min),
         new MetricValue(MetricValueType.Max, histogram_.Max),
         new MetricValue(MetricValueType.Mean, histogram_.Mean),
-        new MetricValue(MetricValueType.StandardDeviation, histogram_.StandardDeviation),
+        new MetricValue(MetricValueType.StandardDeviation,
+          histogram_.StandardDeviation),
         new MetricValue(MetricValueType.Median, snapshot.Median),
         new MetricValue(MetricValueType.Percentile75, snapshot.Percentile75),
         new MetricValue(MetricValueType.Percentile95, snapshot.Percentile95),
