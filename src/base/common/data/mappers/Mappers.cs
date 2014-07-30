@@ -1,182 +1,99 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 
 namespace Nohros.Data
 {
   /// <summary>
-  /// Factory class for <see cref="IDataReaderMapper{T}"/> interface.
+  /// Factory class for implementations of the
+  /// <see cref="IDataReaderMapper{T}"/> interface that maps to value types.
   /// </summary>
   public static class Mappers
   {
     /// <summary>
-    /// Creates a new instance of the <see cref="IDataReaderMapper{T}"/> that
-    /// uses the specified <paramref name="mapping"/> to map between the
-    /// columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="bool"/>.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the interface to map.
-    /// </typeparam>
-    /// <param name="mapping">
-    /// A <see cref="CallableDelegate{T}"/> that can be used to get an array of
-    /// <see cref="KeyValuePair{TKey,TValue}"/> containing the map
-    /// between the columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </param>
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, string>[] mapping) {
-      return GetMapper<T>(mapping, typeof (T).Namespace);
+    public static IDataReaderMapper<bool> Boolean() {
+      return new BooleanDataReaderMapper();
     }
 
     /// <summary>
-    /// Creates a new instance of the <see cref="IDataReaderMapper{T}"/> that
-    /// uses the specified <paramref name="mapping"/> to map between the
-    /// columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="byte"/>.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the interface to map.
-    /// </typeparam>
-    /// <param name="mapping">
-    /// A <see cref="CallableDelegate{T}"/> that can be used to get an array of
-    /// <see cref="KeyValuePair{TKey,TValue}"/> containing the map
-    /// between the columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </param>
-    /// <param name="prefix">
-    /// A string that can be used to distinguish two mappers that map the same
-    /// class using distinct ways.
-    /// </param>
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, string>[] mapping, string prefix) {
-      return new DataReaderMapperBuilder<T>(prefix)
-        .Map(mapping)
-        .Build();
-    }
-
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="IDataReaderMapper{T}"/> that
-    /// uses the specified <paramref name="mapping"/> to map between the
-    /// columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </summary>
-    /// <typeparam name="T">
-    /// The type of the interface to map.
-    /// </typeparam>
-    /// <param name="mapping">
-    /// A <see cref="CallableDelegate{T}"/> that can be used to get an array of
-    /// <see cref="KeyValuePair{TKey,TValue}"/> containing the map
-    /// between the columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </param>
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, string>[] mapping,
-      CallableDelegate<T> factory) {
-      return GetMapper(mapping, factory, typeof (T).Namespace);
+    public static IDataReaderMapper<byte> Byte() {
+      return new ByteDataReaderMapper();
     }
 
     /// <summary>
-    /// Creates a new instance of the <see cref="IDataReaderMapper{T}"/> that
-    /// uses the specified <paramref name="mapping"/> to map between the
-    /// columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="char"/>.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the interface to map.
-    /// </typeparam>
-    /// <param name="mapping">
-    /// A <see cref="CallableDelegate{T}"/> that can be used to get an array of
-    /// <see cref="KeyValuePair{TKey,TValue}"/> containing the map
-    /// between the columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </param>
-    /// <param name="prefix">
-    /// A string that can be used to distinguish two mappers that map the same
-    /// class in distinct forms.
-    /// </param>
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, string>[] mapping,
-      CallableDelegate<T> factory,
-      string prefix) {
-      return new DataReaderMapperBuilder<T>(prefix)
-        .Map(mapping)
-        .Build();
+    public static IDataReaderMapper<char> Char() {
+      return new CharDataReaderMapper();
     }
 
     /// <summary>
-    /// Creates a new instance of the <see cref="IDataReaderMapper{T}"/> that
-    /// uses the specified <paramref name="mapping"/> to map between the
-    /// columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="DateTime"/>.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the interface to map.
-    /// </typeparam>
-    /// <param name="mapping">
-    /// A <see cref="CallableDelegate{T}"/> that can be used to get an array of
-    /// <see cref="KeyValuePair{TKey,TValue}"/> containing the map
-    /// between the columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </param>
-    /// <remarks></remarks>
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, ITypeMap>[] mapping) {
-      return GetMapper<T>(mapping, typeof (T).Namespace);
+    public static IDataReaderMapper<DateTime> DateTime() {
+      return new DateTimeDataReaderMapper();
     }
 
     /// <summary>
-    /// Creates a new instance of the <see cref="IDataReaderMapper{T}"/> that
-    /// uses the specified <paramref name="mapping"/> to map between the
-    /// columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="decimal"/>.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the interface to map.
-    /// </typeparam>
-    /// <param name="mapping">
-    /// A <see cref="CallableDelegate{T}"/> that can be used to get an array of
-    /// <see cref="KeyValuePair{TKey,TValue}"/> containing the map
-    /// between the columns of a <see cref="IDataReader"/> to the properties of
-    /// the <typeparamref name="T"/>.
-    /// </param>
-    /// <param name="prefix">
-    /// A string that can be used to distinguish two mappers that map the same
-    /// class in distinct forms.
-    /// </param>
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, ITypeMap>[] mapping,
-      string prefix) {
-      return new DataReaderMapperBuilder<T>(prefix)
-        .Map(mapping)
-        .Build();
+    public static IDataReaderMapper<decimal> Decimal() {
+      return new DecimalDataReaderMapper();
     }
 
-    public static IDataReaderMapper<T> GetMapper<T>(
-      KeyValuePair<string, ITypeMap>[] mapping,
-      CallableDelegate<T> factory,
-      string prefix) {
-      return new DataReaderMapperBuilder<T>(prefix)
-        .Map(mapping)
-        .SetFactory(factory)
-        .Build();
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="double"/>.
+    /// </summary>
+    public static IDataReaderMapper<double> Double() {
+      return new DoubleDataReaderMapper();
     }
 
-    public static IDataReaderMapper<T> GetMapper<T>(
-      CallableDelegate<KeyValuePair<string, ITypeMap>[]> mapping,
-      CallableDelegate<T> factory) {
-      return GetMapper(mapping, factory);
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="float"/>.
+    /// </summary>
+    public static IDataReaderMapper<float> Float() {
+      return new FloatDataReaderMapper();
     }
 
-    public static IDataReaderMapper<T> AutoMapper<T>() {
-      return AutoMapper<T>(typeof (T).Namespace);
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="Guid"/>.
+    /// </summary>
+    public static IDataReaderMapper<Guid> Guid() {
+      return new GuidDataReaderMapper();
     }
 
-    public static IDataReaderMapper<T> AutoMapper<T>(string prefix) {
-      return new DataReaderMapperBuilder<T>(prefix)
-        .AutoMap()
-        .Build();
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="short"/>.
+    /// </summary>
+    public static IDataReaderMapper<short> Int16() {
+      return new Int16DataReaderMapper();
+    }
+
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="int"/>.
+    /// </summary>
+    public static IDataReaderMapper<int> Int32() {
+      return new Int32DataReaderMapper();
+    }
+
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="long"/>.
+    /// </summary>
+    public static IDataReaderMapper<long> Long() {
+      return new LongDataReaderMapper();
     }
   }
 }

@@ -338,18 +338,44 @@ namespace Nohros.Data
     }
 
     /// <summary>
-    /// Automatically maps the properties defined by the type
-    /// <typeparamref name="T"/>.
+    /// Maps the source column <see cref="source"/> to a object property.
     /// </summary>
-    /// <remarks>
-    /// The properties that has no mapping defined will be mapped to the
-    /// field that has the same name as the mapped property.
-    /// </remarks>
-    public DataReaderMapperBuilder<T> AutoMap() {
-      auto_map_ = true;
-      return this;
+    /// <typeparam name="TProperty">
+    /// The type of the property to be mapped
+    /// </typeparam>
+    /// <param name="expression">
+    /// A <see cref="Expression{TDelegate}"/> that describes the property to
+    /// be mapped.
+    /// </param>
+    /// <param name="source">
+    /// The name of the source column to be mapped.
+    /// </param>
+    /// <returns>
+    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of
+    /// type <typeparamref source="T"/> and mapping the value of the source
+    /// column <paramref name="source"/> to the property described by
+    /// the <paramref name="expression"/> object.
+    /// </returns>
+    public DataReaderMapperBuilder<T> Map<TProperty>(
+      Expression<Func<T, TProperty>> expression, string source) {
+      return Map(expression, source, null);
     }
 
+    /// <summary>
+    /// Maps the source column <see cref="source"/> to a object property.
+    /// </summary>
+    /// <typeparam name="TProperty">
+    /// The type of the property to be mapped
+    /// </typeparam>
+    /// <param name="expression">
+    /// A <see cref="Expression{TDelegate}"/> that describes the property to
+    /// be mapped.
+    /// </param>
+    /// <param name="source">
+    /// The name of the source column to be mapped.
+    /// </param>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
       MemberExpression member;
@@ -365,9 +391,17 @@ namespace Nohros.Data
       return Map(member.Member.Name, source, type);
     }
 
-    public DataReaderMapperBuilder<T> Map<TProperty>(
-      Expression<Func<T, TProperty>> expression, string source) {
-      return Map(expression, source, null);
+    /// <summary>
+    /// Automatically maps the properties defined by the type
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// The properties that has no mapping defined will be mapped to the
+    /// field that has the same name as the mapped property.
+    /// </remarks>
+    public DataReaderMapperBuilder<T> AutoMap() {
+      auto_map_ = true;
+      return this;
     }
 
     /// <summary>
