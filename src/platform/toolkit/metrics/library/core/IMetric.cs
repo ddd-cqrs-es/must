@@ -19,5 +19,9 @@ namespace Nohros.Metrics
     /// reporting operation.
     /// </param>
     void Report<T>(MetricReportCallback<T> callback, T context);
+
+#if DEBUG
+    void Run(Action action);
+#endif
   }
 }

@@ -8,7 +8,7 @@ namespace Nohros.Metrics
   /// </summary>
   public class Counter : IMetric, ICounter
   {
-    readonly Mailbox<RunnableDelegate> async_tasks_mailbox_;
+    readonly Mailbox<Action> mailbox_;
     long count_;
 
     /// <summary>
@@ -18,12 +18,14 @@ namespace Nohros.Metrics
     /// </summary>
     public Counter() {
       count_ = 0;
-      async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(Run);
+      mailbox_ = new Mailbox<Action>(runnable => runnable());
     }
 
-    void Run(RunnableDelegate runnable) {
-      runnable();
+#if DEBUG
+    public void Run(Action action) {
+      mailbox_.Send(action);
     }
+#endif
 
     /// <summary>
     /// Increment the counter by one.
@@ -38,7 +40,7 @@ namespace Nohros.Metrics
     /// <param name="n">The amount by which the counter will be increased.
     /// </param>
     public void Increment(long n) {
-      async_tasks_mailbox_.Send(() => Update(n));
+      mailbox_.Send(() => Update(n));
     }
 
     /// <summary>
@@ -54,7 +56,7 @@ namespace Nohros.Metrics
     /// <param name="n">The amount by which the counter will be increased.
     /// </param>
     public void Decrement(long n) {
-      async_tasks_mailbox_.Send(() => Update(-n));
+      mailbox_.Send(() => Update(-n));
     }
 
     void Update(long delta) {
@@ -63,7 +65,7 @@ namespace Nohros.Metrics
 
     public void GetCount(LongMetricCallback callback) {
       DateTime now = DateTime.Now;
-      async_tasks_mailbox_.Send(() => callback(count_, now));
+      mailbox_.Send(() => callback(count_, now));
     }
 
     public void Increment(CountedCallback callback) {
@@ -71,7 +73,7 @@ namespace Nohros.Metrics
     }
 
     public void Increment(long n, CountedCallback callback) {
-      async_tasks_mailbox_.Send(() => {
+      mailbox_.Send(() => {
         Update(n);
         callback(this);
       });
@@ -82,7 +84,7 @@ namespace Nohros.Metrics
     }
 
     public void Decrement(long n, CountedCallback callback) {
-      async_tasks_mailbox_.Send(() => {
+      mailbox_.Send(() => {
         Update(-n);
         callback(this);
       });

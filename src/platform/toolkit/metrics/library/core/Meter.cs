@@ -47,7 +47,7 @@ namespace Nohros.Metrics
       : this(rate_unit, clock, new Mailbox<Action>(runnable => runnable())) {
     }
 
-    public Meter(TimeUnit rate_unit, Clock clock, Mailbox<Action> mailbox) {
+    internal Meter(TimeUnit rate_unit, Clock clock, Mailbox<Action> mailbox) {
       count_ = 0;
       rate_unit_ = rate_unit;
       clock_ = clock;
@@ -58,6 +58,12 @@ namespace Nohros.Metrics
       ewma_15_rate_ = ExponentialWeightedMovingAverages.FifteenMinute();
       mailbox_ = mailbox;
     }
+
+#if DEBUG
+    public void Run(Action action) {
+      mailbox_.Send(action);
+    }
+#endif
 
     /// <inheritdoc/>
     public TimeUnit RateUnit {
@@ -139,14 +145,16 @@ namespace Nohros.Metrics
       mailbox_.Send(() => Mark(n, timestamp));
     }
 
-    void Mark(long n, long timestamp) {
-      mailbox_.Send(() => {
-        TickIfNecessary(timestamp);
-        count_ += n;
-        ewma_1_rate_.Update(n);
-        ewma_5_rate_.Update(n);
-        ewma_15_rate_.Update(n);
-      });
+    /// <summary>
+    /// Provide unsafe access to the internal Mark. This should be called
+    /// using the same context that is used to update the histogram.
+    /// </summary>
+    internal void Mark(long n, long timestamp) {
+      TickIfNecessary(timestamp);
+      count_ += n;
+      ewma_1_rate_.Update(n);
+      ewma_5_rate_.Update(n);
+      ewma_15_rate_.Update(n);
     }
 
     double GetMeanRate(long timestamp) {

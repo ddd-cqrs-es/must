@@ -9,6 +9,14 @@ namespace Nohros.Metrics
     readonly Mailbox<Action> mailbox_;
     int count_;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Histogram"/> by using the
+    /// given <see cref="IResevoir"/>.
+    /// </summary>
+    /// <param name="resevoir">
+    /// A <see cref="IResevoir"/> that can be used to store the computed
+    /// values.
+    /// </param>
     public Histogram(IResevoir resevoir)
       : this(resevoir, new Mailbox<Action>(runnable => runnable())) {
     }
@@ -18,6 +26,12 @@ namespace Nohros.Metrics
       mailbox_ = mailbox;
       count_ = 0;
     }
+
+#if DEBUG
+    public void Run(Action action) {
+      mailbox_.Send(action);
+    }
+#endif
 
     /// <inheritdoc/>
     public void GetSnapshot(SnapshotCallback callback) {

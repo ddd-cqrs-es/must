@@ -21,7 +21,16 @@ namespace Nohros.Metrics
     /// <see cref="ExponentiallyDecayingResevoir"/> and
     /// <see cref="UserTimeClock"/> as default resevoir and clock.
     /// </summary>
-    public Timer() : this(TimeUnit.Seconds, new ExponentiallyDecayingResevoir()) {
+    public Timer() : this(new UserTimeClock()) {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Timer"/> class by using
+    /// <see cref="ExponentiallyDecayingResevoir"/> and
+    /// <see cref="UserTimeClock"/> as default resevoir and clock.
+    /// </summary>
+    public Timer(Clock clock)
+      : this(TimeUnit.Seconds, new ExponentiallyDecayingResevoir(), clock) {
     }
 
     /// <summary>
@@ -58,6 +67,12 @@ namespace Nohros.Metrics
       histogram_ = new Histogram(resevoir, mailbox_);
     }
 
+#if DEBUG
+    public void Run(Action action) {
+      mailbox_.Send(action);
+    }
+#endif
+
     public void GetFifteenMinuteRate(DoubleMetricCallback callback) {
       meter_.GetFifteenMinuteRate(callback);
     }
@@ -91,9 +106,9 @@ namespace Nohros.Metrics
     /// Adds a recorded duration.
     /// </summary>
     /// <param name="duration">The length of the duration.</param>
-    /// <param name="unit">The scale unit of <paramref name="duration"/></param>
-    public void Update(long duration, TimeUnit unit) {
-      Update(TimeUnitHelper.ToNanos(duration, unit));
+    public void Update(long duration) {
+      long timestamp = clock_.Tick;
+      mailbox_.Send(() => Update(duration, timestamp));
     }
 
     public T Time<T>(Func<T> method) {
@@ -103,7 +118,8 @@ namespace Nohros.Metrics
       try {
         return method();
       } finally {
-        Update(clock_.Tick - start_time);
+        var tick = clock_.Tick;
+        Update(tick - start_time, tick);
       }
     }
 
@@ -114,7 +130,8 @@ namespace Nohros.Metrics
       try {
         method();
       } finally {
-        Update(clock_.Tick - start_time);
+        var tick = clock_.Tick;
+        Update(tick - start_time, tick);
       }
     }
 
@@ -133,10 +150,10 @@ namespace Nohros.Metrics
     /// Adds a recorded duration.
     /// </summary>
     /// <param name="duration">The length of the duration.</param>
-    void Update(long duration) {
+    void Update(long duration, long timestamp) {
       if (duration >= 0) {
         histogram_.Update(duration);
-        meter_.Mark();
+        meter_.Mark(1, timestamp);
       }
     }
 

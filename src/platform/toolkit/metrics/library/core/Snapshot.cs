@@ -84,7 +84,7 @@ namespace Nohros.Metrics
       }
 
       double lower = values_[(int) pos - 1];
-      double upper = values_[(int) pos - 1];
+      double upper = values_[(int) pos];
       return lower + (pos - Math.Floor(pos))*(upper - lower);
     }
 

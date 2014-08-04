@@ -37,7 +37,7 @@ namespace Nohros.Metrics
     /// </summary>
     public long Stop() {
       long elapsed_nanos = clock_.Tick - start_time_;
-      timer_.Update(elapsed_nanos, TimeUnit.Nanoseconds);
+      timer_.Update(elapsed_nanos);
       return elapsed_nanos;
     }
   }

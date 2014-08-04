@@ -23,5 +23,11 @@ namespace Nohros.Metrics
     /// Gets the metric's current value.
     /// </summary>
     public abstract T Value { get; }
+
+#if DEBUG
+    public void Run(Action action) {
+      action();
+    }
+#endif
   }
 }
