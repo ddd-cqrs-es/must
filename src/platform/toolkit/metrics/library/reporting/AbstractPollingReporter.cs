@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using Nohros.Concurrent;
 
 namespace Nohros.Metrics.Reporting
 {
@@ -11,19 +10,19 @@ namespace Nohros.Metrics.Reporting
   /// </summary>
   public abstract class AbstractPollingReporter : IPollingMetricsReporter
   {
-    readonly IMetricsRegistry registry_;
+    readonly MetricsRegistry registry_;
     System.Threading.Timer timer_;
 
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="AbstractPollingReporter"/>
-    /// class by using the specified <see cref="IMetricsRegistry"/> object.
+    /// class by using the specified <see cref="MetricsRegistry"/> object.
     /// </summary>
     /// <param name="registry">
-    /// A <see cref="IMetricsRegistry"/> that can be used to collect the
+    /// A <see cref="MetricsRegistry"/> that can be used to collect the
     /// metrics to be reported.
     /// </param>
-    protected AbstractPollingReporter(IMetricsRegistry registry) {
+    protected AbstractPollingReporter(MetricsRegistry registry) {
       registry_ = registry;
     }
     #endregion
@@ -87,7 +86,7 @@ namespace Nohros.Metrics.Reporting
     /// <summary>
     /// Gets the associated metrics registry.
     /// </summary>
-    protected internal IMetricsRegistry MetricsRegistry {
+    protected internal MetricsRegistry MetricsRegistry {
       get { return registry_; }
     }
   }

@@ -11,7 +11,7 @@ namespace Nohros.Metrics
   ///  http://www.johndcook.com/standard_deviation.html
   /// </para>
   /// </remarks>
-  public interface IHistogram : IMetric
+  public interface IHistogram : IMetric, ISampling, ICounted
   {
     /// <summary>
     /// Adds a recorded value.

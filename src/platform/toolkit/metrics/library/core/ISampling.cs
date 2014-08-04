@@ -11,6 +11,6 @@ namespace Nohros.Metrics
     /// Gets a snapshot of the values.
     /// </summary>
     /// <value>A snapshot of the values.</value>
-    Snapshot Snapshot { get; }
+    void GetSnapshot(SnapshotCallback callback);
   }
 }

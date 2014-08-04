@@ -5,7 +5,7 @@ namespace Nohros.Metrics
   /// <summary>
   /// A statistically representative sample of a data stream.
   /// </summary>
-  public interface ISample
+  public interface IResevoir
   {
     /// <summary>
     /// Gets the number of values recorded.

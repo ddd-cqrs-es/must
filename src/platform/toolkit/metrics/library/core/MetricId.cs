@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Nohros.Metrics
@@ -68,10 +69,11 @@ namespace Nohros.Metrics
     /// A collection of key/value pairs that semantically identifies a
     /// metric.
     /// </summary>
-    public IEnumerable<KeyValuePair<string, string>> Tags {
-      get { return tags_; }
+    public IEnumerable<Tag> Tags {
+      get { return tags_.Select(x => new Tag(x.Key, x.Value)); }
     }
 
+    /// <inheritdoc/>
     public override bool Equals(object obj) {
       if (obj == null) {
         return false;
@@ -101,8 +103,10 @@ namespace Nohros.Metrics
     int ComputeHashCode() {
       unchecked {
         int hash = 17;
-        hash = hash*23 + tags_.GetHashCode();
         hash = hash*23 + Name.GetHashCode();
+        foreach (var tag in tags_) {
+          hash = hash*23 + tag.GetHashCode();
+        }
         return hash;
       }
     }

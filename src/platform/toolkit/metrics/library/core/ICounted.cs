@@ -8,6 +8,6 @@ namespace Nohros.Metrics
     /// Get the number of values recorded.
     /// </summary>
     /// <returns>The number of values recorded.</returns>
-    long Count { get; }
+    void GetCount(LongMetricCallback callback);
   }
 }

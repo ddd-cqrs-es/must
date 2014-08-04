@@ -1,13 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nohros.Metrics.Reporting;
 
 namespace Nohros.Metrics
 {
-  /// <summary>
-  /// A central registry for metric instances.
-  /// </summary>
-  public interface IMetricsRegistry
+  public class MetricsRegistry
   {
+    const int kExpectedMetricCount = 1024;
+
+    readonly Dictionary<MetricId, IMetric> metrics_;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MetricsRegistry"/> class.
+    /// </summary>
+    public MetricsRegistry() {
+      metrics_ = new Dictionary<MetricId, IMetric>(kExpectedMetricCount);
+    }
+
     /// <summary>
     /// Gets the the collection of values associated with all the registered
     /// metrics.
@@ -20,7 +30,16 @@ namespace Nohros.Metrics
     /// A user-defined object that qualifies or contains information about the
     /// reporting operation.
     /// </param>
-    void Report<T>(MetricsReportCallback<T> callback, T context);
+    public void Report<T>(MetricsReportCallback<T> callback, T context) {
+      // The code above is the same as the Report method that accepts a
+      // predicate, and it is duplicated to avoid overhead of calling the
+      // predicate method when there is no need.
+      foreach (KeyValuePair<MetricId, IMetric> metric in metrics_) {
+        MetricId id = metric.Key;
+        metric.Value.Report((metrics, ctx) =>
+          callback(id, metrics.Values, context), context);
+      }
+    }
 
     /// <summary>
     /// Gets the the collection of values associated with the metrics that
@@ -38,8 +57,16 @@ namespace Nohros.Metrics
     /// A <see cref="MetricPredicate"/> delegate that defines the conditions
     /// of the metrics to report.
     /// </param>
-    void Report<T>(MetricsReportCallback<T> callback, T context,
-      MetricPredicate predicate);
+    public void Report<T>(MetricsReportCallback<T> callback, T context,
+      MetricPredicate predicate) {
+      foreach (KeyValuePair<MetricId, IMetric> metric in metrics_) {
+        MetricId id = metric.Key;
+        metric.Value.Report((metrics, ctx) => {
+          var list = metrics.Where(m => predicate(id, m));
+          callback(id, list.ToArray(), context);
+        }, context);
+      }
+    }
 
     /// <summary>
     /// Adds an metric to the metrics collection using the metrics name.
@@ -54,7 +81,9 @@ namespace Nohros.Metrics
     /// A metric with the same id already exists in the
     /// <see cref="IMetricsRegistry"/>.
     /// </exception>
-    void Add(string name, IMetric metric);
+    public virtual void Add(string name, IMetric metric) {
+      Add(new MetricId(name), metric);
+    }
 
     /// <summary>
     /// Adds an metric to the metrics collection using the metrics id.
@@ -69,15 +98,15 @@ namespace Nohros.Metrics
     /// A metric with the same id already exists in the
     /// <see cref="IMetricsRegistry"/>.
     /// </exception>
-    void Add(MetricId id, IMetric metric);
+    public virtual void Add(MetricId id, IMetric metric) {
+      metrics_.Add(id, metric);
+      OnMetricAdded(id, metric);
+    }
 
-    /// <summary>
-    /// Indicates if a metric of the given id has been registered.
-    /// </summary>
-    /// <param name="id">
-    /// The id of the metric to check.
-    /// </param>
-    bool HasMetric(MetricId id);
+    /// <inheritdoc/>
+    public bool HasMetric(MetricId id) {
+      return metrics_.ContainsKey(id);
+    }
 
     /// <summary>
     /// Gets a metric associated with the specified metric's id.
@@ -92,7 +121,15 @@ namespace Nohros.Metrics
     /// type <typeparamref name="T"/>
     /// </param>
     /// <returns></returns>
-    bool TryGetMetric<T>(MetricId id, out T metric) where T : IMetric;
+    public bool TryGetMetric<T>(MetricId id, out T metric) where T : IMetric {
+      IMetric mtc;
+      if (metrics_.TryGetValue(id, out mtc)) {
+        metric = (T) mtc;
+        return true;
+      }
+      metric = default(T);
+      return false;
+    }
 
     /// <summary>
     /// Gets a metric associated with specified metric's id or create a new one
@@ -112,11 +149,24 @@ namespace Nohros.Metrics
     /// <returns>
     /// A metric associated with the <paramref name="id"/>.
     /// </returns>
-    T GetMetric<T>(MetricId id, Func<MetricId, T> factory) where T : IMetric;
+    public T GetMetric<T>(MetricId id, Func<MetricId, T> factory)
+      where T : IMetric {
+      T metric;
+      if (!TryGetMetric(id, out metric)) {
+        metric = factory(id);
+        Add(id, metric);
+      }
+      return metric;
+    }
 
     /// <summary>
     /// Raised when a new metric is added to the registry.
     /// </summary>
-    event MetricAddedEventHandler MetricAdded;
+    public virtual event MetricAddedEventHandler MetricAdded;
+
+    void OnMetricAdded(MetricId id, IMetric metric) {
+      Listeners.SafeInvoke(MetricAdded,
+        (MetricAddedEventHandler handler) => handler(id, metric));
+    }
   }
 }

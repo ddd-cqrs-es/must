@@ -2,7 +2,7 @@
 
 namespace Nohros.Metrics
 {
-  public interface ITimed : IMetered, ISampling, ISummarizable, ITimer
+  public interface ITimed : IMetered, ISampling, ITimer
   {
   }
 }

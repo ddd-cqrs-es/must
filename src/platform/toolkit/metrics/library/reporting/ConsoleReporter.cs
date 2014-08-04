@@ -8,14 +8,13 @@ namespace Nohros.Metrics.Reporting
   /// </summary>
   public class ConsoleReporter : AbstractPollingReporter
   {
-    public ConsoleReporter(IMetricsRegistry registry) : base(registry) {
+    public ConsoleReporter(MetricsRegistry registry) : base(registry) {
     }
 
     /// <inheritdoc/>
     public override void Run(MetricPredicate predicate) {
-      var registry = MetricsRegistry;
       var now = DateTime.UtcNow;
-      registry.Report(Report, now, predicate);
+      MetricsRegistry.Report(Report, now, predicate);
     }
 
     /// <inheritdoc/>

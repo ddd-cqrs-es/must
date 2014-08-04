@@ -15,7 +15,7 @@ namespace Nohros.Metrics
     /// which events have occurred since the meter was created.</value>
     /// <remarks>This rate has the same exponential decay factor as the
     /// fifteen-minute load average in the <c>top</c> Unix command.</remarks>
-    double FifteenMinuteRate { get; }
+    void GetFifteenMinuteRate(DoubleMetricCallback callback);
 
     /// <summary>
     /// Gets the five-minute exponentially-weighted moving average rate at
@@ -25,7 +25,7 @@ namespace Nohros.Metrics
     /// which events have occurred since the meter was created.</value>
     /// <remarks>This rate has the same exponential decay factor as the
     /// five-minute load average in the <c>top</c> Unix command.</remarks>
-    double FiveMinuteRate { get; }
+    void GetFiveMinuteRate(DoubleMetricCallback callback);
 
     /// <summary>
     /// Gets the fifteen-minute exponentially-weighted moving average rate at
@@ -35,7 +35,7 @@ namespace Nohros.Metrics
     /// which events have occurred since the meter was created.</value>
     /// <remarks>This rate has the same exponential decay factor as the
     /// fifteen-minute load average in the <c>top</c> Unix command.</remarks>
-    double OneMinuteRate { get; }
+    void GetOneMinuteRate(DoubleMetricCallback callback);
 
     /// <summary>
     /// Gets the mean rate at which events have occurred since the meter was
@@ -43,22 +43,17 @@ namespace Nohros.Metrics
     /// </summary>
     /// <value>The mean rate at which events have occurred since the meter was
     /// created.</value>
-    double MeanRate { get; }
+    void GetMeanRate(DoubleMetricCallback callback);
+
+    /// <summary>
+    /// Gets the number of events which have been marked.
+    /// </summary>
+    void GetCount(LongMetricCallback callback);
 
     /// <summary>
     /// Gets the meter's rate unit.
     /// </summary>
     /// <returns></returns>
     TimeUnit RateUnit { get; }
-
-    /// <summary>
-    /// Gets the event type of events the meter is measuring.
-    /// </summary>
-    string EventType { get; }
-
-    /// <summary>
-    /// Gets the number of events which have been marked.
-    /// </summary>
-    long Count { get; }
   }
 }

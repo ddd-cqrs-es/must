@@ -18,7 +18,7 @@ namespace Nohros.Metrics
     /// <exception cref="Exception">
     /// The exception throwed by <paramref name="method"/>.
     /// </exception>
-    T Time<T>(CallableDelegate<T> method);
+    T Time<T>(Func<T> method);
 
     /// <summary>
     /// Times and records the duration of event.
@@ -29,7 +29,7 @@ namespace Nohros.Metrics
     /// <returns>The value returned by <paramref name="method"/>.</returns>
     /// <exception cref="Exception">Exception if <paramref name="method"/>
     /// throws an <see cref="Exception"/>.</exception>
-    void Time(RunnableDelegate method);
+    void Time(Action method);
 
     /// <summary>
     /// Gets a timing <see cref="TimerContext"/>, which measures an elapsed

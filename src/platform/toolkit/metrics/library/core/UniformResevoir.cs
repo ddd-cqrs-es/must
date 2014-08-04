@@ -11,7 +11,7 @@ namespace Nohros.Metrics
   /// Ramdom Sampling with a Resovoir -
   ///   http://www.cs.umd.edu/~samir/498/vitter.pdf
   /// </remarks>
-  public class UniformSample : ISample
+  public class UniformResevoir : IResevoir
   {
     const int kBitsPerLong = 63;
     readonly Random rand_;
@@ -20,9 +20,8 @@ namespace Nohros.Metrics
     readonly int resevoir_upper_limit_;
     int count_;
 
-    #region .ctor
     /// <summary>
-    /// Initializes a new instance of the <see cref="UniformSample"/> class
+    /// Initializes a new instance of the <see cref="UniformResevoir"/> class
     /// that uses the specified executor to execute the update operation and
     /// keeps <paramref name="resevoir_size"/> elements in its resevoir.
     /// </summary>
@@ -36,13 +35,12 @@ namespace Nohros.Metrics
     /// this can cause significant pauses in the thread that is executing the
     /// sample update.
     /// </remarks>
-    public UniformSample(int resevoir_size) {
+    public UniformResevoir(int resevoir_size) {
       resevoir_ = new long[resevoir_size];
       resevoir_size_ = resevoir_size;
       resevoir_upper_limit_ = resevoir_size - 1;
       rand_ = new Random();
     }
-    #endregion
 
     /// <inheritdoc/>
     public int Size {

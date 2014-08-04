@@ -17,9 +17,12 @@ namespace Nohros.Metrics
   /// Conference on Data Engineering (2009).
   /// http://www.research.att.com/people/Cormode_Graham/library/publications/CormodeShkapenyukSrivastavaXu09.pdf
   /// </remarks>
-  public class ExponentiallyDecayingSample : ISample
+  public class ExponentiallyDecayingResevoir : IResevoir
   {
     const long kRescaleThreshold = 3600000000000;
+    const int kDefaultSampleSize = 1028;
+    const double kDefaultAlpha = 0.015;
+
     readonly double alpha_;
     readonly Clock clock_;
     readonly AndersonTree<double, int> priorities_;
@@ -31,10 +34,20 @@ namespace Nohros.Metrics
     long next_scale_time_;
     long start_time_;
 
-    #region .ctor
     /// <summary>
     /// Initializes a new instance of the
-    /// <see cref="ExponentiallyDecayingSample"/> class by using the specified
+    /// <see cref="ExponentiallyDecayingResevoir"/> of 1028 elements, which
+    /// offers 99.9% confidence level with a 5% margin of error assuming a
+    /// normal distribution, and an alpha factor of 0.015, which heavily
+    /// biases the resevoir to the past 5 minutes of measurements.
+    /// </summary>
+    public ExponentiallyDecayingResevoir()
+      : this(kDefaultSampleSize, kDefaultAlpha) {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the
+    /// <see cref="ExponentiallyDecayingResevoir"/> class by using the specified
     /// resevoir size and exponential decay factor.
     /// </summary>
     /// <param name="resevoir_size">
@@ -51,13 +64,13 @@ namespace Nohros.Metrics
     /// this can cause significant pauses in the thread that is executing the
     /// sample update.
     /// </remarks>
-    public ExponentiallyDecayingSample(int resevoir_size, double alpha)
+    public ExponentiallyDecayingResevoir(int resevoir_size, double alpha)
       : this(resevoir_size, alpha, new UserTimeClock()) {
     }
 
     /// <summary>
     /// Initializes a new instance of the
-    /// <see cref="ExponentiallyDecayingSample"/> class by using the specified
+    /// <see cref="ExponentiallyDecayingResevoir"/> class by using the specified
     /// resevoir size and exponential decay factor.
     /// </summary>
     /// <param name="resevoir_size">
@@ -77,7 +90,7 @@ namespace Nohros.Metrics
     /// this can cause significant pauses in the thread that is executing the
     /// sample update.
     /// </remarks>
-    public ExponentiallyDecayingSample(int resevoir_size, double alpha,
+    public ExponentiallyDecayingResevoir(int resevoir_size, double alpha,
       Clock clock) {
       count_ = 0;
       clock_ = clock;
@@ -91,7 +104,6 @@ namespace Nohros.Metrics
       start_time_ = CurrentTimeInSeconds;
       next_scale_time_ = clock_.Tick + kRescaleThreshold;
     }
-    #endregion
 
     /// <inheritdoc/>
     public void Update(long value) {

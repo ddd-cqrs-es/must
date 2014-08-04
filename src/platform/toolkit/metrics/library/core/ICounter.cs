@@ -2,7 +2,7 @@
 
 namespace Nohros.Metrics
 {
-  public interface IAsyncCounter : IAsyncCounted
+  public interface ICounter : ICounted
   {
     /// <summary>
     /// Increments the counter by one.

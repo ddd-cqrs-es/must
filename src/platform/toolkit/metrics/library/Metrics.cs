@@ -9,20 +9,20 @@ namespace Nohros.Metrics
   /// instances.
   /// </summary>
   /// <remarks>
-  /// A <see cref="SyncMetricsRegistry"/> is used as the default metrics
-  /// registry. If you want to use another <see cref="IMetricsRegistry"/>
+  /// A <see cref="MetricsRegistry"/> is used as the default metrics
+  /// registry. If you want to use another <see cref="MetricsRegistry"/>
   /// implementation, set the value of the property <see cref="Registry"/>.
   /// </remarks>
   public class AppMetrics
   {
-    static IMetricsRegistry registry_;
+    static readonly MetricsRegistry registry_;
     static readonly IDictionary<string, IMetricsReporter> reporters_;
 
     /// <summary>
     /// Initializes the siatic members.
     /// </summary>
     static AppMetrics() {
-      registry_ = new SyncMetricsRegistry();
+      registry_ = new MetricsRegistry();
       reporters_ = new Dictionary<string, IMetricsReporter>();
     }
 
@@ -108,18 +108,8 @@ namespace Nohros.Metrics
     /// <summary>
     /// Gets or set the singleton metrics object.
     /// </summary>
-    /// <remarks>
-    /// The default value of <see cref="Registry"/> is
-    /// <see cref="SyncMetricsRegistry"/>.
-    /// </remarks>
-    public static IMetricsRegistry Registry {
+    public static MetricsRegistry Registry {
       get { return registry_; }
-      set {
-        if (registry_ == null) {
-          throw new ArgumentNullException("value");
-        }
-        registry_ = value;
-      }
     }
   }
 }

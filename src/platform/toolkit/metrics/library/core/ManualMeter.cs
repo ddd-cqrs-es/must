@@ -14,7 +14,6 @@ namespace Nohros.Metrics
   public class ManualMeter : IMetric
   {
     const long kTickInterval = 5000000000; // 5 seconds in nanoseconds
-    readonly string event_type_;
     readonly ExponentialWeightedMovingAverage ewma_15_rate_;
     readonly ExponentialWeightedMovingAverage ewma_1_rate_;
     readonly ExponentialWeightedMovingAverage ewma_5_rate_;
@@ -24,50 +23,37 @@ namespace Nohros.Metrics
     bool ignore_old_events_;
     long last_mark_;
     long last_tick_;
-    DateTime last_updated_;
 
     /// <summary>
     /// Initialize a new instance of the <see cref="Meter"/> class by using
-    /// the given clock, the work "events" as event type and
-    /// <see cref="TimeUnit.Seconds"/> as event rate unit.
+    /// the given clock and <see cref="TimeUnit.Seconds"/> as event rate unit.
     /// </summary>
     /// <param name="start_time">
     /// The starting point.
     /// </param>
     public ManualMeter(long start_time)
-      : this("events", TimeUnit.Seconds, start_time) {
+      : this(TimeUnit.Seconds, start_time) {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref=" Meter"/> class by using
     /// the specified meter name, rate unit and clock.
     /// </summary>
+    /// <param name="start_time">
+    /// The starting point.
+    /// </param>
     /// <param name="rate_unit">
     /// The rate unit of the new meter.
     /// </param>
-    /// <param name="event_type">
-    /// The plural name of the event meter is measuring
-    /// <example>
-    /// <code>
-    /// "requests"
-    /// </code>
-    /// </example>
-    /// </param>
-    public ManualMeter(string event_type, TimeUnit rate_unit, long start_time) {
+    public ManualMeter(TimeUnit rate_unit, long start_time) {
       count_ = 0;
       rate_unit_ = rate_unit;
-      event_type_ = event_type;
       start_time_ = start_time;
       last_tick_ = start_time_;
       ewma_1_rate_ = ExponentialWeightedMovingAverages.OneMinute();
       ewma_5_rate_ = ExponentialWeightedMovingAverages.FiveMinute();
       ewma_15_rate_ = ExponentialWeightedMovingAverages.FifteenMinute();
       ignore_old_events_ = false;
-      last_updated_ = DateTime.Now;
-    }
-
-    public virtual void Report<T>(MetricReportCallback<T> callback, T context) {
-      callback(Report(), context);
     }
 
     /// <summary>
@@ -91,7 +77,6 @@ namespace Nohros.Metrics
       ewma_1_rate_.Update(n);
       ewma_5_rate_.Update(n);
       ewma_15_rate_.Update(n);
-      last_updated_ = DateTime.Now;
       last_mark_ = time;
     }
 
@@ -130,28 +115,6 @@ namespace Nohros.Metrics
       return rate_per_ns*TimeUnitHelper.ToNanos(1, rate_unit_);
     }
 
-    /// <inheritdoc/>
-    protected virtual MetricValueSet Report() {
-      string rate_unit = UnitHelper.FromRate(EventType, RateUnit);
-      var values = new[] {
-        new MetricValue((int) MetricValueType.Count, Count, EventType),
-        new MetricValue((int) MetricValueType.OneMinuteRate, OneMinuteRate,
-          rate_unit),
-        new MetricValue((int) MetricValueType.FiveMinuteRate, FiveMinuteRate,
-          rate_unit),
-        new MetricValue((int) MetricValueType.FifteenMinuteRate,
-          FifteenMinuteRate, rate_unit)
-      };
-      return new MetricValueSet(this, values);
-    }
-
-    /// <summary>
-    /// Gets the date and time when the metric was last updated.
-    /// </summary>
-    public DateTime LastUpdated {
-      get { return last_updated_; }
-    }
-
     /// <summary>
     /// Gets the time associated with of the last marked event.
     /// </summary>
@@ -162,11 +125,6 @@ namespace Nohros.Metrics
     /// <inheritdoc/>
     public TimeUnit RateUnit {
       get { return rate_unit_; }
-    }
-
-    /// <inheritdoc/>
-    public string EventType {
-      get { return event_type_; }
     }
 
     /// <inheritdoc/>

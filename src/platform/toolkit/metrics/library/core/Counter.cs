@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Nohros.Concurrent;
 
 namespace Nohros.Metrics
@@ -7,29 +6,23 @@ namespace Nohros.Metrics
   /// <summary>
   /// An incrementing and decrementing counter metric.
   /// </summary>
-  public class AsyncCounter : IMetric, IAsyncCounter, ICounted
+  public class Counter : IMetric, ICounter
   {
     readonly Mailbox<RunnableDelegate> async_tasks_mailbox_;
     long count_;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AsyncCounter"/> class that
+    /// Initializes a new instance of the <see cref="Counter"/> class that
     /// uses the specified executor to perform the counter updates (
     /// increment/decrement).
     /// </summary>
-    public AsyncCounter() {
+    public Counter() {
       count_ = 0;
       async_tasks_mailbox_ = new Mailbox<RunnableDelegate>(Run);
     }
 
     void Run(RunnableDelegate runnable) {
       runnable();
-    }
-
-    public void Report<T>(MetricReportCallback<T> callback, T context) {
-      var value = new MetricValue(MetricValueType.Count, Count);
-      var set = new MetricValueSet(this, value);
-      callback(set, context);
     }
 
     /// <summary>
@@ -95,15 +88,15 @@ namespace Nohros.Metrics
       });
     }
 
-    /// <summary>
-    /// Gets the counter current value.
-    /// </summary>
-    long ICounted.Count {
-      get { return count_; }
+    /// <inheritdoc/>
+    public void Report<T>(MetricReportCallback<T> callback, T context) {
+      callback(new MetricValueSet(this, Report()), context);
     }
 
-    long Count {
-      get { return count_; }
+    MetricValue[] Report() {
+      return new[] {
+        new MetricValue(MetricValueType.Count, count_),
+      };
     }
   }
 }
