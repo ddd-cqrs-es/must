@@ -107,7 +107,6 @@
     <Compile Include="concurrent\ExecutionList.cs" />
     <Compile Include="concurrent\SameThreadExecutor.cs" />
     <Compile Include="concurrent\SettableFuture.cs" />
-    <Compile Include="concurrent\SingleThreadExecutor.cs" />
     <Compile Include="concurrent\TaskFuture.cs" />
     <Compile Include="concurrent\ExecutorState.cs" />
     <Compile Include="concurrent\IExecutor.cs" />
@@ -299,7 +298,6 @@
     <Compile Include="type\delegates\RunnableDelegate.cs" />
     <Compile Include="concurrent\SerialExecutorState.cs" />
     <Compile Include="concurrent\Uninterruptibles.cs" />
-    <Compile Include="concurrent\YQueue.cs" />
     <Compile Include="cache\CacheEntry.cs" />
     <Compile Include="configuration\common\provider\ProviderOptions.cs" />
     <Compile Include="data\readers\DataReaders.cs" />
@@ -424,7 +422,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

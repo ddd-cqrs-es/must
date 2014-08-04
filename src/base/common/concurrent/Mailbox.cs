@@ -42,7 +42,7 @@ namespace Nohros.Concurrent
     readonly MailboxReceiveCallback<T> callback_;
 
     // The pipe to store actual messages
-    readonly YQueue<T> message_queue_;
+    readonly ConcurrentQueue<T> message_queue_;
 
     // There is only one thread receiving from the mailbox, but there is
     // arbitrary number of threads sending. Given that |message_queue_| requires
@@ -56,28 +56,7 @@ namespace Nohros.Concurrent
     // The synchronization context of the thread that creates the mailbox.
     protected readonly SynchronizationContext synchronization_context_;
 
-    // the producer thread.
-    readonly Thread thread_;
-
-    readonly AutoResetEvent sync_;
-
-    volatile bool running_;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Mailbox{T}"/> class by
-    /// using the specified receive callback.
-    /// </summary>
-    /// <param name="callback">
-    /// A <see cref="MailboxReceiveCallback{T}"/> delegate that is called to
-    /// process each message sent to the <see cref="Mailbox{T}"/>.
-    /// </param>
-    /// <remarks>
-    /// A <see cref="Thread"/> from the <see cref="ThreadPool"/> is used to
-    /// execute the callback.
-    /// </remarks>
-    public Mailbox(MailboxReceiveCallback<T> callback)
-      : this(callback, kDefaultCapacity) {
-    }
+    volatile bool active_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Mailbox{T}"/> class by
@@ -87,28 +66,20 @@ namespace Nohros.Concurrent
     /// A <see cref="MailboxReceiveCallback{T}"/> delegate that is called to
     /// process each message sent to the <see cref="Mailbox{T}"/>.
     /// </param>
-    /// <param name="capacity">
-    /// The number of messages that the <see cref="Mailbox{T}"/> can initially
-    /// store
-    /// </param>
     /// <remarks>
     /// A <see cref="Thread"/> from the <see cref="ThreadPool"/> is used to
     /// execute the callback.
     /// </remarks>
-    public Mailbox(MailboxReceiveCallback<T> callback, int capacity) {
+    public Mailbox(MailboxReceiveCallback<T> callback) {
       mutex_ = new object();
-      message_queue_ = new YQueue<T>(capacity);
+      message_queue_ = new ConcurrentQueue<T>();
       callback_ = callback;
       synchronization_context_ = SynchronizationContext.Current;
-      sync_ = new AutoResetEvent(false);
 
       // Get the pipe into passive state. That way, if the user starts by
       // polling on the associated queue, it will be woken up when
       // new message is posted.
-      running_ = true;
-
-      thread_ = new Thread(ThreadMain);
-      thread_.Start(synchronization_context_);
+      active_ = false;
     }
 
     /// <summary>
@@ -118,22 +89,31 @@ namespace Nohros.Concurrent
     /// The message to be sent.
     /// </param>
     public void Send(T message) {
-      bool active;
-      lock (mutex_) {
-        active = message_queue_.Enqueue(message);
-      }
+      message_queue_.Enqueue(message);
 
-      // Wake up the producer if it is sleeping.
-      if (!active) {
-        //sync_.Set();
+      // Woken up the consumer thread if it is sleeping.
+      if (!active_) {
+        // Synchronize the mode exchange with the consumer to ensure that only
+        // one thread is consuming at a given point in time.
+        lock (mutex_) {
+#if DEBUG
+          locks_++;
+#endif
+          if (!active_) {
+            active_ = true;
+            ThreadPool.QueueUserWorkItem(ThreadMain, synchronization_context_);
+          }
+        }
       }
     }
 
-    public void Shutdown() {
-      running_ = false;
-      sync_.Set();
-      thread_.Join();
+#if DEBUG
+    long locks_ = 0;
+
+    public long Locks {
+      get { return locks_; }
     }
+#endif
 
     /// <summary>
     /// Receives messages from the mailbox and executes the receiver callback.
@@ -172,7 +152,7 @@ namespace Nohros.Concurrent
     /// </remarks>
     bool GetMessage(out T message) {
       // try to get message straight away.
-      /*if (!message_queue_.Dequeue(out message)) {
+      if (!message_queue_.TryDequeue(out message)) {
         // If there are no more messages available, switch into passive mode.
         // We need to synchronize the state change with the sender, because
         // it uses it to ensure that no more that one thread runs the receive
@@ -181,27 +161,21 @@ namespace Nohros.Concurrent
           // recheck the queue for emptiness, now we are inside the lock. We
           // need to recheck to make sure that no messages are sent to the
           // queue between the first check and the lock operation.
-          if (!message_queue_.Dequeue(out message)) {
+          if (!message_queue_.TryDequeue(out message)) {
+            active_ = false;
             return false;
           }
         }
       }
-      return true;*/
-      return message_queue_.Dequeue(out message);
+      return true;
     }
 
     void ThreadMain(object obj) {
-      var context = obj as SynchronizationContext;
+      var context = (SynchronizationContext) obj;
       if (context == null) {
-        while (running_) {
-          //Receive();
-          //sync_.WaitOne();
-        }
+        Receive();
       } else {
-        while (running_) {
-          //Receive(context);
-          //sync_.WaitOne();
-        }
+        Receive(context);
       }
     }
   }
