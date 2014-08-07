@@ -96,9 +96,6 @@ namespace Nohros.Concurrent
         // Synchronize the mode exchange with the consumer to ensure that only
         // one thread is consuming at a given point in time.
         lock (mutex_) {
-#if DEBUG
-          locks_++;
-#endif
           if (!active_) {
             active_ = true;
             ThreadPool.QueueUserWorkItem(ThreadMain, synchronization_context_);
@@ -106,14 +103,6 @@ namespace Nohros.Concurrent
         }
       }
     }
-
-#if DEBUG
-    long locks_ = 0;
-
-    public long Locks {
-      get { return locks_; }
-    }
-#endif
 
     /// <summary>
     /// Receives messages from the mailbox and executes the receiver callback.
