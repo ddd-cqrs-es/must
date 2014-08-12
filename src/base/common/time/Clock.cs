@@ -60,13 +60,5 @@ namespace Nohros
     /// </para>
     /// </remarks>
     public abstract long Tick { get; }
-
-    /// <summary>
-    /// Gets the current time in milliseconds.
-    /// </summary>
-    /// <value>Time in milliseconds.</value>
-    public virtual long Time {
-      get { return CurrentTimeMilis; }
-    }
   }
 }
