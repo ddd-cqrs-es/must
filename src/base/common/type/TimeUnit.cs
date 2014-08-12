@@ -341,5 +341,28 @@ namespace Nohros
           throw new ArgumentOutOfRangeException("unit");
       }
     }
+
+    public static long ToUnit(this TimeSpan duration, TimeUnit unit) {
+      switch (unit) {
+        case TimeUnit.Days:
+          return (long) duration.TotalDays;
+        case TimeUnit.Hours:
+          return (long) duration.Hours;
+        case TimeUnit.Microseconds:
+          return (long) duration.TotalSeconds*1000000;
+        case TimeUnit.Milliseconds:
+          return (long) duration.TotalMilliseconds;
+        case TimeUnit.Minutes:
+          return (long) duration.TotalMinutes;
+        case TimeUnit.Nanoseconds:
+          return (long) duration.TotalSeconds*1000000000;
+        case TimeUnit.Seconds:
+          return (long) duration.TotalSeconds;
+        case TimeUnit.Ticks:
+          return duration.Ticks;
+        default:
+          throw new ArgumentOutOfRangeException("unit");
+      }
+    }
   }
 }

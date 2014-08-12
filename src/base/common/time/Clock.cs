@@ -11,7 +11,8 @@ namespace Nohros
     /// Gets the current value of the most precise available system timer, in
     /// nanoseconds.
     /// </summary>
-    /// <remarks>This method should be used only to measure elapsed time
+    /// <remarks>
+    /// This method should be used only to measure elapsed time
     /// and is not related to any other notion of system or wall-clock time.
     /// The value returned represents nanoseconds since some fixed but
     /// arbitrary time(perhaps in the future, so values may be negative). This
@@ -45,11 +46,14 @@ namespace Nohros
     /// <summary>
     /// Gets the current time tick.
     /// </summary>
-    /// <value>The current time tick in nanoseconds.</value>
+    /// <value>
+    /// The current time tick.
+    /// </value>
     /// <remarks>
     /// The smallest unit of time is the tick, which is equals to 100
     /// nanoseconds.
-    /// <para>This method should be used only to measure elapsed time
+    /// <para>
+    /// This method should be used only to measure elapsed time
     /// and is not related to any other notion of system or wall-clock time.
     /// The value returned represents nanoseconds since some fixed but
     /// arbitrary time(perhaps in the future, so values may be negative). This
