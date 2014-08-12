@@ -3,43 +3,62 @@
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// A <see cref="Gauge{T}"/> that computes its value using a
-  /// <see cref="CallableDelegate{T}"/>.
+  /// A <see cref="IGauge{T}"/> that computes its value using a
+  /// <see cref="Func{T}"/>.
   /// </summary>
-  /// <typeparam name="T">
-  /// The type of <see cref="Value"/>.
-  /// </typeparam>
-  public class CallableGauge<T> : Gauge<T>
+  public class CallableGauge : AbstractMetric, IGauge
   {
-    readonly CallableDelegate<T> callable_;
+    protected readonly Func<Measure> callable_;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CallableGauge{T}"/>
-    /// by using the specified <see cref="CallableDelegate{T}"/>.
+    /// Initializes a new instance of the <see cref="Func{T}"/>
+    /// by using the specified <see cref="Func{T}"/>.
     /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    protected CallableGauge(MetricConfig config) : base(config) {
+      callable_ = () => { throw new NotImplementedException(); };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Func{T}"/>
+    /// by using the specified <see cref="Func{T}"/>.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
     /// <param name="callable">
-    /// A <see cref="CallableDelegate{T}"/> that is used to compute the gauge
+    /// A <see cref="Func{T}"/> that is used to compute the gauge
     /// values.
     /// </param>
-    public CallableGauge(CallableDelegate<T> callable) {
+    public CallableGauge(MetricConfig config, Func<Measure> callable)
+      : base(config) {
       callable_ = callable;
     }
 
-    public override void Report<V>(MetricReportCallback<V> callback, V context) {
-      double gauge;
-      try {
-        gauge = Convert.ToDouble(Value);
-      } catch (InvalidCastException e) {
-        gauge = 0.0;
-      }
-      var value = new MetricValue(MetricValueType.Value, gauge);
-      var set = new MetricValueSet(this, new[] {value});
-      callback(set, context);
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Func{T}"/>
+    /// by using the specified <see cref="Func{T}"/>.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    /// <param name="callable">
+    /// A <see cref="Func{T}"/> that is used to compute the gauge
+    /// values.
+    /// </param>
+    public CallableGauge(MetricConfig config, Func<double> callable)
+      : base(config) {
+      callable_ = () => CreateMeasure(callable());
     }
 
     /// <inheritdoc/>
-    public override T Value {
-      get { return callable_(); }
+    protected internal override Measure Compute() {
+      return callable_();
     }
   }
 }

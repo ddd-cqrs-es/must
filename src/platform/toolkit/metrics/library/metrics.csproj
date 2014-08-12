@@ -39,41 +39,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MetricsRegistry.cs" />
+    <Compile Include="core\AbstractMetric.cs" />
+    <Compile Include="core\CompositeMetric.cs" />
+    <Compile Include="core\Counter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="core\Histogram.cs" />
-    <Compile Include="core\Meter.cs" />
+    <Compile Include="core\ICompositeMetric.cs" />
+    <Compile Include="core\MaxGauge.cs" />
+    <Compile Include="core\MeanRate.cs" />
+    <Compile Include="core\Meter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="core\MetricType.cs" />
+    <Compile Include="core\MetricTypeTag.cs" />
+    <Compile Include="core\MinGauge.cs" />
+    <Compile Include="core\Snapshot.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="core\SnapshotConfig.cs" />
+    <Compile Include="core\Tags.cs" />
     <Compile Include="core\ICounter.cs" />
-    <Compile Include="core\IMetered.cs" />
     <Compile Include="core\CallableGauge.cs" />
-    <Compile Include="core\Counter.cs" />
-    <Compile Include="core\Callbacks.cs" />
     <Compile Include="core\DottedMetricName.cs" />
-    <Compile Include="core\ICounted.cs" />
     <Compile Include="core\IHistogram.cs" />
     <Compile Include="core\IMeter.cs" />
-    <Compile Include="core\MetricId.cs" />
+    <Compile Include="core\MetricConfig.cs" />
     <Compile Include="core\Tag.cs" />
-    <Compile Include="core\ITimed.cs" />
     <Compile Include="core\ITimer.cs" />
     <Compile Include="core\MetricPredicate.cs" />
     <Compile Include="core\MetricReportCallback.cs" />
     <Compile Include="core\MetricValueSet.cs" />
-    <Compile Include="core\MetricValue.cs" />
-    <Compile Include="core\MetricValueType.cs" />
+    <Compile Include="core\Measure.cs" />
+    <Compile Include="core\Timer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="core\Unit.cs" />
     <Compile Include="MetricAddedEventHandler.cs" />
-    <Compile Include="Metrics.cs" />
-    <Compile Include="reporting\AbstractPollingReporter.cs" />
-    <Compile Include="reporting\ConsoleReporter.cs" />
-    <Compile Include="reporting\ForwarderReporter.cs" />
-    <Compile Include="reporting\IMetricsReporter.cs" />
-    <Compile Include="reporting\IPollingMetricsReporter.cs" />
-    <Compile Include="reporting\MetricsReportCallback.cs" />
-    <Compile Include="reporting\NOPMetricsReporter.cs" />
-    <Compile Include="reporting\MetricReported.cs" />
     <Compile Include="core\ExponentialWeightedMovingAverage.cs" />
     <Compile Include="core\ExponentialWeightedMovingAverages.cs" />
-    <Compile Include="core\Gauge.cs" />
+    <Compile Include="core\IGauge.cs" />
     <Compile Include="core\IMetric.cs" />
     <Compile Include="core\ExponentiallyDecayingResevoir.cs">
       <SubType>Code</SubType>
@@ -81,12 +86,10 @@
     <Compile Include="core\IResevoir.cs" />
     <Compile Include="core\ISampling.cs" />
     <Compile Include="core\IStoppable.cs" />
-    <Compile Include="core\Snapshot.cs" />
     <Compile Include="core\ISummarizable.cs" />
-    <Compile Include="core\Timer.cs" />
     <Compile Include="core\TimerContext.cs" />
     <Compile Include="core\UniformResevoir.cs" />
-    <Compile Include="core\UserTimeClock.cs" />
+    <Compile Include="core\StopwatchClock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

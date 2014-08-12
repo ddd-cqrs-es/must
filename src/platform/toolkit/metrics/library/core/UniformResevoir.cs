@@ -10,6 +10,9 @@ namespace Nohros.Metrics
   /// <remarks>
   /// Ramdom Sampling with a Resovoir -
   ///   http://www.cs.umd.edu/~samir/498/vitter.pdf
+  /// <para>
+  /// <see cref="UniformResevoir"/> is not thread-safe.
+  /// </para>
   /// </remarks>
   public class UniformResevoir : IResevoir
   {
@@ -38,7 +41,6 @@ namespace Nohros.Metrics
     public UniformResevoir(int resevoir_size) {
       resevoir_ = new long[resevoir_size];
       resevoir_size_ = resevoir_size;
-      resevoir_upper_limit_ = resevoir_size - 1;
       rand_ = new Random();
     }
 
@@ -66,17 +68,30 @@ namespace Nohros.Metrics
     /// The update operation is performed asynchrounsly and is thread-safe.
     /// </remarks>
     public void Update(long value) {
+      Update(value, 0);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// The update operation is performed asynchrounsly and is thread-safe.
+    /// </remarks>
+    public void Update(long value, long timestamp) {
       // resevoir_.length is always less thant [long.MaxValue], because the
       // resevoir size is an 32-bit integer. So, count never overflows,
       // because first condition.
-      if (count_ < resevoir_upper_limit_) {
-        resevoir_[count_++] = value;
+      if (++count_ <= resevoir_size_) {
+        resevoir_[count_ - 1] = value;
       } else {
         long r = NextLong(count_);
         if (r < resevoir_size_) {
           resevoir_[r] = value;
         }
       }
+    }
+
+    /// <inheritdoc/>
+    public long Timestamp {
+      get { return 0; }
     }
 
     /// <summary>

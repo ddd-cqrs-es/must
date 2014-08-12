@@ -2,17 +2,15 @@
 
 namespace Nohros.Metrics
 {
-  public interface ICounter : ICounted
+  /// <summary>
+  /// A metric for tracking how often some event is occuring.
+  /// </summary>
+  public interface ICounter
   {
     /// <summary>
     /// Increments the counter by one.
     /// </summary>
-    /// <param name="callback">
-    /// A <see cref="CountedCallback"/> method that will be executed before the
-    /// increment operation completes. The callback is executed in sync with the
-    /// increment operation.
-    /// </param>
-    void Increment(CountedCallback callback);
+    void Increment();
 
     /// <summary>
     /// Increments the counter by <paramref name="n"/>.
@@ -20,22 +18,12 @@ namespace Nohros.Metrics
     /// <param name="n">
     /// The amount by which the counter will be increased.
     /// </param>
-    /// <param name="callback">
-    /// A <see cref="CountedCallback"/> method that will be executed before the
-    /// increment operation completes. The callback is executed in sync with the
-    /// increment operation.
-    /// </param>
-    void Increment(long n, CountedCallback callback);
+    void Increment(long n);
 
     /// <summary>
     /// Decrements the counter by one.
     /// </summary>
-    /// <param name="callback">
-    /// A <see cref="CountedCallback"/> method that will be executed before the
-    /// decrement operation completes. The callback is executed in sync with the
-    /// decrement operation.
-    /// </param>
-    void Decrement(CountedCallback callback);
+    void Decrement();
 
     /// <summary>
     /// Decrements the counter by <paramref name="n"/>
@@ -43,11 +31,6 @@ namespace Nohros.Metrics
     /// <param name="n">
     /// The amount by which the counter will be increased.
     /// </param>
-    /// <param name="callback">
-    /// A <see cref="CountedCallback"/> method that will be executed before the
-    /// decrement operation completes. The callback is executed in sync with the
-    /// decrement operation.
-    /// </param>
-    void Decrement(long n, CountedCallback callback);
+    void Decrement(long n);
   }
 }

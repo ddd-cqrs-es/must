@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Nohros.Metrics
 {
@@ -9,8 +10,7 @@ namespace Nohros.Metrics
   public class TimerContext
   {
     readonly ITimer timer_;
-    readonly long start_time_;
-    readonly Clock clock_;
+    readonly Stopwatch watch_;
 
     #region .ctor
     /// <summary>
@@ -21,13 +21,10 @@ namespace Nohros.Metrics
     /// <param name="timer">
     /// The <see cref="Timer"/> to report elapsed time.
     /// </param>
-    /// <param name="clock">
-    /// A <see cref="Clock"/> that can be used to mark the passage of time.
-    /// </param>
-    public TimerContext(ITimer timer, Clock clock) {
+    public TimerContext(ITimer timer) {
       timer_ = timer;
-      clock_ = clock;
-      start_time_ = clock.Tick;
+      watch_ = new Stopwatch();
+      watch_.Start();
     }
     #endregion
 
@@ -35,10 +32,10 @@ namespace Nohros.Metrics
     /// Stops recording the elapsed time, updates the timer and returns the
     /// elapsed time.
     /// </summary>
-    public long Stop() {
-      long elapsed_nanos = clock_.Tick - start_time_;
-      timer_.Update(elapsed_nanos);
-      return elapsed_nanos;
+    public TimeSpan Stop() {
+      watch_.Stop();
+      timer_.Update(watch_.Elapsed);
+      return watch_.Elapsed;
     }
   }
 }

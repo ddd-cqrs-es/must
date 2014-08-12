@@ -65,7 +65,7 @@ namespace Nohros.Metrics
     /// sample update.
     /// </remarks>
     public ExponentiallyDecayingResevoir(int resevoir_size, double alpha)
-      : this(resevoir_size, alpha, new UserTimeClock()) {
+      : this(resevoir_size, alpha, new StopwatchClock()) {
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ namespace Nohros.Metrics
     /// this can cause significant pauses in the thread that is executing the
     /// sample update.
     /// </remarks>
-    public ExponentiallyDecayingResevoir(int resevoir_size, double alpha,
+    internal ExponentiallyDecayingResevoir(int resevoir_size, double alpha,
       Clock clock) {
       count_ = 0;
       clock_ = clock;
@@ -101,13 +101,13 @@ namespace Nohros.Metrics
       reservoir_upper_limit_ = resevoir_size - 1;
       priorities_ = new AndersonTree<double, int>();
       resevoir_ = new long[resevoir_size];
-      start_time_ = CurrentTimeInSeconds;
+      start_time_ = clock_.Tick;
       next_scale_time_ = clock_.Tick + kRescaleThreshold;
     }
 
     /// <inheritdoc/>
     public void Update(long value) {
-      Update(value, CurrentTimeInSeconds);
+      Update(value, clock_.Tick);
     }
 
     public Snapshot Snapshot {
@@ -157,6 +157,11 @@ namespace Nohros.Metrics
       }
     }
 
+    /// <inheritdoc/>
+    public long Timestamp {
+      get { return clock_.Tick; }
+    }
+
     double Priority(long timestamp) {
       return Weight(timestamp - start_time_)/rand_.NextDouble();
     }
@@ -190,7 +195,7 @@ namespace Nohros.Metrics
     void Rescale(long now) {
       next_scale_time_ = now + kRescaleThreshold;
       long old_start_time = start_time_;
-      start_time_ = CurrentTimeInSeconds;
+      start_time_ = clock_.Tick;
 
       KeyValuePair<double, int>[] priorities = priorities_.ToArray();
       foreach (KeyValuePair<double, int> priority in priorities) {
@@ -203,10 +208,6 @@ namespace Nohros.Metrics
 
     double Weight(long t) {
       return Math.Exp(alpha_*t);
-    }
-
-    public long CurrentTimeInSeconds {
-      get { return TimeUnitHelper.ToSeconds(clock_.Time, TimeUnit.Milliseconds); }
     }
   }
 }

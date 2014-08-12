@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Nohros.Concurrent;
 
 namespace Nohros.Metrics
@@ -9,122 +11,107 @@ namespace Nohros.Metrics
   /// </summary>
   /// <remarks>
   /// <para>
+  /// The value is the mean count per time unit within the specified interval.
+  /// </para>
+  /// <para>
   ///   http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average
   /// </para>
   /// </remarks>
-  public class Meter : IMeter, IMetered
+  public class Meter : AbstractMetric, IMeter, ICompositeMetric
   {
-    const long kTickInterval = 5000000000; // 5 seconds in nanoseconds
-    readonly Mailbox<Action> mailbox_;
     readonly Clock clock_;
     readonly ExponentialWeightedMovingAverage ewma_15_rate_;
     readonly ExponentialWeightedMovingAverage ewma_1_rate_;
     readonly ExponentialWeightedMovingAverage ewma_5_rate_;
-    readonly TimeUnit rate_unit_;
-    readonly long start_time_;
-    long count_;
-    long last_tick_;
+    readonly ReadOnlyCollection<IMetric> metrics_;
+    readonly MeanRate mean_rate_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref=" Meter"/> class by using
-    /// the specified meter name, rate unit and clock.
+    /// the specified config and rate unit.
     /// </summary>
-    /// <param name="rate_unit">
-    /// The rate unit of the new meter.
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
     /// </param>
-    public Meter(TimeUnit rate_unit)
-      : this(rate_unit, new UserTimeClock()) {
+    /// <param name="rate_unit">
+    /// The time unit of the meter's rate.
+    /// </param>
+    public Meter(MetricConfig config, TimeUnit rate_unit)
+      : this(config, rate_unit, new StopwatchClock()) {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref=" Meter"/> class by using
     /// the specified meter name, rate unit and clock.
     /// </summary>
-    /// <param name="rate_unit">
-    /// The rate unit of the new meter.
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
     /// </param>
-    public Meter(TimeUnit rate_unit, Clock clock)
-      : this(rate_unit, clock, new Mailbox<Action>(runnable => runnable())) {
+    /// <param name="rate_unit">
+    /// The time unit of the meter's rate.
+    /// </param>
+    /// <param name="clock">
+    /// The clock that should be used to mark the passage of time.
+    /// </param>
+    internal Meter(MetricConfig config, TimeUnit rate_unit, Clock clock)
+      : this(config, new Mailbox<Action>(runnable => runnable()), rate_unit,
+        clock) {
     }
 
-    internal Meter(TimeUnit rate_unit, Clock clock, Mailbox<Action> mailbox) {
-      count_ = 0;
-      rate_unit_ = rate_unit;
+    /// <summary>
+    /// Initializes a new instance of the <see cref=" Meter"/> class by using
+    /// the specified meter name, rate unit and clock.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    /// <param name="rate_unit">
+    /// The time unit of the meter's rate.
+    /// </param>
+    /// <param name="clock">
+    /// The clock that should be used to mark the passage of time.
+    /// </param>
+    /// <param name="mailbox">
+    /// A <see cref="Mailbox{T}"/> that can be used to asynchrously process
+    /// metrics operations.
+    /// </param>
+    internal Meter(MetricConfig config, Mailbox<Action> mailbox,
+      TimeUnit rate_unit, Clock clock) : base(config, mailbox) {
       clock_ = clock;
-      start_time_ = clock_.Tick;
-      last_tick_ = start_time_;
-      ewma_1_rate_ = ExponentialWeightedMovingAverages.OneMinute();
-      ewma_5_rate_ = ExponentialWeightedMovingAverages.FiveMinute();
-      ewma_15_rate_ = ExponentialWeightedMovingAverages.FifteenMinute();
+
+      const string kStatistic = "statistic";
+
+      Tag unit_tag = new Tag("unit", rate_unit.Name());
+      MetricConfig unit_config = config.WithAdditionalTag(unit_tag);
+
+      mean_rate_ = new MeanRate(
+        config.WithAdditionalTag(new Tag(kStatistic, "mean_rate")), rate_unit,
+        mailbox, clock);
+
+      ewma_1_rate_ = ExponentialWeightedMovingAverage
+        .ForOneMinute(
+          unit_config.WithAdditionalTag(new Tag(kStatistic, "m1_rate")),
+          mailbox, rate_unit, clock);
+
+      ewma_5_rate_ = ExponentialWeightedMovingAverage
+        .ForFiveMinutes(
+          unit_config.WithAdditionalTag(new Tag(kStatistic, "m5_rate")),
+          mailbox, rate_unit, clock);
+
+      ewma_15_rate_ = ExponentialWeightedMovingAverage
+        .ForFifteenMinutes(
+          unit_config.WithAdditionalTag(new Tag(kStatistic, "m15_rate")),
+          mailbox, rate_unit, clock);
+
       mailbox_ = mailbox;
-    }
 
-#if DEBUG
-    public void Run(Action action) {
-      mailbox_.Send(action);
-    }
-#endif
-
-    /// <inheritdoc/>
-    public TimeUnit RateUnit {
-      get { return rate_unit_; }
-    }
-
-    /// <inheritdoc/>
-    public void GetFifteenMinuteRate(DoubleMetricCallback callback) {
-      // We need to declare a local variable to hold the current value of the
-      // clock tick, because the closure will capture the variable and not the
-      // value of it.
-      var now = DateTime.Now;
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => {
-        TickIfNecessary(timestamp);
-        callback(ewma_15_rate_.Rate(rate_unit_), now);
-      });
-    }
-
-    /// <inheritdoc/>
-    public void GetFiveMinuteRate(DoubleMetricCallback callback) {
-      // We need to declare a local variable to hold the current value of the
-      // clock tick, because the closure will capture the variable and not the
-      // value of it.
-      var now = DateTime.Now;
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => {
-        TickIfNecessary(timestamp);
-        callback(ewma_5_rate_.Rate(rate_unit_), now);
-      });
-    }
-
-    /// <inheritdoc/>
-    public void GetOneMinuteRate(DoubleMetricCallback callback) {
-      // We need to declare a local variables to hold the current value of the
-      // clock tick and count, because the closure will capture the variable
-      // and not the value of it.
-      var now = DateTime.Now;
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => {
-        TickIfNecessary(timestamp);
-        callback(ewma_1_rate_.Rate(rate_unit_), now);
-      });
-    }
-
-    /// <inheritdoc/>
-    public void GetMeanRate(DoubleMetricCallback callback) {
-      // We need to declare a local variables to hold the current value of the
-      // clock tick and count, because the closure will capture the variable
-      // and not the value of it.
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => GetMeanRate(timestamp));
-    }
-
-    /// <inheritdoc/>
-    public void GetCount(LongMetricCallback callback) {
-      // We need to declare a local variables to hold the current value of the
-      // clock tick and count, because the closure will capture the variable
-      // and not the value of it.
-      var now = DateTime.Now;
-      mailbox_.Send(() => callback(count_, now));
+      metrics_ = new ReadOnlyCollection<IMetric>(
+        new IMetric[] {
+          mean_rate_, ewma_1_rate_, ewma_5_rate_, ewma_15_rate_
+        });
     }
 
     /// <summary>
@@ -142,77 +129,30 @@ namespace Nohros.Metrics
     /// </param>
     public void Mark(long n) {
       long timestamp = clock_.Tick;
+
+      // The mean_rate.Mauk method is asynchrnous, so we need to perform
+      // it before the synchonrnous Mark method of the ewma rates.
+      mean_rate_.Mark(n);
       mailbox_.Send(() => Mark(n, timestamp));
     }
 
+    protected internal override Measure Compute() {
+      throw new NotImplementedException();
+    }
+
     /// <summary>
-    /// Provide unsafe access to the internal Mark. This should be called
+    /// Provides unsafe access to the internal Mark. This should be called
     /// using the same context that is used to update the histogram.
     /// </summary>
     internal void Mark(long n, long timestamp) {
-      TickIfNecessary(timestamp);
-      count_ += n;
-      ewma_1_rate_.Update(n);
-      ewma_5_rate_.Update(n);
-      ewma_15_rate_.Update(n);
-    }
-
-    double GetMeanRate(long timestamp) {
-      if (count_ == 0) {
-        return 0.0;
-      }
-
-      long elapsed = timestamp - start_time_;
-      double rate = count_/(double) elapsed;
-      return ConvertNsRate(rate);
-    }
-
-    /// <summary>
-    /// Updates the moving average.
-    /// </summary>
-    void Tick() {
-      ewma_1_rate_.Tick();
-      ewma_5_rate_.Tick();
-      ewma_15_rate_.Tick();
-    }
-
-    void TickIfNecessary(long now) {
-      long age = now - last_tick_;
-      last_tick_ = now;
-      if (age > kTickInterval) {
-        long required_ticks = age/kTickInterval;
-        for (long i = 0; i < required_ticks; i++) {
-          Tick();
-        }
-      }
-    }
-
-    double ConvertNsRate(double rate_per_ns) {
-      return rate_per_ns*TimeUnitHelper.ToNanos(1, rate_unit_);
+      ewma_1_rate_.Mark(n, timestamp);
+      ewma_5_rate_.Mark(n, timestamp);
+      ewma_15_rate_.Mark(n, timestamp);
     }
 
     /// <inheritdoc/>
-    public void Report<T>(MetricReportCallback<T> callback, T context) {
-      long timestamp = clock_.Tick;
-      mailbox_.Send(
-        () => callback(new MetricValueSet(this, Report(timestamp)), context));
-    }
-
-    /// <summary>
-    /// Provide unsafe access to the internal counter. This should be called
-    /// using the same context that is used to update the histogram.
-    /// </summary>
-    internal MetricValue[] Report(long timestamp) {
-      return new[] {
-        new MetricValue(MetricValueType.Count, count_),
-        new MetricValue(MetricValueType.FifteenMinuteRate,
-          ewma_15_rate_.Rate(rate_unit_)),
-        new MetricValue(MetricValueType.FiveMinuteRate,
-          ewma_5_rate_.Rate(rate_unit_)),
-        new MetricValue(MetricValueType.MeanRate, GetMeanRate(timestamp)),
-        new MetricValue(MetricValueType.OneMinuteRate,
-          ewma_1_rate_.Rate(rate_unit_))
-      };
+    public ICollection<IMetric> Metrics {
+      get { return metrics_; }
     }
   }
 }

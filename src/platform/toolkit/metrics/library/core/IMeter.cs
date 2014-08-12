@@ -2,6 +2,9 @@
 
 namespace Nohros.Metrics
 {
+  /// <summary>
+  /// A meter metric which measures mean throughput.
+  /// </summary>
   public interface IMeter : IMetric
   {
     /// <summary>

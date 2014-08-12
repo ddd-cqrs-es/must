@@ -4,11 +4,15 @@ using Nohros.Concurrent;
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// An incrementing and decrementing counter metric.
+  /// A simple counter implementation of the <see cref="ICounter"/> class.
   /// </summary>
-  public class Counter : IMetric, ICounter
+  /// <remarks>
+  /// The value is the instantaneous value of the counter and it is never
+  /// negative. If a <see cref="Decrement(long)"/> causes the counter
+  /// do becomes negative its values will be set to zero.
+  /// </remarks>
+  public class Counter : AbstractMetric, ICounter
   {
-    readonly Mailbox<Action> mailbox_;
     long count_;
 
     /// <summary>
@@ -16,89 +20,60 @@ namespace Nohros.Metrics
     /// uses the specified executor to perform the counter updates (
     /// increment/decrement).
     /// </summary>
-    public Counter() {
-      count_ = 0;
-      mailbox_ = new Mailbox<Action>(runnable => runnable());
+    public Counter(MetricConfig config) : this(config, 0) {
     }
-
-#if DEBUG
-    public void Run(Action action) {
-      mailbox_.Send(action);
-    }
-#endif
 
     /// <summary>
-    /// Increment the counter by one.
+    /// Initializes a new instance of the <see cref="Counter"/> class that
+    /// uses the specified executor to perform the counter updates (
+    /// increment/decrement).
     /// </summary>
+    public Counter(MetricConfig config, long initial)
+      : this(config, new Mailbox<Action>(x => x()), initial) {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Counter"/> class that
+    /// uses the specified executor to perform the counter updates (
+    /// increment/decrement).
+    /// </summary>
+    internal Counter(MetricConfig config, Mailbox<Action> mailbox, long initial)
+      : base(config.WithAdditionalTag(MetricType.Counter.AsTag())) {
+      count_ = initial;
+      mailbox_ = mailbox;
+    }
+
+
+    /// <inheritdoc/>
     public void Increment() {
       Increment(1);
     }
 
-    /// <summary>
-    /// Increments the counter by <paramref name="n"/>.
-    /// </summary>
-    /// <param name="n">The amount by which the counter will be increased.
-    /// </param>
+    /// <inheritdoc/>
     public void Increment(long n) {
       mailbox_.Send(() => Update(n));
     }
 
-    /// <summary>
-    /// Decrements the counter by one.
-    /// </summary>
+    /// <inheritdoc/>
     public void Decrement() {
       Decrement(1);
     }
 
-    /// <summary>
-    /// Decrements the counter by <paramref name="n"/>
-    /// </summary>
-    /// <param name="n">The amount by which the counter will be increased.
-    /// </param>
+    /// <inheritdoc/>
     public void Decrement(long n) {
       mailbox_.Send(() => Update(-n));
     }
 
+    /// <inheritdoc/>
+    protected internal override Measure Compute() {
+      return CreateMeasure(count_);
+    }
+
     void Update(long delta) {
       count_ += delta;
-    }
-
-    public void GetCount(LongMetricCallback callback) {
-      DateTime now = DateTime.Now;
-      mailbox_.Send(() => callback(count_, now));
-    }
-
-    public void Increment(CountedCallback callback) {
-      Increment(1, callback);
-    }
-
-    public void Increment(long n, CountedCallback callback) {
-      mailbox_.Send(() => {
-        Update(n);
-        callback(this);
-      });
-    }
-
-    public void Decrement(CountedCallback callback) {
-      Decrement(1, callback);
-    }
-
-    public void Decrement(long n, CountedCallback callback) {
-      mailbox_.Send(() => {
-        Update(-n);
-        callback(this);
-      });
-    }
-
-    /// <inheritdoc/>
-    public void Report<T>(MetricReportCallback<T> callback, T context) {
-      callback(new MetricValueSet(this, Report()), context);
-    }
-
-    MetricValue[] Report() {
-      return new[] {
-        new MetricValue(MetricValueType.Count, count_),
-      };
+      if (count_ < 0) {
+        count_ = 0;
+      }
     }
   }
 }

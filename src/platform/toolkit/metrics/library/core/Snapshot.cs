@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Nohros.Extensions;
 
 namespace Nohros.Metrics
@@ -52,10 +52,8 @@ namespace Nohros.Metrics
     /// the specifid collection of long values.
     /// </summary>
     /// <param name="values">An unordered set of values in the resevoir.</param>
-    public Snapshot(ICollection<long> values) {
-      values_ = new long[values.Count];
-      values.CopyTo(values_, 0);
-      Array.Sort(values_);
+    public Snapshot(IEnumerable<long> values) {
+      values_ = values.ToArray();
     }
 
     /// <summary>
@@ -189,22 +187,6 @@ namespace Nohros.Metrics
         values_.CopyTo(copy, 0);
         return copy;
       }
-    }
-
-    public List<MetricValue> Report() {
-      return new List<MetricValue> {
-        new MetricValue(MetricValueType.Count, Size),
-        new MetricValue(MetricValueType.Max, Max),
-        new MetricValue(MetricValueType.Mean, Mean),
-        new MetricValue(MetricValueType.Median, Median),
-        new MetricValue(MetricValueType.Min, Min),
-        new MetricValue(MetricValueType.Percentile75, Quantile(k75Percentile)),
-        new MetricValue(MetricValueType.Percentile95, Quantile(k95Percentile)),
-        new MetricValue(MetricValueType.Percentile98, Quantile(k98Percentile)),
-        new MetricValue(MetricValueType.Percentile99, Quantile(k99Percentile)),
-        new MetricValue(MetricValueType.Percentile999, Quantile(k999Percentile))
-        ,new MetricValue(MetricValueType.StandardDeviation, StdDev)
-      };
     }
   }
 }

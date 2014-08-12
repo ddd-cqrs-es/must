@@ -2,6 +2,10 @@
 
 namespace Nohros.Metrics
 {
+  /// <summary>
+  /// A timer metric which aggregates timing durations and provides duration
+  /// statistics, plus throughput statistics
+  /// </summary>
   public interface ITimer : IMetric
   {
     /// <summary>
@@ -44,6 +48,6 @@ namespace Nohros.Metrics
     /// Adds a recorded duration.
     /// </summary>
     /// <param name="duration">The length of the duration.</param>
-    void Update(long duration);
+    void Update(TimeSpan duration);
   }
 }

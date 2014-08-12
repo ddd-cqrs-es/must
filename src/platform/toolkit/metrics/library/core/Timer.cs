@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Nohros.Concurrent;
 
 namespace Nohros.Metrics
@@ -7,176 +10,137 @@ namespace Nohros.Metrics
   /// A timer metric which aggregates timing durations and provides duration
   /// statistics, plus throughput statistics via <see cref="Meter"/>.
   /// </summary>
-  public class Timer : ITimed, ITimer
+  public class Timer : AbstractMetric, ITimer, ICompositeMetric
   {
-    readonly IResevoir resevoir_;
+    public class Builder
+    {
+      public Builder(MetricConfig config) {
+        Config = config;
+        Mailbox = new Mailbox<Action>(x => x());
+        TimeUnit = TimeUnit.Seconds;
+        Clock = new StopwatchClock();
+        Resevoir = new ExponentiallyDecayingResevoir();
+      }
+
+      public Builder WithResevoir(IResevoir resevoir) {
+        Resevoir = resevoir;
+        return this;
+      }
+
+      public Builder WithTimeUnit(TimeUnit unit) {
+        TimeUnit = unit;
+        return this;
+      }
+
+      public Builder WithSnapshotConfig(SnapshotConfig config) {
+        SnapshotConfig = config;
+        return this;
+      }
+
+      internal Builder WithClock(Clock clock) {
+        Clock = clock;
+        return this;
+      }
+
+      internal Builder WithMailbox(Mailbox<Action> mailbox) {
+        Mailbox = mailbox;
+        return this;
+      }
+
+      public MetricConfig Config { get; private set; }
+      public IResevoir Resevoir { get; private set; }
+      public TimeUnit TimeUnit { get; private set; }
+      public SnapshotConfig SnapshotConfig { get; internal set; }
+
+      internal Clock Clock { get; private set; }
+      internal Mailbox<Action> Mailbox { get; private set; }
+    }
+
     readonly Clock clock_;
-    readonly TimeUnit duration_unit_;
+    readonly TimeUnit unit_;
     readonly Histogram histogram_;
     readonly Meter meter_;
-    readonly Mailbox<Action> mailbox_;
+    readonly ReadOnlyCollection<IMetric> metrics_;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Timer"/> class by using
-    /// <see cref="ExponentiallyDecayingResevoir"/> and
-    /// <see cref="UserTimeClock"/> as default resevoir and clock.
-    /// </summary>
-    public Timer() : this(new UserTimeClock()) {
-    }
+    Timer(Builder builder) : base(builder.Config, builder.Mailbox) {
+      unit_ = builder.TimeUnit;
+      clock_ = builder.Clock;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Timer"/> class by using
-    /// <see cref="ExponentiallyDecayingResevoir"/> and
-    /// <see cref="UserTimeClock"/> as default resevoir and clock.
-    /// </summary>
-    public Timer(Clock clock)
-      : this(TimeUnit.Seconds, new ExponentiallyDecayingResevoir(), clock) {
-    }
+      MetricConfig unit_config = Config.WithAdditionalTag("unit", unit_.Name());
 
-    /// <summary>
-    /// Creates a new <see cref="Timer"/>.
-    /// </summary>
-    /// <param name="duration_unit">
-    /// The scale unit for this timer's duration metrics.
-    /// </param>
-    /// <param name="resevoir">
-    /// The <see cref="IResevoir"/> implementation the timer should use.
-    /// </param>
-    public Timer(TimeUnit duration_unit, IResevoir resevoir)
-      : this(duration_unit, resevoir, new UserTimeClock()) {
-      resevoir_ = resevoir;
-    }
+      meter_ = new Meter(unit_config, builder.Mailbox, builder.TimeUnit,
+        builder.Clock);
 
-    /// <summary>
-    /// Creates a new <see cref="Timer"/>.
-    /// </summary>
-    /// <param name="duration_unit">
-    /// The scale unit for this timer's duration metrics.
-    /// </param>
-    /// <param name="resevoir">
-    /// The <see cref="IResevoir"/> implementation the timer should use.
-    /// </param>
-    /// <param name="clock">
-    /// The <see cref="Clock"/> implementation the timer should use.
-    /// </param>
-    public Timer(TimeUnit duration_unit, IResevoir resevoir, Clock clock) {
-      duration_unit_ = duration_unit;
-      clock_ = clock;
-      mailbox_ = new Mailbox<Action>(runnable => runnable());
-      meter_ = new Meter(duration_unit, clock, mailbox_);
-      histogram_ = new Histogram(resevoir, mailbox_);
-    }
+      histogram_ = new Histogram(unit_config, builder.Mailbox,
+        builder.SnapshotConfig, builder.Resevoir);
 
-#if DEBUG
-    public void Run(Action action) {
-      mailbox_.Send(action);
-    }
-#endif
-
-    public void GetFifteenMinuteRate(DoubleMetricCallback callback) {
-      meter_.GetFifteenMinuteRate(callback);
-    }
-
-    public void GetFiveMinuteRate(DoubleMetricCallback callback) {
-      meter_.GetFiveMinuteRate(callback);
-    }
-
-    public void GetMeanRate(DoubleMetricCallback callback) {
-      meter_.GetMeanRate(callback);
-    }
-
-    public void GetOneMinuteRate(DoubleMetricCallback callback) {
-      meter_.GetOneMinuteRate(callback);
-    }
-
-    public void GetCount(LongMetricCallback callback) {
-      meter_.GetCount(callback);
-    }
-
-    /// <inheritdoc/>
-    public void GetSnapshot(SnapshotCallback callback) {
-      histogram_.GetSnapshot(callback);
-    }
-
-    public TimeUnit RateUnit {
-      get { return meter_.RateUnit; }
+      metrics_ = new ReadOnlyCollection<IMetric>(
+        new IMetric[] {
+          meter_, histogram_
+        });
     }
 
     /// <summary>
     /// Adds a recorded duration.
     /// </summary>
-    /// <param name="duration">The length of the duration.</param>
-    public void Update(long duration) {
+    /// <param name="duration">
+    /// The length of the duration.
+    /// </param>
+    public void Update(TimeSpan duration) {
       long timestamp = clock_.Tick;
       mailbox_.Send(() => Update(duration, timestamp));
     }
 
     public T Time<T>(Func<T> method) {
-      long start_time = clock_.Tick;
-
       // The time should be mensured even if a exception is throwed.
+      var timer = new Stopwatch();
       try {
+        timer.Start();
         return method();
       } finally {
-        var tick = clock_.Tick;
-        Update(tick - start_time, tick);
+        timer.Stop();
+        Update(timer.Elapsed);
       }
     }
 
     public void Time(Action method) {
-      long start_time = clock_.Tick;
-
       // The time should be mensured even if a exception is throwed.
+      var timer = new Stopwatch();
       try {
+        timer.Start();
         method();
       } finally {
-        var tick = clock_.Tick;
-        Update(tick - start_time, tick);
+        timer.Stop();
+        Update(timer.Elapsed);
       }
     }
 
     /// <summary>
     /// Gets a timing <see cref="TimerContext"/>, which measures an elapsed
-    /// time in nanoseconds.
+    /// time using the same duration as the parent <see cref="Timer"/>.
     /// </summary>
     /// <returns>
     /// A new <see cref="TimerContext"/>.
     /// </returns>
     public TimerContext Time() {
-      return new TimerContext(this, clock_);
-    }
-
-    /// <summary>
-    /// Adds a recorded duration.
-    /// </summary>
-    /// <param name="duration">The length of the duration.</param>
-    void Update(long duration, long timestamp) {
-      if (duration >= 0) {
-        histogram_.Update(duration);
-        meter_.Mark(1, timestamp);
-      }
-    }
-
-    /// <summary>
-    /// Gets the timer's duration scale unit.
-    /// </summary>
-    public TimeUnit DurationUnit {
-      get { return duration_unit_; }
+      return new TimerContext(this);
     }
 
     /// <inheritdoc/>
-    public void Report<T>(MetricReportCallback<T> callback, T context) {
-      long timestamp = clock_.Tick;
-      mailbox_.Send(
-        () => callback(new MetricValueSet(this, Report(timestamp)), context));
+    public ICollection<IMetric> Metrics {
+      get { return metrics_; }
     }
 
-    MetricValue[] Report(long timestamp) {
-      var metrics = resevoir_.Snapshot.Report();
-      metrics.Add(
-        new MetricValue(MetricValueType.Count, histogram_.InternalCount));
-      metrics.AddRange(meter_.Report(timestamp));
-      return metrics.ToArray();
+    /// <inheritdoc/>
+    protected internal override Measure Compute() {
+      return CreateMeasure(metrics_.Count);
+    }
+
+    void Update(TimeSpan duration, long timestamp) {
+      if (duration > TimeSpan.Zero) {
+        histogram_.Update(duration.ToUnit(unit_), timestamp);
+        meter_.Mark(1, timestamp);
+      }
     }
   }
 }

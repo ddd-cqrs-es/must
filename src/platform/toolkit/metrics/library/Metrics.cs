@@ -70,20 +70,16 @@ namespace Nohros.Metrics
     /// </param>
     /// <exception cref="ArgumentException">
     /// A metric with the same id already exists in the
-    /// <see cref="IMetricsRegistry"/>.
+    /// <see cref="MetricsRegistry"/>.
     /// </exception>
     public static void AddMetric(string name, IMetric metric) {
       registry_.Add(name, metric);
     }
 
-    public static bool HasMetric(MetricId id) {
-      return registry_.HasMetric(id);
-    }
-
     /// <summary>
     /// Adds an metric to the metrics collection using the metrics id.
     /// </summary>
-    /// <param name="id">
+    /// <param name="config">
     /// The id of the metric.
     /// </param>
     /// <param name="metric">
@@ -91,10 +87,10 @@ namespace Nohros.Metrics
     /// </param>
     /// <exception cref="ArgumentException">
     /// A metric with the same id already exists in the
-    /// <see cref="IMetricsRegistry"/>.
+    /// <see cref="MetricsRegistry"/>.
     /// </exception>
-    public static void AddMetric(MetricId id, IMetric metric) {
-      registry_.Add(id, metric);
+    public static void AddMetric(MetricConfig config, IMetric metric) {
+      registry_.Add(config, metric);
     }
 
     /// <summary>

@@ -1,73 +1,187 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nohros.Concurrent;
+using Nohros.Extensions;
 
 namespace Nohros.Metrics
 {
-  public class Histogram : IHistogram
+  public class Histogram : AbstractMetric, IHistogram, ICompositeMetric
   {
+    class CallableGaugeWrapper
+    {
+      readonly MetricConfig config_;
+      readonly Func<Snapshot, double> callable_;
+
+      public CallableGaugeWrapper(MetricConfig config,
+        Func<Snapshot, double> callable) {
+        config_ = config;
+        callable_ = callable;
+      }
+
+      public IMetric Wrap(Snapshot snapshot) {
+        return new CallableGauge(config_, () => callable_(snapshot));
+      }
+    }
+
+    readonly SnapshotConfig stats_;
     readonly IResevoir resevoir_;
-    readonly Mailbox<Action> mailbox_;
-    int count_;
+    readonly List<CallableGaugeWrapper> gauges_;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Histogram"/> by using the
     /// given <see cref="IResevoir"/>.
     /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    /// <param name="stats">
+    /// A <see cref="SnapshotConfig"/> that defines the statistics that should
+    /// be computed.
+    /// </param>
     /// <param name="resevoir">
     /// A <see cref="IResevoir"/> that can be used to store the computed
     /// values.
     /// </param>
-    public Histogram(IResevoir resevoir)
-      : this(resevoir, new Mailbox<Action>(runnable => runnable())) {
+    public Histogram(MetricConfig config, SnapshotConfig stats,
+      IResevoir resevoir)
+      : this(config, new Mailbox<Action>(x => x()), stats, resevoir) {
     }
 
-    internal Histogram(IResevoir resevoir, Mailbox<Action> mailbox) {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Histogram"/> by using the
+    /// given <see cref="IResevoir"/>.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    /// <param name="mailbox">
+    /// A <see cref="Mailbox{T}"/> that can be used to asynchrously process
+    /// metrics operations.
+    /// </param>
+    /// <param name="stats">
+    /// A <see cref="SnapshotConfig"/> that defines the statistics that should
+    /// be computed.
+    /// </param>
+    /// <param name="resevoir">
+    /// A <see cref="IResevoir"/> that can be used to store the computed
+    /// values.
+    /// </param>
+    internal Histogram(MetricConfig config, Mailbox<Action> mailbox,
+      SnapshotConfig stats, IResevoir resevoir)
+      : base(config, mailbox) {
+      stats_ = stats;
       resevoir_ = resevoir;
       mailbox_ = mailbox;
-      count_ = 0;
+
+      gauges_ = new List<CallableGaugeWrapper>();
+
+      if (stats.ComputeCount) {
+        gauges_.Add(CountGauge(config));
+      }
+
+      if (stats.ComputeMax) {
+        gauges_.Add(MaxGauge(config));
+      }
+
+      if (stats.ComputeMean) {
+        gauges_.Add(MeanGauge(config));
+      }
+
+      if (stats.ComputeMedian) {
+        gauges_.Add(MedianGauge(config));
+      }
+
+      if (stats.ComputeMin) {
+        gauges_.Add(MinGauge(config));
+      }
+
+      if (stats.ComputeStdDev) {
+        gauges_.Add(StdDevGauge(config));
+      }
+
+      foreach (var percentile in stats.Percentiles) {
+        gauges_.Add(PercentileGauge(config, percentile));
+      }
     }
 
-#if DEBUG
-    public void Run(Action action) {
-      mailbox_.Send(action);
-    }
-#endif
-
-    /// <inheritdoc/>
-    public void GetSnapshot(SnapshotCallback callback) {
-      var now = DateTime.Now;
-      mailbox_.Send(() => callback(resevoir_.Snapshot, now));
+    CallableGaugeWrapper MinGauge(MetricConfig config) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic", "min"),
+          snapshot => snapshot.Min);
     }
 
-    /// <inheritdoc/>
-    public void GetCount(LongMetricCallback callback) {
-      var now = DateTime.Now;
-      mailbox_.Send(() => callback(count_, now));
+    CallableGaugeWrapper MedianGauge(MetricConfig config) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic", "median"),
+          snapshot => snapshot.Median);
+    }
+
+    CallableGaugeWrapper MeanGauge(MetricConfig config) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic", "mean"),
+          snapshot => snapshot.Mean);
+    }
+
+    CallableGaugeWrapper MaxGauge(MetricConfig config) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic", "max"),
+          snapshot => snapshot.Max);
+    }
+
+    CallableGaugeWrapper CountGauge(MetricConfig config) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic", "count"),
+          snapshot => snapshot.Size);
+    }
+
+    CallableGaugeWrapper StdDevGauge(MetricConfig config) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic", "stddev"),
+          snapshot => snapshot.StdDev);
+    }
+
+    CallableGaugeWrapper PercentileGauge(MetricConfig config, double percentile) {
+      return
+        new CallableGaugeWrapper(
+          config.WithAdditionalTag("statistic",
+            "percentile_" + percentile.ToString("#.####")),
+          snapshot => snapshot.Quantile(percentile));
     }
 
     /// <inheritdoc/>
     public void Update(long value) {
-      count_++;
-      resevoir_.Update(value);
+      long timestamp = resevoir_.Timestamp;
+      mailbox_.Send(() => Update(value, timestamp));
     }
 
-    /// <summary>
-    /// Provide unsafe access to the internal counter. This should be called
-    /// using the same context that is used to update the histogram.
-    /// </summary>
-    internal long InternalCount {
-      get { return count_; }
+    public void Update(long value, long timestamp) {
+      mailbox_.Send(() => resevoir_.Update(value, timestamp));
     }
 
     /// <inheritdoc/>
-    public void Report<T>(MetricReportCallback<T> callback, T context) {
-      mailbox_.Send(() => callback(new MetricValueSet(this, Report()), context));
+    public ICollection<IMetric> Metrics {
+      get {
+        Snapshot snapshot = resevoir_.Snapshot;
+        var metrics = new IMetric[gauges_.Count];
+        for (int i = gauges_.Count - 1; i < 0; i++) {
+          metrics[i] = gauges_[i].Wrap(snapshot);
+        }
+        return metrics;
+      }
     }
 
-    MetricValue[] Report() {
-      var metrics = resevoir_.Snapshot.Report();
-      metrics.Add(new MetricValue(MetricValueType.Count, count_));
-      return metrics.ToArray();
+    /// <inheritdoc/>
+    protected internal override Measure Compute() {
+      return CreateMeasure(gauges_.Count);
     }
   }
 }

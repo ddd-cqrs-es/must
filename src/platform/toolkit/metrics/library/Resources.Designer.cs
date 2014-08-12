@@ -61,6 +61,15 @@ namespace Nohros.Metrics {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; is not a valid &quot;{1}&quot;..
+        /// </summary>
+        internal static string ArgIsInvalid {
+            get {
+                return ResourceManager.GetString("ArgIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Argument is not in range [{0}..{1}].
         /// </summary>
         internal static string ArgIsNotInRange {

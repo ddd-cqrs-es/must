@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// A set of <see cref="MetricValue"/>.
+  /// A set of <see cref="Measure"/>.
   /// </summary>
-  public struct MetricValueSet : IEnumerable<MetricValue>
+  public struct MetricValueSet : IEnumerable<Measure>
   {
     readonly IMetric metric_;
-    readonly MetricValue[] values_;
+    readonly Measure[] values_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MetricValueSet"/> class
@@ -22,7 +23,7 @@ namespace Nohros.Metrics
     /// <param name="value">
     /// A instantaneous value of the given <paramref name="metric"/>.
     /// </param>
-    public MetricValueSet(IMetric metric, MetricValue value)
+    public MetricValueSet(IMetric metric, Measure value)
       : this(metric, new[] {value}) {
     }
 
@@ -35,10 +36,10 @@ namespace Nohros.Metrics
     /// The metric that produces the <paramref name="values"/>.
     /// </param>
     /// <param name="values">
-    /// A collection of <see cref="MetricValue"/> containing instantaneous
+    /// A collection of <see cref="Measure"/> containing instantaneous
     /// values of the given <paramref name="metric"/>.
     /// </param>
-    public MetricValueSet(IMetric metric, MetricValue[] values) {
+    public MetricValueSet(IMetric metric, Measure[] values) {
       metric_ = metric;
       values_ = values;
     }
@@ -47,7 +48,13 @@ namespace Nohros.Metrics
       return GetEnumerator();
     }
 
-    public IEnumerator<MetricValue> GetEnumerator() {
+    /// <summary>
+    /// Gets a enumerator that iterates through the metric's values of the set.
+    /// </summary>
+    /// <returns>
+    /// A enumerator that iterates through the metric's values of the set.
+    /// </returns>
+    public IEnumerator<Measure> GetEnumerator() {
       foreach (var value in values_) {
         yield return value;
       }
@@ -63,8 +70,8 @@ namespace Nohros.Metrics
     /// <summary>
     /// Gets a collection of instanteneous values.
     /// </summary>
-    public MetricValue[] Values {
-      get { return values_; }
+    public ReadOnlyCollection<Measure> Values {
+      get { return new ReadOnlyCollection<Measure>(values_); }
     }
   }
 }

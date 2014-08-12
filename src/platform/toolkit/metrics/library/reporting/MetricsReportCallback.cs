@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nohros.Metrics.Reporting
 {
@@ -10,12 +11,12 @@ namespace Nohros.Metrics.Reporting
   /// A user-defined object that qualifies or contains information about the
   /// reporting operation.
   /// </param>
-  /// <param name="metric_id">
+  /// <param name="config">
   /// The id of the metric.
   /// </param>
   /// <param name="values">
   /// The values associated with a <see cref="IMetric"/>.
   /// </param>
-  public delegate void MetricsReportCallback<in T>(MetricId metric_id,
-    MetricValue[] values, T context);
+  public delegate void MetricsReportCallback<in T>(MetricConfig config,
+    IEnumerable<Measure> values, T context);
 }
