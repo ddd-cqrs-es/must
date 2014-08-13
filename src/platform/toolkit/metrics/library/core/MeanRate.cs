@@ -1,5 +1,6 @@
 ﻿using System;
 using Nohros.Concurrent;
+using Nohros.Extensions.Time;
 
 namespace Nohros.Metrics
 {
@@ -9,6 +10,23 @@ namespace Nohros.Metrics
     readonly long ticks_per_unit_;
     readonly long start_time_;
     readonly Counter count_;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref=" MeanRate"/> class by
+    /// using the specified config, rate unit and <see cref="StopwatchClock"/>
+    /// as the clock.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    /// <param name="rate_unit">
+    /// The time unit of the meter's rate.
+    /// </param>
+    public MeanRate(MetricConfig config, TimeUnit rate_unit)
+      : this(config, rate_unit, new Mailbox<Action>(runnable => runnable()),
+        new StopwatchClock()) {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref=" MeanRate"/> class by using
@@ -21,9 +39,12 @@ namespace Nohros.Metrics
     /// <param name="rate_unit">
     /// The time unit of the meter's rate.
     /// </param>
-    public MeanRate(MetricConfig config, TimeUnit rate_unit)
+    /// <param name="clock">
+    /// The clock that should be used to mark the passage of time.
+    /// </param>
+    public MeanRate(MetricConfig config, TimeUnit rate_unit, Clock clock)
       : this(config, rate_unit, new Mailbox<Action>(runnable => runnable()),
-        new StopwatchClock()) {
+        clock) {
     }
 
     /// <summary>
@@ -45,7 +66,7 @@ namespace Nohros.Metrics
       clock_ = clock;
       start_time_ = clock.Tick;
       count_ = new Counter(config, mailbox, 0);
-      ticks_per_unit_ = TimeUnitHelper.ToTicks(1, unit);
+      ticks_per_unit_ = 1.ToTicks(unit);
     }
 
     /// <inheritdoc/>
@@ -70,7 +91,7 @@ namespace Nohros.Metrics
       mailbox_.Send(() => callback(Compute(timestamp), context));
     }
 
-    Measure Compute(long timestamp) {
+    internal Measure Compute(long timestamp) {
       Measure count = count_.Compute();
 
       long elapsed = timestamp - start_time_;

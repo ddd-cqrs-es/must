@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Nohros.Collections;
 using Nohros.Concurrent;
+using Nohros.Extensions.Time;
 
 namespace Nohros.Metrics
 {
@@ -219,7 +220,7 @@ namespace Nohros.Metrics
     }
 
     long TimeInSeconds(long ticks) {
-      return TimeUnitHelper.ToSeconds(ticks, TimeUnit.Ticks);
+      return ticks.ToSeconds(TimeUnit.Ticks);
     }
   }
 }

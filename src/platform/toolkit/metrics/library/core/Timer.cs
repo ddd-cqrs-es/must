@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Nohros.Concurrent;
+using Nohros.Extensions.Time;
 
 namespace Nohros.Metrics
 {

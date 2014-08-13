@@ -1,5 +1,6 @@
 ﻿using System;
 using Nohros.Concurrent;
+using Nohros.Extensions.Time;
 
 namespace Nohros.Metrics
 {
@@ -168,7 +169,7 @@ namespace Nohros.Metrics
       Clock clock) : base(config, mailbox) {
       interval_ = interval.Ticks;
       alpha_ = alpha;
-      ticks_per_unit_ = TimeUnitHelper.ToTicks(1, unit);
+      ticks_per_unit_ = 1.ToTicks(unit);
       clock_ = clock;
       uncounted_ = 0;
       rate_ = 0.0;
