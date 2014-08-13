@@ -49,6 +49,7 @@
     <Compile Include="ExponentiallyDecayingReservoirTests.cs" />
     <Compile Include="ExponentialWeightedMovingAverageTest.cs" />
     <Compile Include="MaxGaugeTests.cs" />
+    <Compile Include="MeanRateTests.cs" />
     <Compile Include="MetricsConfigTest.cs" />
     <Compile Include="MinGaugeTests.cs" />
     <Compile Include="Program.cs" />
