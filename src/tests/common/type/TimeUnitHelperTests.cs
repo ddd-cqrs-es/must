@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Nohros.Extensions.Time;
 
 namespace Nohros.Common
 {

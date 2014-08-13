@@ -64,16 +64,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cache\CacheBuilderTests.cs" />
-    <Compile Include="cache\CacheLoaders.cs" />
-    <Compile Include="cache\LoadingCacheTests.cs" />
-    <Compile Include="cache\CacheProviderMock.cs" />
     <Compile Include="concurrent\AbstractFutureTests.cs" />
     <Compile Include="concurrent\AtomicLongArrayTests.cs" />
     <Compile Include="concurrent\AtomicLongTests.cs" />
     <Compile Include="concurrent\AtomicReferenceTests.cs" />
     <Compile Include="concurrent\MailboxTests.cs" />
-    <Compile Include="concurrent\YQueueTests.cs" />
+    <Compile Include="concurrent\TimeUnitHelperTests.cs" />
     <Compile Include="configuration\common\provider\ProvidersNodeParserTests.cs" />
     <Compile Include="data\id\HiLoGeneratorTests.cs" />
     <Compile Include="data\json\collection\JsonCollectionFactoryTest.cs" />
@@ -81,9 +77,7 @@
     <Compile Include="data\json\collection\JsonTableTest.cs" />
     <Compile Include="data\json\JsonStringBuilderTest.cs" />
     <Compile Include="data\MapperTests.cs" />
-    <Compile Include="data\repositories\AbstractCriteriaTests.cs" />
     <Compile Include="data\repositories\AbstractStateDaoTests.cs" />
-    <Compile Include="data\repositories\CriteriaResolver.cs" />
     <Compile Include="extensions\Configurations.cs" />
     <Compile Include="extensions\ProvidersNode.cs" />
     <Compile Include="GenericTest.cs" />
@@ -112,6 +106,12 @@
     <Content Include="config-tests.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\base\common\common.csproj">
+      <Project>{EA6B35FF-1A1B-46D8-A599-4F9A467C75D1}</Project>
+      <Name>common %28%28base%29\common%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

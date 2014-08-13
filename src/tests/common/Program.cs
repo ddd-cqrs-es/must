@@ -8,10 +8,7 @@ namespace Nohros.Tests
   {
     public static void Main() {
       long received_long = 0;
-      Mailbox<long> mailbox = new Mailbox<long>(
-        delegate(long message) {
-          Console.WriteLine(message);
-        }, Executors.SameThreadExecutor());
+      var mailbox = new Mailbox<long>(Console.WriteLine);
 
       for (int i = 0, j = 15; i < j; i++) {
         mailbox.Send(i);

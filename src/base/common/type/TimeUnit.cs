@@ -1,4 +1,5 @@
 ﻿using System;
+using Nohros.Resources;
 
 namespace Nohros
 {
@@ -66,7 +67,7 @@ namespace Nohros
       const long C1 = C0*100L;
 
       // ticks to microseconds
-      const long C2 = C1*100000L;
+      const long C2 = C1*10L;
 
       // microseconds to miliseconds
       const long C3 = C2*1000L;
@@ -375,6 +376,41 @@ namespace Nohros
           default:
             throw new ArgumentOutOfRangeException("unit");
         }
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToTicks(this int duration, TimeUnit unit) {
+        return ToTicks((long)duration, unit);
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      public static long ToNanos(this int duration, TimeUnit unit) {
+        return ToNanos((long)duration, unit);
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// seconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToMilliseconds(this int duration, TimeUnit unit) {
+        return ToMilliseconds((long)duration, unit);
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToSeconds(this int duration, TimeUnit unit) {
+        return ToSeconds((long)duration, unit);
       }
     }
   }
