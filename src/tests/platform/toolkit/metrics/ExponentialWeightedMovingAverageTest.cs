@@ -7,32 +7,13 @@ namespace Nohros.Metrics.Tests
 {
   public class ExponentialWeightedMovingAverageTest
   {
-    class StepClock : Clock
-    {
-      readonly long interval_;
-      long tick_;
-
-      public StepClock(long interval) {
-        interval_ = interval;
-        tick_ = 0;
-      }
-
-      public void TickNow(long count) {
-        tick_ += interval_*count;
-      }
-
-      public override long Tick {
-        get { return tick_; }
-      }
-    }
-
     static Mailbox<Action> mailbox_;
     static StepClock step_clock_;
 
     [SetUp]
     public void SetUp() {
       mailbox_ = new Mailbox<Action>(x => x());
-      step_clock_ = new StepClock(TimeSpan.FromSeconds(5).Ticks + 1);
+      step_clock_ = new StepClock(TimeSpan.FromMilliseconds(5*1001));
     }
 
     [Test]

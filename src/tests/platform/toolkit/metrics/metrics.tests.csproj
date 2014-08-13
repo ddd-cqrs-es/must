@@ -46,11 +46,13 @@
     <Compile Include="CounterTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ExponentiallyDecayingReservoirTests.cs" />
     <Compile Include="ExponentialWeightedMovingAverageTest.cs" />
     <Compile Include="MaxGaugeTests.cs" />
     <Compile Include="MetricsConfigTest.cs" />
     <Compile Include="MinGaugeTests.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="StepClock.cs" />
     <Compile Include="Testing.cs">
       <SubType>Code</SubType>
     </Compile>
