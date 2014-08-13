@@ -147,7 +147,7 @@ namespace Nohros.Metrics
           // replace the element associated with the smallest key by the
           // sampled value.
           priorities_.Remove(first.Key);
-          priorities_[priority] = first.Value;
+          priorities_[priority] = value;
           //resevoir_[first.Value] = value;
         }
       }
