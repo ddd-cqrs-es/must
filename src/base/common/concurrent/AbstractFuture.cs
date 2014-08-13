@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Nohros.Extensions.Time;
 using Nohros.Resources;
 
 namespace Nohros.Concurrent
@@ -149,7 +150,7 @@ namespace Nohros.Concurrent
         throw new ArgumentOutOfRangeException("timeout",
           StringResources.ArgumentOutOfRange_NeedNonNegNum);
       }
-      return TryGet((int) TimeUnitHelper.ToMilliseconds(timeout, unit), out result);
+      return TryGet((int) timeout.ToMilliseconds(unit), out result);
     }
 
     public void AddListener(RunnableDelegate listener, IExecutor executor) {

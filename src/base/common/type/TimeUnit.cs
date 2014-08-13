@@ -50,318 +50,331 @@ namespace Nohros
     Ticks = 7
   }
 
-  public static class TimeUnitHelper
+  namespace Extensions.Time
   {
     /// <summary>
-    /// Handy constants for conversion methods.
+    /// Extensions for time based conversion.
     /// </summary>
-    const long C0 = 1L; // 1 nanosecond
+    public static class TimeUnitHelper
+    {
+      /// <summary>
+      /// Handy constants for conversion methods.
+      /// </summary>
+      const long C0 = 1L; // 1 nanosecond
 
-    const long C1 = 100L; // 1 nanosecond
+      // nanoseconds to ticks
+      const long C1 = C0*100L;
 
-    // nanos to micros
-    const long C2 = C0*1000L;
+      // ticks to microseconds
+      const long C2 = C1*100000L;
 
-    // micros to milis
-    const long C3 = C2*1000L;
+      // microseconds to miliseconds
+      const long C3 = C2*1000L;
 
-    // milis to seconds
-    const long C4 = C3*1000L;
+      // miliseconds to seconds
+      const long C4 = C3*1000L;
 
-    // seconds to minutes
-    const long C5 = C4*60L;
+      // seconds to minutes
+      const long C5 = C4*60L;
 
-    // minutes to hours
-    const long C6 = C5*60L;
+      // minutes to hours
+      const long C6 = C5*60L;
 
-    // hours to days
-    const long C7 = C6*24L;
+      // hours to days
+      const long C7 = C6*24L;
 
-    // the maximum allowed value
-    const long MAX = long.MaxValue;
+      // the maximum allowed value
+      const long MAX = long.MaxValue;
 
-    static DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+      static DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    /// <summary>
-    /// Scale <paramref name="d"/> by <paramref name="m"/>, checking for
-    /// overflow. This has a short name to make above code more readable.
-    /// </summary>
-    static long x(long d, long m, long over) {
-      if (d > over) return long.MaxValue;
-      if (d < -over) return long.MinValue;
-      return d*m;
-    }
-
-    /// <summary>
-    /// Convert the specified time duration in the given unit to the
-    /// nanoseconds units.
-    /// </summary>
-    /// <returns></returns>
-    public static long ToTicks(long duration, TimeUnit unit) {
-      switch (unit) {
-        case TimeUnit.Nanoseconds:
-          return duration/(C1/C0);
-
-        case TimeUnit.Ticks:
-          return duration;
-
-        case TimeUnit.Microseconds:
-          return x(duration, C2/C1, MAX/(C2/C1));
-
-        case TimeUnit.Milliseconds:
-          return x(duration, C3/C1, MAX/(C3/C1));
-
-        case TimeUnit.Seconds:
-          return x(duration, C4/C1, MAX/(C4/C1));
-
-        case TimeUnit.Minutes:
-          return x(duration, C5/C1, MAX/(C5/C4));
-
-        case TimeUnit.Hours:
-          return x(duration, C6/C1, MAX/(C6/C4));
-
-        case TimeUnit.Days:
-          return x(duration, C7/C1, MAX/(C7/C4));
+      /// <summary>
+      /// Scale <paramref name="d"/> by <paramref name="m"/>, checking for
+      /// overflow. This has a short name to make above code more readable.
+      /// </summary>
+      static long x(long d, long m, long over) {
+        if (d > over) return long.MaxValue;
+        if (d < -over) return long.MinValue;
+        return d*m;
       }
-      throw new ArgumentOutOfRangeException("unit");
-    }
 
-    /// <summary>
-    /// Convert the specified time duration in the given unit to the
-    /// nanoseconds units.
-    /// </summary>
-    /// <returns></returns>
-    public static long ToNanos(long duration, TimeUnit unit) {
-      switch (unit) {
-        case TimeUnit.Nanoseconds:
-          return duration;
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToTicks(this long duration, TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Nanoseconds:
+            return duration/(C1/C0);
 
-        case TimeUnit.Ticks:
-          return x(duration, C1/C0, MAX/(C1/C0));
+          case TimeUnit.Ticks:
+            return duration;
 
-        case TimeUnit.Microseconds:
-          return x(duration, C2/C0, MAX/(C2/C0));
+          case TimeUnit.Microseconds:
+            return x(duration, C2/C1, MAX/(C2/C1));
 
-        case TimeUnit.Milliseconds:
-          return x(duration, C3/C0, MAX/(C3/C0));
+          case TimeUnit.Milliseconds:
+            return x(duration, C3/C1, MAX/(C3/C1));
 
-        case TimeUnit.Seconds:
-          return x(duration, C4/C0, MAX/(C4/C0));
+          case TimeUnit.Seconds:
+            return x(duration, C4/C1, MAX/(C4/C1));
 
-        case TimeUnit.Minutes:
-          return x(duration, C5/C0, MAX/(C5/C0));
+          case TimeUnit.Minutes:
+            return x(duration, C5/C1, MAX/(C5/C4));
 
-        case TimeUnit.Hours:
-          return x(duration, C6/C0, MAX/(C6/C0));
+          case TimeUnit.Hours:
+            return x(duration, C6/C1, MAX/(C6/C4));
 
-        case TimeUnit.Days:
-          return x(duration, C7/C0, MAX/(C7/C0));
+          case TimeUnit.Days:
+            return x(duration, C7/C1, MAX/(C7/C4));
+        }
+        throw new ArgumentOutOfRangeException("unit");
       }
-      throw new ArgumentOutOfRangeException("unit");
-    }
 
-    /// <summary>
-    /// Convert the specified timestamp to the nano seconds unit.
-    /// </summary>
-    /// <returns>The total number of nanoseconds that the</returns>
-    public static long ToNanos(TimeSpan duration) {
-      // one tick have a undred nanoseconds.
-      return duration.Ticks*100;
-    }
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      public static long ToNanos(this long duration, TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Nanoseconds:
+            return duration;
 
-    /// <summary>
-    /// Converts the specified datetime to the unix time unit.
-    /// </summary>
-    /// <returns>
-    /// The number of seconds since unix epoch.
-    /// </returns>
-    /// <remarks>
-    /// If <see cref="DateTime.Kind"/> property of the given
-    /// <see cref="duration"/> is <see cref="DateTimeKind.Unspecified"/>
-    /// <paramref name="duration"/> is assumed to be a UTC time.
-    /// </remarks>
-    [Obsolete("Use ToUnixEpoch instead", true)]
-    public static long ToUnixTime(DateTime duration) {
-      return (long) duration.ToUniversalTime().Subtract(epoch).TotalSeconds;
-    }
+          case TimeUnit.Ticks:
+            return x(duration, C1/C0, MAX/(C1/C0));
 
-    /// <summary>
-    /// Converts the specified datetime to the unix time unit.
-    /// </summary>
-    /// <returns>
-    /// The number of seconds since unix epoch.
-    /// </returns>
-    /// <remarks>
-    /// If <see cref="DateTime.Kind"/> property of the given
-    /// <see cref="duration"/> is <see cref="DateTimeKind.Unspecified"/>
-    /// <paramref name="duration"/> is assumed to be a UTC time.
-    /// </remarks>
-    public static long ToUnixEpoch(DateTime duration) {
-      return (long) duration.ToUniversalTime().Subtract(epoch).TotalSeconds;
-    }
+          case TimeUnit.Microseconds:
+            return x(duration, C2/C0, MAX/(C2/C0));
 
-    /// <summary>
-    /// Converts the specified epoch time to its corresponding local date
-    /// and time.
-    /// </summary>
-    /// <param name="timestamp">
-    /// A Unix epoch time.
-    /// </param>
-    /// <returns>
-    /// The local time representation of the specified unix epoch
-    /// time.
-    /// </returns>
-    /// <remarks>
-    /// The returned date time represents a local time. To convert to a
-    /// Coordinated Universal Time (UTC) use the
-    /// <see cref="FromUnixEpoch(long, DateTimeKind)"/> overload
-    /// </remarks>
-    public static DateTime FromUnixEpoch(long timestamp) {
-      return FromUnixEpoch(timestamp, DateTimeKind.Local);
-    }
+          case TimeUnit.Milliseconds:
+            return x(duration, C3/C0, MAX/(C3/C0));
 
-    /// <summary>
-    /// Converts the specified epoch time to its corresponding date and time
-    /// using the given date time kind.
-    /// </summary>
-    /// <param name="timestamp">
-    /// A Unix epoch time.
-    /// </param>
-    /// <returns>
-    /// The <see cref="DateTime"/> representation of the specified unix epoch
-    /// time.
-    /// </returns>
-    /// <remarks>
-    /// If <paramref name="kind"/> is set to
-    /// <see cref="DateTimeKind.Unspecified"/> the
-    /// <see cref="DateTimeKind.Local"/> will be used.
-    /// </remarks>
-    public static DateTime FromUnixEpoch(long timestamp, DateTimeKind kind) {
-      var date = epoch.AddSeconds(timestamp);
-      return kind == DateTimeKind.Utc ? date : date.ToLocalTime();
-    }
+          case TimeUnit.Seconds:
+            return x(duration, C4/C0, MAX/(C4/C0));
 
-    /// <summary>
-    /// Convert the specified time duration in the given unit to the
-    /// seconds units.
-    /// </summary>
-    /// <returns></returns>
-    [Obsolete("Use ToMilliseconds instead", true)]
-    public static long ToMillis(long duration, TimeUnit unit) {
-      return ToMilliseconds(duration, unit);
-    }
+          case TimeUnit.Minutes:
+            return x(duration, C5/C0, MAX/(C5/C0));
 
-    /// <summary>
-    /// Convert the specified time duration in the given unit to the
-    /// seconds units.
-    /// </summary>
-    /// <returns></returns>
-    public static long ToMilliseconds(long duration, TimeUnit unit) {
-      switch (unit) {
-        case TimeUnit.Nanoseconds:
-          return duration/(C3/C0);
+          case TimeUnit.Hours:
+            return x(duration, C6/C0, MAX/(C6/C0));
 
-        case TimeUnit.Ticks:
-          return duration/(C3/C1);
-
-        case TimeUnit.Microseconds:
-          return duration/(C3/C2);
-
-        case TimeUnit.Milliseconds:
-          return duration;
-
-        case TimeUnit.Seconds:
-          return x(duration, C4/C3, MAX/(C4/C3));
-
-        case TimeUnit.Minutes:
-          return x(duration, C5/C3, MAX/(C5/C3));
-
-        case TimeUnit.Hours:
-          return x(duration, C6/C3, MAX/(C6/C3));
-
-        case TimeUnit.Days:
-          return x(duration, (C7/C3), MAX/(C7/C3));
+          case TimeUnit.Days:
+            return x(duration, C7/C0, MAX/(C7/C0));
+        }
+        throw new ArgumentOutOfRangeException("unit");
       }
-      throw new ArgumentOutOfRangeException("unit");
-    }
 
-    /// <summary>
-    /// Convert the specified time duration in the given unit to the
-    /// nanoseconds units.
-    /// </summary>
-    /// <returns></returns>
-    public static long ToSeconds(long duration, TimeUnit unit) {
-      switch (unit) {
-        case TimeUnit.Nanoseconds:
-          return duration/(C4/C0);
-
-        case TimeUnit.Ticks:
-          return duration/(C4/C1);
-
-        case TimeUnit.Microseconds:
-          return duration/(C4/C2);
-
-        case TimeUnit.Milliseconds:
-          return duration/(C4/C3);
-
-        case TimeUnit.Seconds:
-          return duration;
-
-        case TimeUnit.Minutes:
-          return x(duration, C5/C4, MAX/(C5/C4));
-
-        case TimeUnit.Hours:
-          return x(duration, C6/C4, MAX/(C6/C4));
-
-        case TimeUnit.Days:
-          return x(duration, C7/C4, MAX/(C7/C4));
+      /// <summary>
+      /// Converts the specified datetime to the unix time unit.
+      /// </summary>
+      /// <returns>
+      /// The number of seconds since unix epoch.
+      /// </returns>
+      /// <remarks>
+      /// If <see cref="DateTime.Kind"/> property of the given
+      /// <see cref="duration"/> is <see cref="DateTimeKind.Unspecified"/>
+      /// <paramref name="duration"/> is assumed to be a UTC time.
+      /// </remarks>
+      [Obsolete("Use ToUnixEpoch instead", true)]
+      public static long ToUnixTime(DateTime duration) {
+        return (long) duration.ToUniversalTime().Subtract(epoch).TotalSeconds;
       }
-      throw new ArgumentOutOfRangeException("unit");
-    }
 
-    public static string Name(this TimeUnit unit) {
-      switch (unit) {
-        case TimeUnit.Days:
-          return "Days";
-        case TimeUnit.Hours:
-          return "Hours";
-        case TimeUnit.Microseconds:
-          return "Microseconds";
-        case TimeUnit.Milliseconds:
-          return "Milliseconds";
-        case TimeUnit.Minutes:
-          return "Minutes";
-        case TimeUnit.Nanoseconds:
-          return "Nanoseconds";
-        case TimeUnit.Seconds:
-          return "Seconds";
-        case TimeUnit.Ticks:
-          return "Ticks";
-        default:
-          throw new ArgumentOutOfRangeException("unit");
+      /// <summary>
+      /// Converts the specified datetime to the unix time unit.
+      /// </summary>
+      /// <returns>
+      /// The number of seconds since unix epoch.
+      /// </returns>
+      /// <remarks>
+      /// If <see cref="DateTime.Kind"/> property of the given
+      /// <see cref="duration"/> is <see cref="DateTimeKind.Unspecified"/>
+      /// <paramref name="duration"/> is assumed to be a UTC time.
+      /// </remarks>
+      public static long ToUnixEpoch(this DateTime duration) {
+        return (long) duration.ToUniversalTime().Subtract(epoch).TotalSeconds;
       }
-    }
 
-    public static long ToUnit(this TimeSpan duration, TimeUnit unit) {
-      switch (unit) {
-        case TimeUnit.Days:
-          return (long) duration.TotalDays;
-        case TimeUnit.Hours:
-          return (long) duration.Hours;
-        case TimeUnit.Microseconds:
-          return (long) duration.TotalSeconds*1000000;
-        case TimeUnit.Milliseconds:
-          return (long) duration.TotalMilliseconds;
-        case TimeUnit.Minutes:
-          return (long) duration.TotalMinutes;
-        case TimeUnit.Nanoseconds:
-          return (long) duration.TotalSeconds*1000000000;
-        case TimeUnit.Seconds:
-          return (long) duration.TotalSeconds;
-        case TimeUnit.Ticks:
-          return duration.Ticks;
-        default:
-          throw new ArgumentOutOfRangeException("unit");
+      /// <summary>
+      /// Converts the specified epoch time to its corresponding local date
+      /// and time.
+      /// </summary>
+      /// <param name="timestamp">
+      /// A Unix epoch time.
+      /// </param>
+      /// <returns>
+      /// The local time representation of the specified unix epoch
+      /// time.
+      /// </returns>
+      /// <remarks>
+      /// The returned date time represents a local time. To convert to a
+      /// Coordinated Universal Time (UTC) use the
+      /// <see cref="FromUnixEpoch(long, DateTimeKind)"/> overload
+      /// </remarks>
+      public static DateTime FromUnixEpoch(this long timestamp) {
+        return FromUnixEpoch(timestamp, DateTimeKind.Local);
+      }
+
+      /// <summary>
+      /// Converts the specified epoch time to its corresponding date and time
+      /// using the given date time kind.
+      /// </summary>
+      /// <param name="timestamp">
+      /// A Unix epoch time.
+      /// </param>
+      /// <returns>
+      /// The <see cref="DateTime"/> representation of the specified unix epoch
+      /// time.
+      /// </returns>
+      /// <remarks>
+      /// If <paramref name="kind"/> is set to
+      /// <see cref="DateTimeKind.Unspecified"/> the
+      /// <see cref="DateTimeKind.Local"/> will be used.
+      /// </remarks>
+      public static DateTime FromUnixEpoch(this long timestamp,
+        DateTimeKind kind) {
+        var date = epoch.AddSeconds(timestamp);
+        return kind == DateTimeKind.Utc ? date : date.ToLocalTime();
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// seconds units.
+      /// </summary>
+      /// <returns></returns>
+      [Obsolete("Use ToMilliseconds instead", true)]
+      public static long ToMillis(long duration, TimeUnit unit) {
+        return ToMilliseconds(duration, unit);
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// seconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToMilliseconds(this long duration, TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Nanoseconds:
+            return duration/(C3/C0);
+
+          case TimeUnit.Ticks:
+            return duration/(C3/C1);
+
+          case TimeUnit.Microseconds:
+            return duration/(C3/C2);
+
+          case TimeUnit.Milliseconds:
+            return duration;
+
+          case TimeUnit.Seconds:
+            return x(duration, C4/C3, MAX/(C4/C3));
+
+          case TimeUnit.Minutes:
+            return x(duration, C5/C3, MAX/(C5/C3));
+
+          case TimeUnit.Hours:
+            return x(duration, C6/C3, MAX/(C6/C3));
+
+          case TimeUnit.Days:
+            return x(duration, (C7/C3), MAX/(C7/C3));
+        }
+        throw new ArgumentOutOfRangeException("unit");
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToSeconds(this long duration, TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Nanoseconds:
+            return duration/(C4/C0);
+
+          case TimeUnit.Ticks:
+            return duration/(C4/C1);
+
+          case TimeUnit.Microseconds:
+            return duration/(C4/C2);
+
+          case TimeUnit.Milliseconds:
+            return duration/(C4/C3);
+
+          case TimeUnit.Seconds:
+            return duration;
+
+          case TimeUnit.Minutes:
+            return x(duration, C5/C4, MAX/(C5/C4));
+
+          case TimeUnit.Hours:
+            return x(duration, C6/C4, MAX/(C6/C4));
+
+          case TimeUnit.Days:
+            return x(duration, C7/C4, MAX/(C7/C4));
+        }
+        throw new ArgumentOutOfRangeException("unit");
+      }
+
+      /// <summary>
+      /// Gets the name of the given <see cref="TimeUnit"/>.
+      /// </summary>
+      /// <param name="unit">
+      /// THe <see cref="TimeUnit"/> to get the name.
+      /// </param>
+      public static string Name(this TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Days:
+            return "Days";
+          case TimeUnit.Hours:
+            return "Hours";
+          case TimeUnit.Microseconds:
+            return "Microseconds";
+          case TimeUnit.Milliseconds:
+            return "Milliseconds";
+          case TimeUnit.Minutes:
+            return "Minutes";
+          case TimeUnit.Nanoseconds:
+            return "Nanoseconds";
+          case TimeUnit.Seconds:
+            return "Seconds";
+          case TimeUnit.Ticks:
+            return "Ticks";
+          default:
+            throw new ArgumentOutOfRangeException("unit");
+        }
+      }
+
+      /// <summary>
+      /// Converts a <see cref="TimeSpan"/> to the <paramref name="unit"/>.
+      /// </summary>
+      /// <param name="duration">
+      /// The duration to be converted.
+      /// </param>
+      /// <param name="unit">
+      /// The unit which <paramref name="duration"/> should be converted to.
+      /// </param>
+      public static long ToUnit(this TimeSpan duration, TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Days:
+            return (long) duration.TotalDays;
+          case TimeUnit.Hours:
+            return (long) duration.Hours;
+          case TimeUnit.Microseconds:
+            return (long) duration.TotalSeconds*1000000;
+          case TimeUnit.Milliseconds:
+            return (long) duration.TotalMilliseconds;
+          case TimeUnit.Minutes:
+            return (long) duration.TotalMinutes;
+          case TimeUnit.Nanoseconds:
+            return (long) duration.TotalSeconds*1000000000;
+          case TimeUnit.Seconds:
+            return (long) duration.TotalSeconds;
+          case TimeUnit.Ticks:
+            return duration.Ticks;
+          default:
+            throw new ArgumentOutOfRangeException("unit");
+        }
       }
     }
   }

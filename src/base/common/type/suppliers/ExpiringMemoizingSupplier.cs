@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Nohros.Concurrent;
+using Nohros.Extensions.Time;
 
 namespace Nohros
 {
@@ -37,7 +38,7 @@ namespace Nohros
       }
 
       supplier_ = supplier;
-      duration_nanos_ = TimeUnitHelper.ToNanos(duration, unit);
+      duration_nanos_ = duration.ToNanos(unit);
       expiration_nanos_ = new AtomicLong(0);
       mutex_ = new object();
     }
