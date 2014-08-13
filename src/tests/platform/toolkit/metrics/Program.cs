@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Nohros.Concurrent;
 using Nohros.Extensions;
@@ -11,7 +12,6 @@ namespace Nohros.Metrics.Tests
 {
   public class Program
   {
-    static long count_ ;
     public static void Main(string[] args) {
       var test = new Test();
       var watch = new Stopwatch();
@@ -25,13 +25,13 @@ namespace Nohros.Metrics.Tests
         Console.WriteLine("With {0} threads:{1}".Fmt(p, measures.Average()));
       }
       Console.WriteLine("Done");
-      Console.WriteLine(count_);
+      Console.WriteLine();
       Console.ReadLine();
     }
 
     public class Test
     {
-      Mailbox<int> mailbox_1_;
+      Mailbox<Action> mailbox_1_;
       ConcurrentQueue<int> concurrent_;
       readonly AutoResetEvent sync_;
 
@@ -39,20 +39,22 @@ namespace Nohros.Metrics.Tests
         sync_ = new AutoResetEvent(false);
       }
 
+      SemaphoreSlim semaphore_;
       public void Run(Stopwatch watch, int concurrency) {
-        mailbox_1_ = new Mailbox<int>(message => { });
-        //concurrent_ = new ConcurrentQueue<int>();
+        mailbox_1_ = new Mailbox<Action>(message => {});
+        concurrent_ = new ConcurrentQueue<int>();
+        semaphore_ = new SemaphoreSlim(concurrency);
 
         for (int i = 0; i < concurrency - 1; i++) {
           new BackgroundThreadFactory()
-            .CreateThread(Loop)
-            .Start();
+            .CreateThread(new ParameterizedThreadStart(Loop))
+            .Start(concurrency);
         }
         //mailbox_1_.Send(() => Start(watch));
         Start(watch);
-        Loop();
+        Loop(concurrency);
+        semaphore_.Wait();
         Stop(watch);
-        mailbox_1_.Shutdown();
         //mailbox_1_.Send(() => Stop(watch));
         //sync_.WaitOne();
       }
@@ -66,13 +68,49 @@ namespace Nohros.Metrics.Tests
         sync_.Set();
       }
 
-      void Loop() {
-        for (int i = 0; i < 10000000; i++) {
-          mailbox_1_.Send(i);
-          //Interlocked.Increment(ref count_);
-          //Interlocked.Increment(ref count_);
-          //Interlocked.Increment(ref count_);
+      void Loop(object threads) {
+        semaphore_.Wait();
+        for (int i = 0; i < 10000000/(int)threads; i++) {
+          UpdateAsync(i);
+          //UpdateAtomic(i);
+          //Update(i);
+          //Interlocked.CompareExchange(ref max_, i, i-1);
+          //Interlocked.Increment(ref max_);
+          //Interlocked.Increment(ref max_);
           //concurrent_.Enqueue(i);
+        }
+        semaphore_.Release();
+      }
+
+      long max_ = 0;
+
+      void UpdateAsync(long v) {
+        mailbox_1_.Send(() => Update(v));
+      }
+
+      struct Param {
+        public int method;
+        public long value;
+      }
+
+      void Run(Param param) {
+        switch (param.method) {
+          case 0:
+            Update(param.value);
+            break;
+        }
+      }
+
+      void Update(long v) {
+        max_ += v;
+      }
+
+      void UpdateAtomic(long v) {
+        long value = Interlocked.Read(ref max_);
+        long new_value = value + v;
+        while (Interlocked.CompareExchange(ref max_, new_value, value) != value) {
+          value = Interlocked.Read(ref max_);
+          new_value = value + v;
         }
       }
     }

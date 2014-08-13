@@ -1,50 +1,50 @@
 ﻿using System;
 using NUnit.Framework;
-using Nohros.Concurrent;
 
-namespace Nohros.Metrics
+namespace Nohros.Metrics.Tests
 {
-  [TestFixture]
-  public class AsyncCounterTest
+  public class CounterTest
   {
     [Test]
     public void should_start_counting_at_zero() {
-      var counter = new AsyncCounter();
-      long count = -1;
-      counter.GetCount((l, timestamp) => count = l);
+      var counter = new Counter(new MetricConfig("counter1"));
+      double count = Testing.Sync(counter, counter.GetMeasure);
       Assert.That(count, Is.EqualTo(0));
     }
 
     [Test]
     public void should_increment_counter_by_one() {
-      var counter = new AsyncCounter();
-      long count = 9;
-      counter.Increment(c => count = c.Count);
-      Assert.That(count, Is.EqualTo(1));
+      var counter = new Counter(new MetricConfig("counter1"), 9);
+      counter.Increment();
+
+      double count = Testing.Sync(counter, counter.GetMeasure);
+
+      Assert.That(count, Is.EqualTo(10));
     }
 
     [Test]
     public void should_increment_counter_by_given_delta() {
-      var counter = new AsyncCounter();
-      long count = 3;
-      counter.Increment(15, c => count = c.Count);
+      var counter = new Counter(new MetricConfig("counter1"));
+      counter.Increment(15);
+
+      double count = Testing.Sync(counter, counter.GetMeasure);
       Assert.That(count, Is.EqualTo(15));
     }
 
     [Test]
     public void should_decrement_counter_by_one() {
-      var counter = new AsyncCounter();
-      long count = 10;
-      counter.Decrement(c => count = c.Count);
-      Assert.That(count, Is.EqualTo(-1));
+      var counter = new Counter(new MetricConfig("counter1"), 10);
+      counter.Decrement();
+      double count = Testing.Sync(counter, counter.GetMeasure);
+      Assert.That(count, Is.EqualTo(10 - 1));
     }
 
     [Test]
     public void should_decrement_counter_by_given_delta() {
-      var counter = new AsyncCounter();
-      long count = 15;
-      counter.Decrement(12, c => count = c.Count);
-      Assert.That(count, Is.EqualTo(-12));
+      var counter = new Counter(new MetricConfig("counter1"), 15);
+      counter.Decrement(12);
+      double count = Testing.Sync(counter, counter.GetMeasure);
+      Assert.That(count, Is.EqualTo(15 - 12));
     }
   }
 }

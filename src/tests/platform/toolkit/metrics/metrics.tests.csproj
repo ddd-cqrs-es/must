@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nohros.Metrics.Tests</RootNamespace>
-    <AssemblyName>nohros.toolkit.metrics.tests</AssemblyName>
+    <AssemblyName>nohros.metrics.tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -40,16 +40,21 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AsyncTimerTests.cs" />
-    <Compile Include="CallableGaugeTests.cs" />
-    <Compile Include="CounterTest.cs" />
-    <Compile Include="DottedMetricNameTests.cs" />
-    <Compile Include="HistogramTests.cs" />
-    <Compile Include="ListClock.cs" />
-    <Compile Include="ManualMeterTests.cs" />
-    <Compile Include="MeterTests.cs" />
+    <Compile Include="CallableGaugeTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CounterTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExponentialWeightedMovingAverageTest.cs" />
+    <Compile Include="MaxGaugeTests.cs" />
+    <Compile Include="MetricsConfigTest.cs" />
+    <Compile Include="MinGaugeTests.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="TimerTests.cs" />
+    <Compile Include="Testing.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UniformResevoirTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.ServiceLocation">
