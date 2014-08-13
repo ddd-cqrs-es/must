@@ -19,16 +19,15 @@ namespace Nohros.Metrics
   /// </remarks>
   public class ExponentiallyDecayingResevoir : IResevoir
   {
-    const long kRescaleThreshold = 3600000000000;
+    const long kRescaleThreshold = 36000000000; // 1 hour ticks
     const int kDefaultSampleSize = 1028;
     const double kDefaultAlpha = 0.015;
 
     readonly double alpha_;
     readonly Clock clock_;
-    readonly AndersonTree<double, int> priorities_;
+    readonly AndersonTree<double, long> priorities_;
     readonly Random rand_;
-    readonly int reservoir_upper_limit_;
-    readonly long[] resevoir_;
+    //readonly long[] resevoir_;
     readonly int resevoir_size_;
     int count_;
     long next_scale_time_;
@@ -98,10 +97,9 @@ namespace Nohros.Metrics
       next_scale_time_ = 0;
       alpha_ = alpha;
       resevoir_size_ = resevoir_size;
-      reservoir_upper_limit_ = resevoir_size - 1;
-      priorities_ = new AndersonTree<double, int>();
-      resevoir_ = new long[resevoir_size];
-      start_time_ = clock_.Tick;
+      priorities_ = new AndersonTree<double, long>();
+      //resevoir_ = new long[resevoir_size];
+      start_time_ = TimeInSeconds(clock_.Tick);
       next_scale_time_ = clock_.Tick + kRescaleThreshold;
     }
 
@@ -113,8 +111,11 @@ namespace Nohros.Metrics
     public Snapshot Snapshot {
       get {
         int size = Size;
-        var resevoir = new long[size];
-        Array.Copy(resevoir_, resevoir, size);
+        var resevoir = new List<long>(size);
+        priorities_.InOrderTreeWalk(node => {
+          resevoir.Add(node.Value);
+          return true;
+        });
         return new Snapshot(resevoir);
       }
     }
@@ -131,29 +132,24 @@ namespace Nohros.Metrics
     /// <param name="timestamp">The epoch timestamp of <paramref name="value"/>
     /// in seconds.</param>
     public void Update(long value, long timestamp) {
+      RescaleIfNeeded();
+
       double priority = Priority(timestamp);
 
       // Fills the resevoir with the first "m" values and keep elements
       // with the greatest priorities in the resvoir.
-      if (count_ <= reservoir_upper_limit_) {
-        priorities_[priority] = count_;
-        resevoir_[count_++] = value;
+      if (++count_ <= resevoir_size_) {
+        priorities_[priority] = value;
+        //resevoir_[count_ - 1] = value;
       } else {
-        KeyValuePair<double, int> first = priorities_.First;
+        KeyValuePair<double, long> first = priorities_.First;
         if (first.Key < priority) {
           // replace the element associated with the smallest key by the
           // sampled value.
           priorities_.Remove(first.Key);
           priorities_[priority] = first.Value;
-          resevoir_[first.Value] = value;
+          //resevoir_[first.Value] = value;
         }
-      }
-
-      // If the current landmark becomes old rescale the sample values
-      // using a new landmark.
-      long now = clock_.Tick;
-      if (now >= next_scale_time_) {
-        Rescale(now);
       }
     }
 
@@ -162,8 +158,17 @@ namespace Nohros.Metrics
       get { return clock_.Tick; }
     }
 
+    void RescaleIfNeeded() {
+      // If the current landmark becomes old rescale the sample values
+      // using a new landmark.
+      long now = clock_.Tick;
+      if (now >= next_scale_time_) {
+        Rescale(now);
+      }
+    }
+
     double Priority(long timestamp) {
-      return Weight(timestamp - start_time_)/rand_.NextDouble();
+      return Weight(TimeInSeconds(timestamp) - start_time_)/rand_.NextDouble();
     }
 
     /// <summary>
@@ -195,19 +200,26 @@ namespace Nohros.Metrics
     void Rescale(long now) {
       next_scale_time_ = now + kRescaleThreshold;
       long old_start_time = start_time_;
-      start_time_ = clock_.Tick;
+      start_time_ = TimeInSeconds(clock_.Tick);
 
-      KeyValuePair<double, int>[] priorities = priorities_.ToArray();
-      foreach (KeyValuePair<double, int> priority in priorities) {
+      KeyValuePair<double, long>[] priorities = priorities_.ToArray();
+      foreach (KeyValuePair<double, long> priority in priorities) {
         priorities_.Remove(priority.Key);
         double new_priority = priority.Key*
           Math.Exp(-alpha_*(start_time_ - old_start_time));
         priorities_[new_priority] = priority.Value;
       }
+
+      // make sure the counter is in sync with the number of stored samples.
+      count_ = priorities_.Count;
     }
 
     double Weight(long t) {
       return Math.Exp(alpha_*t);
+    }
+
+    long TimeInSeconds(long ticks) {
+      return TimeUnitHelper.ToSeconds(ticks, TimeUnit.Ticks);
     }
   }
 }
