@@ -30,7 +30,6 @@ namespace Nohros.Concurrent
     const string kClassName = "Nohros.Concurrent.NonReentrantSchedule";
 
     readonly TimeSpan interval_;
-    readonly bool use_thread_pool_;
     readonly ManualResetEvent signaler_;
     bool already_started_;
     Action<object> task_;
@@ -39,9 +38,8 @@ namespace Nohros.Concurrent
     /// Initializes a new instance of the <see cref="NonReentrantSchedule"/>
     /// class by using the given interval.
     /// </summary>
-    NonReentrantSchedule(TimeSpan interval, bool use_thread_pool = false) {
+    NonReentrantSchedule(TimeSpan interval) {
       interval_ = interval;
-      use_thread_pool_ = use_thread_pool;
       signaler_ = new ManualResetEvent(false);
       already_started_ = false;
       task_ = null;
@@ -72,7 +70,13 @@ namespace Nohros.Concurrent
     /// <param name="task">
     /// The action that should run at the associated interval.
     /// </param>
-    public void Runnable(Action task) {
+    /// <param name="use_thread_pool">
+    /// A value that inidcates if the task should be executed in a thread
+    /// from the <see cref="ThreadPool"/> or in a dedicated thread; should
+    /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
+    /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
+    /// </param>
+    public void Runnable(Action task, bool use_thread_pool = false) {
       Runnable(obj => task(), null);
     }
 
@@ -83,15 +87,23 @@ namespace Nohros.Concurrent
     /// The action that should run at the associated interval.
     /// </param>
     /// <param name="state">
+    /// An object containing data to be used bu the scheduled task.
     /// </param>
-    public void Runnable(Action<object> task, object state) {
+    /// <param name="use_thread_pool">
+    /// A value that inidcates if the task should be executed in a thread
+    /// from the <see cref="ThreadPool"/> or in a dedicated thread; should
+    /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
+    /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
+    /// </param>
+    public void Runnable(Action<object> task, object state,
+      bool use_thread_pool = false) {
       if (already_started_) {
         throw new InvalidOperationException("The task is already defined.");
       }
       already_started_ = true;
       task_ = task;
 
-      if (!use_thread_pool_) {
+      if (!use_thread_pool) {
         new BackgroundThreadFactory()
           .CreateThread(ThreadMain)
           .Start(state);
