@@ -65,19 +65,6 @@ namespace Nohros.Concurrent
     /// <param name="task">
     /// The action that should run at the associated interval.
     /// </param>
-    [Obsolete(
-      "For .NET 4.0 this method is obsolete, use the Runnable(Action) method instead"
-      , false)]
-    public void Runnable(RunnableDelegate task) {
-      Runnable(obj => task(), null);
-    }
-
-    /// <summary>
-    /// Defines the action that should run at the associated interval.
-    /// </summary>
-    /// <param name="task">
-    /// The action that should run at the associated interval.
-    /// </param>
     public void Runnable(Action task) {
       Runnable(obj => task(), null);
     }
