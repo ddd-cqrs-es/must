@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
+using Nohros.Extensions;
 using Nohros.Logging;
+using Nohros.Resources;
 
 namespace Nohros.Concurrent
 {
@@ -17,14 +19,18 @@ namespace Nohros.Concurrent
   /// The tasks runs in a background thread.
   /// </para>
   /// <para>
-  /// Any unhandled exception is logged through the configured
-  /// <see cref="MustLogger"/> and swallowed. Exceptions raised by one task
-  /// does not stops the scheduling.
+  /// Any unhandled exception is catched and published through the
+  /// <see cref="ExceptionThrown"/> event. If that are no subscribers to the
+  /// <see cref="ExceptionThrown"/> event, the exception will be logged
+  /// through the configured <see cref="MustLogger"/> and swallowed.
   /// </para>
   /// </remarks>
   public class NonReentrantSchedule
   {
+    const string kClassName = "Nohros.Concurrent.NonReentrantSchedule";
+
     readonly TimeSpan interval_;
+    readonly bool use_thread_pool_;
     readonly ManualResetEvent signaler_;
     bool already_started_;
     Action<object> task_;
@@ -33,8 +39,9 @@ namespace Nohros.Concurrent
     /// Initializes a new instance of the <see cref="NonReentrantSchedule"/>
     /// class by using the given interval.
     /// </summary>
-    NonReentrantSchedule(TimeSpan interval) {
+    NonReentrantSchedule(TimeSpan interval, bool use_thread_pool = false) {
       interval_ = interval;
+      use_thread_pool_ = use_thread_pool;
       signaler_ = new ManualResetEvent(false);
       already_started_ = false;
       task_ = null;
@@ -84,17 +91,60 @@ namespace Nohros.Concurrent
       already_started_ = true;
       task_ = task;
 
-      new BackgroundThreadFactory()
-        .CreateThread(ThreadMain)
-        .Start(state);
+      if (!use_thread_pool_) {
+        new BackgroundThreadFactory()
+          .CreateThread(ThreadMain)
+          .Start(state);
+      } else {
+        ThreadPool
+          .RegisterWaitForSingleObject(signaler_, ThreadPoolMain, state,
+            interval_, true);
+      }
     }
 
+    void ThreadPoolMain(object state, bool timed_out) {
+      // Execute the task only if the handle has timed out, otherwise the
+      // scheduler is stopped.
+      if (timed_out) {
+        Run(state);
+
+        ThreadPool
+          .RegisterWaitForSingleObject(signaler_, ThreadPoolMain, state,
+            interval_, true);
+      }
+    }
 
     void ThreadMain(object obj) {
       while (!signaler_.WaitOne(interval_)) {
-        task_(obj);
+        Run(obj);
       }
     }
+
+    void Run(object state) {
+      try {
+        while (!signaler_.WaitOne(interval_)) {
+          task_(state);
+        }
+      } catch (Exception e) {
+        OnExceptionThrown(e);
+      }
+    }
+
+    void OnExceptionThrown(Exception exception) {
+      if (ExceptionThrown != null) {
+        ExceptionThrown(exception);
+      } else {
+        MustLogger.ForCurrentProcess.Error(
+          StringResources.Log_ThrowsException.Fmt("Scheduled Task",
+            kClassName), exception);
+      }
+    }
+
+    /// <summary>
+    /// Raised when an exception is thrown while executing the scheduled
+    /// task.
+    /// </summary>
+    public event Action<Exception> ExceptionThrown;
 
     /// <summary>
     /// Stops scheduling tasks and returns an <seealso cref="WaitHandle"/> that
