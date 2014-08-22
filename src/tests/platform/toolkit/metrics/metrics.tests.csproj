@@ -53,6 +53,7 @@
     <Compile Include="MetricsConfigTest.cs" />
     <Compile Include="MinGaugeTests.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="SnapshotTests.cs" />
     <Compile Include="StepClock.cs" />
     <Compile Include="Testing.cs">
       <SubType>Code</SubType>
