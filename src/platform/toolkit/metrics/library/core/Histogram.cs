@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nohros.Concurrent;
-using Nohros.Extensions;
 
 namespace Nohros.Metrics
 {
@@ -172,7 +171,7 @@ namespace Nohros.Metrics
       get {
         Snapshot snapshot = resevoir_.Snapshot;
         var metrics = new IMetric[gauges_.Count];
-        for (int i = gauges_.Count - 1; i < 0; i++) {
+        for (int i = 0; i < gauges_.Count; i++) {
           metrics[i] = gauges_[i].Wrap(snapshot);
         }
         return metrics;

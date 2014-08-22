@@ -53,7 +53,7 @@ namespace Nohros.Metrics
     /// </summary>
     /// <param name="values">An unordered set of values in the resevoir.</param>
     public Snapshot(IEnumerable<long> values) {
-      values_ = values.ToArray();
+      values_ = values.OrderBy(v => v).ToArray();
     }
 
     /// <summary>

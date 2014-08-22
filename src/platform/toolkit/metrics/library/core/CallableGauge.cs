@@ -3,7 +3,7 @@
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// A <see cref="IGauge{T}"/> that computes its value using a
+  /// A <see cref="IGauge"/> that computes its value using a
   /// <see cref="Func{T}"/>.
   /// </summary>
   public class CallableGauge : AbstractMetric, IGauge

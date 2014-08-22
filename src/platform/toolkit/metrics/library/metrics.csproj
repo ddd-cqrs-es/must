@@ -91,6 +91,25 @@
     <Compile Include="core\UniformResevoir.cs" />
     <Compile Include="core\StopwatchClock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="reporting\AbstractPollingReporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="reporting\ForwarderReporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="reporting\IMetricsReporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="reporting\IPollingMetricsReporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="reporting\MetricReported.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="reporting\MetricsReportCallback.cs" />
+    <Compile Include="reporting\NOPMetricsReporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
