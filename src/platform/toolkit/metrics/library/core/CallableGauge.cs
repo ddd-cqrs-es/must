@@ -53,12 +53,11 @@ namespace Nohros.Metrics
     /// </param>
     public CallableGauge(MetricConfig config, Func<double> callable)
       : base(config) {
-      DateTime now = DateTime.Now;
-      callable_ = () => CreateMeasure(callable(), now);
+      callable_ = () => CreateMeasure(callable());
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute(DateTime timestamp) {
+    protected internal override Measure Compute() {
       return callable_();
     }
   }

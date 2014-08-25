@@ -45,13 +45,12 @@ namespace Nohros.Metrics
     /// <inheritdoc/>
     public virtual void GetMeasure(Action<Measure> callback) {
       DateTime now = DateTime.Now;
-      mailbox_.Send(() => callback(Compute(now)));
+      mailbox_.Send(() => callback(Compute()));
     }
 
     /// <inheritdoc/>
     public virtual void GetMeasure<T>(Action<Measure, T> callback, T context) {
-      DateTime now = DateTime.Now;
-      mailbox_.Send(() => callback(Compute(now), context));
+      mailbox_.Send(() => callback(Compute(), context));
     }
 
     /// <summary>
@@ -61,8 +60,8 @@ namespace Nohros.Metrics
     /// <returns>
     /// A <see cref="Measure"/> containg the current metric's value.
     /// </returns>
-    protected virtual Measure CreateMeasure(double measure, DateTime timestamp) {
-      return new Measure(Config, measure, timestamp);
+    protected virtual Measure CreateMeasure(double measure) {
+      return new Measure(Config, measure);
     }
 
     /// <summary>
@@ -71,14 +70,7 @@ namespace Nohros.Metrics
     /// <returns>
     /// A <see cref="Measure"/> containg the current metric's value.
     /// </returns>
-    /// <param name="timestamp">
-    /// The date and time when the measure was requested. This value
-    /// represents the date and time when the <see cref="GetMeasure"/> method
-    /// was called and not the time when the measured was comptued. This
-    /// allows the measure to be delayed computed without losing the timing
-    /// properties.
-    /// </param>
-    protected internal abstract Measure Compute(DateTime timestamp);
+    protected internal abstract Measure Compute();
 
     /// <inheritdoc/>
     public MetricConfig Config { get; set; }

@@ -11,8 +11,11 @@ namespace Nohros.Metrics.Reporting
     /// Observe the most recent measure of a metric.
     /// </summary>
     /// <param name="measure">
-    /// The most recent measure of a metrics.
+    /// The most recent measure of a metric.
     /// </param>
-    void Observe(Measure measure);
+    /// <param name="timestamp">
+    /// The date and time when the measure was computed.
+    /// </param>
+    void Observe(Measure measure, DateTime timestamp);
   }
 }

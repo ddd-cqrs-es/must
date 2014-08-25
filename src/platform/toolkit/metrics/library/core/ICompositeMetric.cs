@@ -8,7 +8,7 @@ namespace Nohros.Metrics
   /// </summary>
   /// <seealso cref="Timer"/>
   /// <seealso cref="Histogram"/>
-  public interface ICompositeMetric : IMetric
+  public interface ICompositeMetric : IMetric, IEnumerable<IMetric>
   {
     /// <summary>
     /// Gets the list of sub-metrics for this composite.

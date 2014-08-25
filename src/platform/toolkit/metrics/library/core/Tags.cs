@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -78,6 +79,7 @@ namespace Nohros.Metrics
     /// </summary>
     public Tags() {
       tags_ = new HashSet<Tag>();
+      Id = Guid.NewGuid();
     }
 
     /// <summary>
@@ -136,5 +138,16 @@ namespace Nohros.Metrics
     public static Tags Empty {
       get { return new Tags(Enumerable.Empty<Tag>()); }
     }
+
+    /// <summary>
+    /// Gets a <see cref="Guid"/> that uniquely identifies the
+    /// <see cref="Tags"/> object.
+    /// </summary>
+    /// <remarks>
+    /// This <see cref="Id"/> should be used only as the <see cref="Tags"/>
+    /// object id. This field should not be used to compare two tags
+    /// for equality, because each object will have your own id.
+    /// </remarks>
+    public Guid Id { get; private set; }
   }
 }

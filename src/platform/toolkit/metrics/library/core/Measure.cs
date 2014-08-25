@@ -17,13 +17,9 @@ namespace Nohros.Metrics
     /// <param name="config">
     /// The <see cref="MetricConfig"/> object that has produced the measure.
     /// </param>
-    /// <param name="timestamp">
-    /// The date and time when the measure was collected.
-    /// </param>
-    public Measure(MetricConfig config, double value, DateTime timestamp) {
+    public Measure(MetricConfig config, double value) {
       MetricConfig = config;
       Value = value;
-      Timestamp = timestamp;
     }
 
     /// <summary>
@@ -47,10 +43,5 @@ namespace Nohros.Metrics
     /// Gets the instantaneous metric's value
     /// </summary>
     public double Value { get; private set; }
-
-    /// <summary>
-    /// Gets the point in time when the metric was sampled.
-    /// </summary>
-    public DateTime Timestamp { get; private set; }
   }
 }

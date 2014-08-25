@@ -46,9 +46,9 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute(DateTime timestamp) {
+    protected internal override Measure Compute() {
       long v = Interlocked.Read(ref value_);
-      return CreateMeasure(v == long.MaxValue ? 0L : v, timestamp);
+      return CreateMeasure(v == long.MaxValue ? 0L : v);
     }
   }
 }

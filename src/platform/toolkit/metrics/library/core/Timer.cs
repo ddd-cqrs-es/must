@@ -133,8 +133,8 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute(DateTime timestamp) {
-      return CreateMeasure(metrics_.Count, timestamp);
+    protected internal override Measure Compute() {
+      return CreateMeasure(metrics_.Count);
     }
 
     void Update(TimeSpan duration, long timestamp) {

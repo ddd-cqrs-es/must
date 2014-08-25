@@ -67,7 +67,6 @@
     <Compile Include="core\MetricConfig.cs" />
     <Compile Include="core\Tag.cs" />
     <Compile Include="core\ITimer.cs" />
-    <Compile Include="core\MetricPredicate.cs" />
     <Compile Include="core\MetricReportCallback.cs" />
     <Compile Include="core\MetricValueSet.cs" />
     <Compile Include="core\Measure.cs" />
@@ -91,11 +90,13 @@
     <Compile Include="core\TimerContext.cs" />
     <Compile Include="core\UniformResevoir.cs" />
     <Compile Include="core\StopwatchClock.cs" />
+    <Compile Include="AppMetrics.cs" />
     <Compile Include="MetricsRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="reporting\IMeasureObserver.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="reporting\MetricsRegistryPoller.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

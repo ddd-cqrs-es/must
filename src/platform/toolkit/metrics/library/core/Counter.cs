@@ -65,8 +65,8 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute(DateTime timestamp) {
-      return CreateMeasure(count_, timestamp);
+    protected internal override Measure Compute() {
+      return CreateMeasure(count_);
     }
 
     void Update(long delta) {
