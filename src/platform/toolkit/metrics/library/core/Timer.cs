@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -11,7 +12,7 @@ namespace Nohros.Metrics
   /// A timer metric which aggregates timing durations and provides duration
   /// statistics, plus throughput statistics via <see cref="Meter"/>.
   /// </summary>
-  public class Timer : AbstractMetric, ITimer, ICompositeMetric
+  public class Timer : AbstractMetric, ICompositeMetric, ITimer
   {
     public class Builder
     {
@@ -125,6 +126,16 @@ namespace Nohros.Metrics
     /// </returns>
     public TimerContext Time() {
       return new TimerContext(this);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<IMetric> GetEnumerator() {
+      return metrics_.GetEnumerator();
+    }
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() {
+      return GetEnumerator();
     }
 
     /// <inheritdoc/>

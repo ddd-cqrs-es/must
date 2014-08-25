@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Nohros.Concurrent;
 
@@ -176,6 +177,14 @@ namespace Nohros.Metrics
         }
         return metrics;
       }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() {
+      return GetEnumerator();
+    }
+
+    public IEnumerator<IMetric> GetEnumerator() {
+      return Metrics.GetEnumerator();
     }
 
     /// <inheritdoc/>

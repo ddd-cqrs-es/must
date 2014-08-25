@@ -8,49 +8,25 @@ namespace Nohros.Metrics.Reporting
   /// <see cref="IMetricsRegistry"/> on demand and sends the measures to all
   /// associated observers.
   /// </summary>
-  public class MetricsRegistryPoller
+  public class MetricsRegistryPoller : IMetricsPoller
   {
-    readonly TimeSpan interval_;
     readonly List<IMeasureObserver> observers_;
     readonly IMetricsRegistry registry_;
 
     /// <summary>
-    /// Initializes a new <see cref="MetricsRegistryPoller"/> class by using
-    /// the default metrics registry and given <paramref name="interval"/>.
-    /// </summary>
-    /// <param name="interval">
-    /// A <see cref="TimeSpan"/> that defines how frequently to poll measures
-    /// and report to observers.
-    /// </param>
-    /// <param name="observers">
-    /// A collection of <see cref="IMeasureObserver"/> objects that will
-    /// receive the measured values on each poll.
-    /// </param>
-    /// <seealso cref="AppMetrics"/>
-    public MetricsRegistryPoller(TimeSpan interval, IMeasureObserver observers)
-      : this(interval, observers, AppMetrics.ForCurrentProcess) {
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="MetricsRegistryPoller"/>
-    /// class by using the given <paramref name="registry"/> and polling
-    /// <paramref name="interval"/>.
+    /// class by using the given <paramref name="registry"/> to be polled.
     /// </summary>
-    /// <param name="interval">
-    /// A <see cref="TimeSpan"/> that defines how frequently to poll measures
-    /// and report to observers.
-    /// </param>
     /// <param name="observers">
     /// A collection of <see cref="IMeasureObserver"/> objects that will
     /// receive the measured values on each poll.
     /// </param>
     /// <param name="registry">
-    /// The <see cref="IMetricsRegistry"/> to be polled at given
-    /// <paramref name="interval"/>.
+    /// The <see cref="IMetricsRegistry"/> to be polled.
     /// </param>
-    public MetricsRegistryPoller(TimeSpan interval, IMeasureObserver observers,
+    public MetricsRegistryPoller(IEnumerable<IMeasureObserver> observers,
       IMetricsRegistry registry) {
-      observers_ = observers;
+      observers_ = new List<IMeasureObserver>(observers);
       registry_ = registry;
     }
 
@@ -59,6 +35,7 @@ namespace Nohros.Metrics.Reporting
     /// a <see cref="IMetricsRegistry"/>.
     /// </summary>
     public void Poll() {
+      Poll(config => true);
     }
 
     /// <summary>
@@ -71,13 +48,14 @@ namespace Nohros.Metrics.Reporting
     /// be fetched.
     /// </param>
     public void Poll(Func<MetricConfig, bool> predicate) {
-      Poll();
+      DateTime now = DateTime.Now;
+      Poll(registry_.Metrics, predicate, now);
     }
 
     void Poll(IEnumerable<IMetric> metrics, Func<MetricConfig, bool> predicate,
       DateTime timestamp) {
       foreach (var metric in metrics) {
-        if (metric is CompositeMetric) {
+        if (metric is ICompositeMetric) {
           Poll((ICompositeMetric) metric, predicate, timestamp);
         } else if (predicate(metric.Config)) {
           metric.GetMeasure(Observe, timestamp);

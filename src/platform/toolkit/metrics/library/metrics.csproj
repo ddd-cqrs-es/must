@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\AbstractMetric.cs" />
-    <Compile Include="core\CompositeMetric.cs" />
     <Compile Include="core\Counter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -96,6 +95,7 @@
     <Compile Include="reporting\IMeasureObserver.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="reporting\IMetricsPoller.cs" />
     <Compile Include="reporting\MetricsRegistryPoller.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

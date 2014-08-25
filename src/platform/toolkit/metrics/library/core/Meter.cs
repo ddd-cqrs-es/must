@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Nohros.Concurrent;
@@ -137,6 +138,17 @@ namespace Nohros.Metrics
       mailbox_.Send(() => Mark(n, timestamp));
     }
 
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() {
+      return GetEnumerator();
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<IMetric> GetEnumerator() {
+      return metrics_.GetEnumerator();
+    }
+
+    /// <inheritdoc/>
     protected internal override Measure Compute() {
       return CreateMeasure(metrics_.Count);
     }
