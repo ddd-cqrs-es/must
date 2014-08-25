@@ -75,6 +75,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="core\Unit.cs" />
+    <Compile Include="IMetricsRegistry.cs" />
     <Compile Include="MetricAddedEventHandler.cs" />
     <Compile Include="core\ExponentialWeightedMovingAverage.cs" />
     <Compile Include="core\ExponentialWeightedMovingAverages.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="core\TimerContext.cs" />
     <Compile Include="core\UniformResevoir.cs" />
     <Compile Include="core\StopwatchClock.cs" />
+    <Compile Include="MetricsRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="reporting\AbstractPollingReporter.cs">
       <SubType>Code</SubType>
@@ -97,17 +99,17 @@
     <Compile Include="reporting\ForwarderReporter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="reporting\IMetricsReporter.cs">
+    <Compile Include="reporting\IMeasureObserver.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="reporting\IPollingMetricsReporter.cs">
+    <Compile Include="reporting\IPollingMeasureObserver.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="reporting\MetricReported.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="reporting\MetricsReportCallback.cs" />
-    <Compile Include="reporting\NOPMetricsReporter.cs">
+    <Compile Include="reporting\NopMeasureObserver.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Resources.Designer.cs">

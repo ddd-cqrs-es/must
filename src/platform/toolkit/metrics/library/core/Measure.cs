@@ -3,7 +3,7 @@
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// Represents the instantaneous value of a metric.
+  /// Represents the instantaneous value of a metric at agiven point in time.
   /// </summary>
   public class Measure
   {
@@ -17,9 +17,13 @@ namespace Nohros.Metrics
     /// <param name="config">
     /// The <see cref="MetricConfig"/> object that has produced the measure.
     /// </param>
-    public Measure(double value, MetricConfig config) {
+    /// <param name="timestamp">
+    /// The date and time when the measure was collected.
+    /// </param>
+    public Measure(MetricConfig config, double value, DateTime timestamp) {
       MetricConfig = config;
       Value = value;
+      Timestamp = timestamp;
     }
 
     /// <summary>
@@ -39,10 +43,14 @@ namespace Nohros.Metrics
     /// <see cref="MetricConfig"/> property to obtain them.
     /// </remarks>
     //public Tags Tags { get; private set; }
-
     /// <summary>
     /// Gets the instantaneous metric's value
     /// </summary>
     public double Value { get; private set; }
+
+    /// <summary>
+    /// Gets the point in time when the metric was sampled.
+    /// </summary>
+    public DateTime Timestamp { get; private set; }
   }
 }

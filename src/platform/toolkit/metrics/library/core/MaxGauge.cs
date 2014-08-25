@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace Nohros.Metrics
 {
@@ -44,9 +45,9 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute() {
+    protected internal override Measure Compute(DateTime timestamp) {
       long v = Interlocked.Read(ref value_);
-      return CreateMeasure(v);
+      return CreateMeasure(v, timestamp);
     }
   }
 }

@@ -137,8 +137,8 @@ namespace Nohros.Metrics
       mailbox_.Send(() => Mark(n, timestamp));
     }
 
-    protected internal override Measure Compute() {
-      throw new NotImplementedException();
+    protected internal override Measure Compute(DateTime timestamp) {
+      return CreateMeasure(metrics_.Count, timestamp);
     }
 
     /// <summary>

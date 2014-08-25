@@ -6,9 +6,9 @@ using System.Threading;
 namespace Nohros.Metrics.Reporting
 {
   /// <summary>
-  /// A <see cref="IPollingMetricsReporter"/> that does nothing.
+  /// A <see cref="IPollingMeasureObserver"/> that does nothing.
   /// </summary>
-  public class NopMetricsReporter : IPollingMetricsReporter
+  public class NopMeasureObserver : IPollingMeasureObserver
   {
     public void Shutdown() {
     }

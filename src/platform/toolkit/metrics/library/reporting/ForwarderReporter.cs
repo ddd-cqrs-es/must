@@ -4,13 +4,13 @@ using System.Threading;
 namespace Nohros.Metrics.Reporting
 {
   /// <summary>
-  /// A <see cref="IPollingMetricsReporter"/> that forwards all its methods to
-  /// another <see cref="IPollingMetricsReporter"/> object.
+  /// A <see cref="IPollingMeasureObserver"/> that forwards all its methods to
+  /// another <see cref="IPollingMeasureObserver"/> object.
   /// </summary>
-  public class ForwarderReporter : IPollingMetricsReporter
+  public class ForwarderReporter : IPollingMeasureObserver
   {
     #region .ctor
-    public ForwarderReporter(IPollingMetricsReporter reporter) {
+    public ForwarderReporter(IPollingMeasureObserver reporter) {
       Reporter = reporter;
     }
     #endregion
@@ -36,6 +36,6 @@ namespace Nohros.Metrics.Reporting
       Reporter.Start(period, unit, predicate);
     }
 
-    public IPollingMetricsReporter Reporter { get; set; }
+    public IPollingMeasureObserver Reporter { get; set; }
   }
 }

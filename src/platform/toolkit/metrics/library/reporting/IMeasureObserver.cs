@@ -2,7 +2,10 @@
 
 namespace Nohros.Metrics.Reporting
 {
-  public interface IMetricsReporter
+  /// <summary>
+  /// A reporter that receives updates about measures.
+  /// </summary>
+  public interface IMeasureObserver
   {
     /// <summary>
     /// Stops the reporter and deallocates any associated resources.

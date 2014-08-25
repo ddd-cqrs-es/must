@@ -19,7 +19,7 @@ namespace Nohros.Metrics
   /// delegate.
   /// </returns>
   /// <remarks>
-  /// This delegate is used by implementations of the IMetricsReporter class
+  /// This delegate is used by implementations of the IMeasureObserver class
   /// to filter metrics while reporting.
   /// </remarks>
   public delegate bool MetricPredicate(MetricConfig config, Measure value);

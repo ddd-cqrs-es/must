@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Nohros.Metrics.Reporting
 {
-  public interface IPollingMetricsReporter : IMetricsReporter
+  public interface IPollingMeasureObserver : IMeasureObserver
   {
     /// <summary>
     /// Starts the reporter polling at the given period.

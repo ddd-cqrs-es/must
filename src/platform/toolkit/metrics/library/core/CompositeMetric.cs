@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -34,8 +35,8 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute() {
-      return CreateMeasure(Metrics.Count);
+    protected internal override Measure Compute(DateTime timestamp) {
+      return CreateMeasure(Metrics.Count, timestamp);
     }
 
     /// <inheritdoc/>

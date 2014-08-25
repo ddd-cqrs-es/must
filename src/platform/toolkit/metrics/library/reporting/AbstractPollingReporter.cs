@@ -4,11 +4,11 @@ using System.Threading;
 namespace Nohros.Metrics.Reporting
 {
   /// <summary>
-  /// Provides a base class for all <see cref="IMetricsReporter"/>
+  /// Provides a base class for all <see cref="IMeasureObserver"/>
   /// implementations which periodically poll registered metrics (e.g., to
   /// send data to another service).
   /// </summary>
-  public abstract class AbstractPollingReporter : IPollingMetricsReporter
+  public abstract class AbstractPollingReporter : IPollingMeasureObserver
   {
     readonly MetricsRegistry registry_;
     System.Threading.Timer timer_;

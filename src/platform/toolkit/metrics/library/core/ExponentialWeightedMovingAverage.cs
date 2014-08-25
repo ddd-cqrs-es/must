@@ -190,24 +190,26 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public override void GetMeasure(Action<Measure> callback) {
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => callback(Compute(timestamp)));
+      long ticks = clock_.Tick;
+      DateTime timestamp = DateTime.Now;
+      mailbox_.Send(() => callback(Compute(ticks, timestamp)));
     }
 
     /// <inheritdoc/>
     public override void GetMeasure<T>(Action<Measure, T> callback, T context) {
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => callback(Compute(timestamp), context));
+      long tick = clock_.Tick;
+      DateTime timestamp = DateTime.Now;
+      mailbox_.Send(() => callback(Compute(tick, timestamp), context));
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute() {
+    protected internal override Measure Compute(DateTime timestamp) {
       throw new NotSupportedException();
     }
 
-    internal Measure Compute(long timestamp) {
-      TickIfNecessary(timestamp);
-      return CreateMeasure(rate_*ticks_per_unit_);
+    internal Measure Compute(long ticks, DateTime timestamp) {
+      TickIfNecessary(ticks);
+      return CreateMeasure(rate_*ticks_per_unit_, timestamp);
     }
 
     /// <summary>
