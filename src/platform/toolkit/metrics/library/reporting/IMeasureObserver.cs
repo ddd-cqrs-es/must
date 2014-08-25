@@ -8,8 +8,11 @@ namespace Nohros.Metrics.Reporting
   public interface IMeasureObserver
   {
     /// <summary>
-    /// Stops the reporter and deallocates any associated resources.
+    /// Observe the most recent measure of a metric.
     /// </summary>
-    void Shutdown();
+    /// <param name="measure">
+    /// The most recent measure of a metrics.
+    /// </param>
+    void Observe(Measure measure);
   }
 }
