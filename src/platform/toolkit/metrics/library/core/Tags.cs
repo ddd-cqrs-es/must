@@ -38,6 +38,9 @@ namespace Nohros.Metrics
       /// The tag's value.
       /// </param>
       public Builder WithTag(string name, string value) {
+        if (name == null || value == null) {
+          throw new ArgumentNullException(name == null ? "name" : "value");
+        }
         tags_.Add(new Tag(name, value));
         return this;
       }
@@ -49,6 +52,9 @@ namespace Nohros.Metrics
       /// The tag to be added.
       /// </param>
       public Builder WithTag(Tag tag) {
+        if (tag == null) {
+          throw new ArgumentNullException("tag");
+        }
         tags_.Add(tag);
         return this;
       }
@@ -149,5 +155,10 @@ namespace Nohros.Metrics
     /// for equality, because each object will have your own id.
     /// </remarks>
     public Guid Id { get; private set; }
+
+
+    public int Count {
+      get { return tags_.Count; }
+    }
   }
 }

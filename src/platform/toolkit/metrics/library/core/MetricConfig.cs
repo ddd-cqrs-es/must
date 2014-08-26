@@ -50,7 +50,10 @@ namespace Nohros.Metrics
     /// </param>
     public MetricConfig(string name, Tags tags) {
       Name = name;
-      Tags = tags;
+      Tags = new Tags.Builder(this)
+        .WithTags(tags)
+        .WithTag("name", Name)
+        .Build();
     }
 
     /// <summary>

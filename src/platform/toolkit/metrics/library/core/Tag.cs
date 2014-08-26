@@ -33,6 +33,9 @@ namespace Nohros.Metrics
     /// The tag's value.
     /// </param>
     public Tag(string name, string value) {
+      if (name == null || value == null) {
+        throw new ArgumentNullException(name == null ? "name" : "value");
+      }
       Name = name;
       Value = value;
     }

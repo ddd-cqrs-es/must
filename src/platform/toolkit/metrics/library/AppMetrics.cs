@@ -3,18 +3,26 @@
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// A singleton <see cref="IMetricsRegistry"/>.
+  /// A singleton <see cref="IMetricsRegistry"/> that fowards its methods to
+  /// another <see cref="IMetricsRegistry"/> and uses the
+  /// <see cref="MetricsRegistry"/> as the default registry.
   /// </summary>
-  /// <remarks>
-  /// A <see cref="MetricsRegistry"/> is used as the default metrics
-  /// registry. If you want to use another <see cref="MetricsRegistry"/>
-  /// implementation, set the value of the property
-  /// <see cref="ForCurrentProcess"/>.
-  /// </remarks>
-  public class AppMetrics
+  public class AppMetrics : ForwardingMetricsRegistry
   {
-    static readonly MetricsRegistry registry_;
+    static AppMetrics() {
+      ForCurrentProcess = new AppMetrics(new MetricsRegistry());
+    }
 
-    public static IMetricsRegistry ForCurrentProcess { get; set; }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppMetrics"/> class
+    /// by using the given registry.
+    /// </summary>
+    public AppMetrics(IMetricsRegistry registry) : base(registry) {
+    }
+
+    /// <summary>
+    /// Gets the current <see cref="IMetricsRegistry"/>.
+    /// </summary>
+    public static AppMetrics ForCurrentProcess { get; set; }
   }
 }

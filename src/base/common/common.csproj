@@ -113,7 +113,6 @@
     <Compile Include="concurrent\IFuture.cs" />
     <Compile Include="concurrent\Mailbox.cs" />
     <Compile Include="concurrent\ThreadPoolExecutor.cs" />
-    <Compile Include="concurrent\YBlockingQueue.cs" />
     <Compile Include="configuration\AbstractConfigurationNode.cs" />
     <Compile Include="configuration\builders\CallableConfigurationBuilder.cs" />
     <Compile Include="configuration\builders\ThrowableConfigurationBuilder.cs" />
@@ -421,7 +420,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

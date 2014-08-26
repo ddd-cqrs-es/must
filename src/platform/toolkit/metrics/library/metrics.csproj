@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppMetrics.cs" />
     <Compile Include="core\AbstractMetric.cs" />
     <Compile Include="core\Counter.cs">
       <SubType>Code</SubType>
@@ -73,6 +74,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="core\Unit.cs" />
+    <Compile Include="ForwardingMetricsRegistry.cs" />
     <Compile Include="IMetricsRegistry.cs" />
     <Compile Include="MetricAddedEventHandler.cs" />
     <Compile Include="core\ExponentialWeightedMovingAverage.cs" />
@@ -89,14 +91,16 @@
     <Compile Include="core\TimerContext.cs" />
     <Compile Include="core\UniformResevoir.cs" />
     <Compile Include="core\StopwatchClock.cs" />
-    <Compile Include="AppMetrics.cs" />
     <Compile Include="MetricsRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="reporting\IMeasureObserver.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="reporting\IMetricsDao.cs" />
     <Compile Include="reporting\IMetricsPoller.cs" />
     <Compile Include="reporting\MetricsRegistryPoller.cs" />
+    <Compile Include="reporting\PollScheduler.cs" />
+    <Compile Include="reporting\SqlMetricsObserver.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
