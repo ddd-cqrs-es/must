@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Caching;
 using Nohros.Caching.Providers;
+using Nohros.Extensions.Time;
 
 namespace Nohros.Caching
 {
@@ -50,8 +51,7 @@ namespace Nohros.Caching
     public void Set(string key, object value, long duration, TimeUnit unit) {
       var policy = new CacheItemPolicy();
       policy.AbsoluteExpiration =
-        DateTimeOffset.Now.AddMilliseconds(
-          TimeUnitHelper.ToMillis(duration, unit));
+        DateTimeOffset.Now.AddMilliseconds(duration.ToMilliseconds(unit));
       memory_cache_.Set(key, value, policy);
     }
 
@@ -63,8 +63,7 @@ namespace Nohros.Caching
     public void Add(string key, object value, long duration, TimeUnit unit) {
       var policy = new CacheItemPolicy();
       policy.AbsoluteExpiration =
-        DateTimeOffset.Now.AddMilliseconds(
-          TimeUnitHelper.ToMillis(duration, unit));
+        DateTimeOffset.Now.AddMilliseconds(duration.ToMilliseconds(unit));
       memory_cache_.Add(key, value, policy);
     }
 
