@@ -76,8 +76,25 @@ namespace Nohros.Concurrent
     /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
     /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
     /// </param>
+    [Obsolete("Use the Run method.", true)]
     public void Runnable(Action task, bool use_thread_pool = false) {
       Runnable(obj => task(), null);
+    }
+
+    /// <summary>
+    /// Defines the action that should run at the associated interval.
+    /// </summary>
+    /// <param name="task">
+    /// The action that should run at the associated interval.
+    /// </param>
+    /// <param name="use_thread_pool">
+    /// A value that inidcates if the task should be executed in a thread
+    /// from the <see cref="ThreadPool"/> or in a dedicated thread; should
+    /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
+    /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
+    /// </param>
+    public void Run(Action task, bool use_thread_pool = false) {
+      Run(obj => task(), null);
     }
 
     /// <summary>
@@ -95,7 +112,27 @@ namespace Nohros.Concurrent
     /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
     /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
     /// </param>
+    [Obsolete("Use the Run method.", true)]
     public void Runnable(Action<object> task, object state,
+      bool use_thread_pool = false) {
+    }
+
+    /// <summary>
+    /// Defines the action that should run at the associated interval.
+    /// </summary>
+    /// <param name="task">
+    /// The action that should run at the associated interval.
+    /// </param>
+    /// <param name="state">
+    /// An object containing data to be used bu the scheduled task.
+    /// </param>
+    /// <param name="use_thread_pool">
+    /// A value that inidcates if the task should be executed in a thread
+    /// from the <see cref="ThreadPool"/> or in a dedicated thread; should
+    /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
+    /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
+    /// </param>
+    public void Run(Action<object> task, object state,
       bool use_thread_pool = false) {
       if (already_started_) {
         throw new InvalidOperationException("The task is already defined.");
