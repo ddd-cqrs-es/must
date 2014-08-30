@@ -50,7 +50,7 @@ namespace Nohros.Metrics
     /// </param>
     public MetricConfig(string name, Tags tags) {
       Name = name;
-      Tags = new Tags.Builder(this)
+      Tags = new Tags.Builder()
         .WithTags(tags)
         .WithTag("name", Name)
         .Build();
@@ -67,14 +67,14 @@ namespace Nohros.Metrics
     /// </returns>
     public MetricConfig WithAdditionalTag(Tag tag) {
       return new MetricConfig(Name,
-        new Tags.Builder(this)
+        new Tags.Builder(Tags)
           .WithTag(tag)
           .Build());
     }
 
     public MetricConfig WithAdditionalTag(string name, string value) {
       return new MetricConfig(Name,
-        new Tags.Builder(this)
+        new Tags.Builder(Tags)
           .WithTag(new Tag(name, value))
           .Build());
     }
@@ -90,7 +90,7 @@ namespace Nohros.Metrics
     /// </returns>
     public MetricConfig WithAdditionalTags(Tags tags) {
       return new MetricConfig(Name,
-        new Tags.Builder(this)
+        new Tags.Builder(Tags)
           .WithTags(tags)
           .Build());
     }
@@ -106,7 +106,7 @@ namespace Nohros.Metrics
     /// </returns>
     public MetricConfig WithAdditionalTags(IEnumerable<Tag> tags) {
       return new MetricConfig(Name,
-        new Tags.Builder(this)
+        new Tags.Builder(Tags)
           .WithTags(tags)
           .Build());
     }

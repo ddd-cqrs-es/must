@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using Nohros.Data.SqlServer;
+using Nohros.Metrics.Reporting;
 
 namespace Nohros.Metrics.Sql
 {

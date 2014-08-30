@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nohros.Metrics
 {
@@ -7,22 +8,34 @@ namespace Nohros.Metrics
   /// another <see cref="IMetricsRegistry"/> and uses the
   /// <see cref="MetricsRegistry"/> as the default registry.
   /// </summary>
-  public class AppMetrics : ForwardingMetricsRegistry
+  public class AppMetrics
   {
     static AppMetrics() {
-      ForCurrentProcess = new AppMetrics(new MetricsRegistry());
+      ForCurrentProcess = new MetricsRegistry();
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppMetrics"/> class
-    /// by using the given registry.
-    /// </summary>
-    public AppMetrics(IMetricsRegistry registry) : base(registry) {
+    /// <inheritdoc/>
+    public static void Register(IMetric metric) {
+      ForCurrentProcess.Register(metric);
     }
+
+    public static void Register(IEnumerable<IMetric> metrics) {
+      foreach (var metric in metrics) {
+        Register(metric);
+      }
+    }
+
+    /// <inheritdoc/>
+    public static void Unregister(IMetric metric) {
+      ForCurrentProcess.Unregister(metric);
+    }
+
+    /// <inheritdoc/>
+    public ICollection<IMetric> Metrics { get; private set; }
 
     /// <summary>
     /// Gets the current <see cref="IMetricsRegistry"/>.
     /// </summary>
-    public static AppMetrics ForCurrentProcess { get; set; }
+    public static IMetricsRegistry ForCurrentProcess { get; set; }
   }
 }

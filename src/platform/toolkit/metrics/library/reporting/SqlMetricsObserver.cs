@@ -73,14 +73,14 @@ namespace Nohros.Metrics.Reporting
       // A matching tags was not found, lets create a new one.
       long tags_id = metrics_dao_.RegisterTags(hash, tags.Count);
       foreach (Tag tag in tags) {
-        metrics_dao_.RegisterTag(tags_id, tag.Name, tag.Value);
+        metrics_dao_.RegisterTag(tag.Name, tag.Value, tags_id);
       }
       return tags_id;
     }
 
     bool IsSameTags(long tags_id, Tags tags) {
       foreach (var tag in tags) {
-        if (!metrics_dao_.ContainsTag(tags_id, tag.Name, tag.Value)) {
+        if (!metrics_dao_.ContainsTag(tag.Name, tag.Value, tags_id)) {
           return false;
         }
       }

@@ -8,12 +8,12 @@ namespace Nohros.Metrics.Reporting
   /// A basic scheduler for polling metrics that fetch metrics using a
   /// dedicated background thread.
   /// </summary>
-  public class ThreadedPollScheduler
+  public class PollScheduler
   {
     readonly IMetricsPoller poller_;
     readonly NonReentrantSchedule scheduler_;
 
-    public ThreadedPollScheduler(IMetricsPoller poller, TimeSpan interval) {
+    public PollScheduler(IMetricsPoller poller, TimeSpan interval) {
       poller_ = poller;
       scheduler_ = NonReentrantSchedule.Every(interval);
     }

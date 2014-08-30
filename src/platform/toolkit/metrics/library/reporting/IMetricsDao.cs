@@ -8,8 +8,8 @@ namespace Nohros.Metrics.Reporting
     IEnumerable<long> GetTagsIds(int hash, int count);
 
     long RegisterTags(int hash, int count);
-    void RegisterTag(long tags_id, string name, string value);
-    bool ContainsTag(long tags_id, string name, string value);
+    void RegisterTag(string name, string value, long tags_id);
+    bool ContainsTag(string name, string value, long tags_id);
     void RegisterMeasure(long tags_id, double value, DateTime timestamp);
   }
 }

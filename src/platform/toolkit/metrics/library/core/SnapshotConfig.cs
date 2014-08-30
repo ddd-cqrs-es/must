@@ -99,6 +99,14 @@ namespace Nohros.Metrics
       }
 
       /// <summary>
+      /// Builds a <see cref="SnapshotConfig"/> using the configured
+      /// definitions.
+      /// </summary>
+      public SnapshotConfig Build() {
+        return new SnapshotConfig(this);
+      }
+
+      /// <summary>
       /// Gets a value indicating whether a count measure should be
       /// computed.
       /// </summary>

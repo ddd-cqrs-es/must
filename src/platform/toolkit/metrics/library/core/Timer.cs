@@ -22,6 +22,7 @@ namespace Nohros.Metrics
         TimeUnit = TimeUnit.Seconds;
         Clock = new StopwatchClock();
         Resevoir = new ExponentiallyDecayingResevoir();
+        SnapshotConfig = new SnapshotConfig.Builder().Build();
       }
 
       public Builder WithResevoir(IResevoir resevoir) {
@@ -47,6 +48,10 @@ namespace Nohros.Metrics
       internal Builder WithMailbox(Mailbox<Action> mailbox) {
         Mailbox = mailbox;
         return this;
+      }
+
+      public Timer Build() {
+        return new Timer(this);
       }
 
       public MetricConfig Config { get; private set; }

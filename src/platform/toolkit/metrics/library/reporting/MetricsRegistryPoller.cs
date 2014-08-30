@@ -13,6 +13,10 @@ namespace Nohros.Metrics.Reporting
     readonly List<IMeasureObserver> observers_;
     readonly IMetricsRegistry registry_;
 
+    public MetricsRegistryPoller(IMeasureObserver observer,
+      IMetricsRegistry registry) : this(new[] {observer}, registry) {
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MetricsRegistryPoller"/>
     /// class by using the given <paramref name="registry"/> to be polled.

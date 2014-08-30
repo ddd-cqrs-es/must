@@ -16,16 +16,34 @@ namespace Nohros.Metrics
       internal readonly List<Tag> tags_;
 
       /// <summary>
-      /// Initializes a new instance of the <see cref="Builder"/> class whose
-      /// tags and name values are copied from the given
-      /// <paramref name="config"/> object.
+      /// Initializes a new instance of the <see cref="Builder"/> class.
       /// </summary>
-      /// <param name="config">
-      /// A <see cref="MetricConfig"/> whose tags and values are copied to the
+      public Builder() : this(new Tag[0]) {
+      }
+
+      /// <summary>
+      /// Initializes a new instance of the <see cref="Builder"/> class whose
+      /// tags are copied from the given
+      /// <paramref name="tags"/> object.
+      /// </summary>
+      /// <param name="tags">
+      /// A <see cref="Tags"/> whose tags and values are copied to the
       /// <see cref="Builder"/>.
       /// </param>
-      public Builder(MetricConfig config) {
-        tags_ = new List<Tag>(config.Tags);
+      public Builder(Tags tags) : this((IEnumerable<Tag>) tags) {
+      }
+
+      /// <summary>
+      /// Initializes a new instance of the <see cref="Builder"/> class whose
+      /// tags are copied from the given
+      /// <paramref name="tags"/> object.
+      /// </summary>
+      /// <param name="tags">
+      /// A <see cref="Tags"/> whose tags and values are copied to the
+      /// <see cref="Builder"/>.
+      /// </param>
+      public Builder(IEnumerable<Tag> tags) {
+        tags_ = new List<Tag>(tags);
       }
 
       /// <summary>
@@ -72,6 +90,13 @@ namespace Nohros.Metrics
         return this;
       }
 
+      /// <summary>
+      /// Creates a new <see cref="Tags"/> object containing the configured
+      /// tags.
+      /// </summary>
+      /// <returns>
+      /// The newly created <see cref="Tags"/> object.
+      /// </returns>
       public Tags Build() {
         return new Tags(tags_);
       }
