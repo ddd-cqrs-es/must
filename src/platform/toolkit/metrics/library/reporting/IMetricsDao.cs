@@ -5,9 +5,9 @@ namespace Nohros.Metrics.Reporting
 {
   public interface IMetricsDao
   {
-    IEnumerable<long> GetTagsIds(int hash, int count);
+    IEnumerable<long> GetSeriesIds(string name, int hash, int tags_count);
 
-    long RegisterTags(int hash, int count);
+    long RegisterSerie(string name, int hash, int count);
     void RegisterTag(string name, string value, long tags_id);
     bool ContainsTag(string name, string value, long tags_id);
     void RegisterMeasure(long tags_id, double value, DateTime timestamp);

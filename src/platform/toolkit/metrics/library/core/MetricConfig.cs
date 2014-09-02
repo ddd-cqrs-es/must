@@ -52,7 +52,6 @@ namespace Nohros.Metrics
       Name = name;
       Tags = new Tags.Builder()
         .WithTags(tags)
-        .WithTag("name", Name)
         .Build();
     }
 

@@ -33,15 +33,15 @@ namespace Nohros.Metrics.Reporting
     /// <inheritdoc/>
     public void Observe(Measure measure, DateTime timestamp) {
       Tags tags = measure.MetricConfig.Tags;
-      long tags_id = GetTagsId(tags);
+      long tags_id = GetTagsId(measure.MetricConfig.Name, tags);
       metrics_dao_.RegisterMeasure(tags_id, measure.Value, timestamp);
     }
 
-    long GetTagsId(Tags tags) {
+    long GetTagsId(string name, Tags tags) {
       long tags_id;
       string tags_cache_key = CacheKey(tags);
       if (!cache_.Get(tags_cache_key, out tags_id)) {
-        tags_id = TagsIdFromDatabase(tags);
+        tags_id = TagsIdFromDatabase(name, tags);
         cache_.Set(tags_cache_key, tags_id);
       }
       return tags_id;
@@ -51,15 +51,19 @@ namespace Nohros.Metrics.Reporting
     /// Get the id of the <paramref name="tags"/> from the database or
     /// create a new id for the <paramref name="tags"/> if an id is not found.
     /// </summary>
+    /// <param name="name">
+    /// The name of the <see cref="MetricConfig"/> that is associated with
+    /// the <paramref name="tags"/>.
+    /// </param>
     /// <param name="tags">
     /// The tags to get the id.
     /// </param>
     /// <returns>
     /// A number that uniquely identifies the tags within the metrics database.
     /// </returns>
-    long TagsIdFromDatabase(Tags tags) {
+    long TagsIdFromDatabase(string name, Tags tags) {
       int hash = Hash(tags);
-      IEnumerable<long> ids = metrics_dao_.GetTagsIds(hash, tags.Count);
+      IEnumerable<long> ids = metrics_dao_.GetSeriesIds(name, hash, tags.Count);
 
       // The |GetTagsIds| return all the ids that has the same hash and
       // number of tags of the given |tags|. We need to find the tags group
@@ -71,7 +75,7 @@ namespace Nohros.Metrics.Reporting
       }
 
       // A matching tags was not found, lets create a new one.
-      long tags_id = metrics_dao_.RegisterTags(hash, tags.Count);
+      long tags_id = metrics_dao_.RegisterSerie(hash, tags.Count);
       foreach (Tag tag in tags) {
         metrics_dao_.RegisterTag(tag.Name, tag.Value, tags_id);
       }
