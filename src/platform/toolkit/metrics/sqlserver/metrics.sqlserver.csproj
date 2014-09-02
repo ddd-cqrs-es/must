@@ -44,10 +44,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterMeasureQuery.cs" />
     <Compile Include="RegisterTagQuery.cs" />
-    <Compile Include="RegisterTagsQuery.cs" />
+    <Compile Include="RegisterSerieQuery.cs" />
     <Compile Include="SqlMetricsDao.cs" />
-    <Compile Include="TagsDto.cs" />
-    <Compile Include="TagsIdQuery.cs" />
+    <Compile Include="SerieDto.cs" />
+    <Compile Include="SeriesIdQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\base\common\common.csproj">
@@ -65,13 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="scripts\mtc_add_measure.sql" />
+    <Content Include="scripts\mtc_add_serie.sql" />
     <Content Include="scripts\mtc_add_tag.sql" />
-    <Content Include="scripts\mtc_add_tags.sql" />
+    <Content Include="scripts\mtc_get_id_of_serie.sql" />
     <Content Include="scripts\mtc_get_id_of_tag.sql" />
-    <Content Include="scripts\mtc_get_id_of_tags.sql" />
     <Content Include="scripts\mtc_measure.sql" />
+    <Content Include="scripts\mtc_serie.sql" />
     <Content Include="scripts\mtc_tag.sql" />
-    <Content Include="scripts\mtc_tags.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

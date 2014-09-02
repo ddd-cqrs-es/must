@@ -32,7 +32,7 @@ go
 alter proc mtc_add_tag (
   @name varchar(800),
   @value varchar(800),
-  @tags_id bigint
+  @serie_id bigint
 )
 as
 
@@ -41,16 +41,16 @@ if not exists(
   from mtc_tag
   where tag_name = @name
     and tag_value = @value
-    and tags_id = @tags_id
+    and serie_id = @serie_id
 )
 begin
   insert into mtc_tag (
-      tag_name
-     ,tag_value
-     ,tags_id
+     tag_name
+    ,tag_value
+    ,serie_id
   ) values (
      @name
     ,@value
-    ,@tags_id
+    ,@serie_id
   )
 end

@@ -5,14 +5,15 @@ namespace Nohros.Metrics.Sql
 {
   public partial class SqlMetricsDao
   {
-    public IEnumerable<long> GetTagsIds(int hash, int count) {
+    public IEnumerable<long> GetSeriesIds(string name, int hash, int count) {
       return sql_query_executor_
-        .ExecuteQuery(".mtc_get_id_of_tags",
+        .ExecuteQuery(".mtc_get_id_of_serie",
           reader => Mappers.Long().Map(reader, false),
           builder =>
             builder
+              .AddParameter("@name", name)
               .AddParameter("@hash", hash)
-              .AddParameter("@count", count));
+              .AddParameter("@tags_count", count));
     }
   }
 }

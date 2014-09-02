@@ -8,7 +8,7 @@ declare @continue bit,
   @objectname varchar(120),
   @objectversion int
 
-set @objectname = 'mtc_add_tags' /* the name of the object related with the script */
+set @objectname = 'mtc_add_serie' /* the name of the object related with the script */
 set @objectversion = 1 /* the current object version */
 
 exec @continue = nohros_updateversion @objectname=@objectname, @objectversion=@objectversion
@@ -29,18 +29,21 @@ go
 /**
  * Copyright (c) 2011 by Nohros Inc, All rights reserved.
  */
-alter proc mtc_add_tags (
-  @hash int,
-  @count int
+alter proc mtc_add_serie (
+   @name varchar(256)
+  ,@tags_count int
+  ,@hash int
 )
 as
 
-insert into mtc_tags (
-   tags_hash
-  ,tags_count
+insert into mtc_serie(
+   serie_name
+  ,serie_hash
+  ,serie_tags_count
 ) values (
-   @hash
-  ,@count
+   @name
+  ,@hash
+  ,@tags_count
 )
 
 select cast(scope_identity() as bigint)

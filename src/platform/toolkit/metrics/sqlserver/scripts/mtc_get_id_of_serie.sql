@@ -8,7 +8,7 @@ declare @continue bit,
   @objectname varchar(120),
   @objectversion int
 
-set @objectname = 'mtc_get_id_of_tags' /* the name of the object related with the script */
+set @objectname = 'mtc_get_id_of_serie' /* the name of the object related with the script */
 set @objectversion = 1 /* the current object version */
 
 exec @continue = nohros_updateversion @objectname=@objectname, @objectversion=@objectversion
@@ -29,13 +29,15 @@ go
 /**
  * Copyright (c) 2011 by Nohros Inc, All rights reserved.
  */
-alter proc mtc_get_id_of_tags (
+alter proc mtc_get_id_of_serie (
+  @name varchar(256),
   @hash int,
-  @count int
+  @tags_count int
 )
 as
 
-select tags_id
-from mtc_tags
-where tags_hash = @hash
-  and tags_count = @count
+select serie_id
+from mtc_serie
+where serie_hash = @hash
+  and serie_tags_count = @tags_count
+  and serie_name = @name

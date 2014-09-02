@@ -32,16 +32,16 @@ go
 alter proc mtc_add_measure (
   @measure float,
   @timestamp datetime,
-  @tags_id bigint
+  @serie_id bigint
 )
 as
 
 insert into mtc_measure (
    measure_value
   ,measure_time
-  ,tags_id
+  ,serie_id
 ) values (
    @measure
   ,@timestamp
-  ,@tags_id
+  ,@serie_id
 )

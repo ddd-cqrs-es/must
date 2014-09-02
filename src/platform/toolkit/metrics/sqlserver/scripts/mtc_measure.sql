@@ -9,12 +9,20 @@ end
 go
 
 create table mtc_measure (
+  serie_id bigint not null,
   measure_value float(24) not null,
-  measure_time datetime2(0) not null,
-  tags_id int not null
+  measure_time datetime2(0) not null
 )
 
 create clustered index IX_mtc_measure_cluster
 on mtc_measure (
   measure_time
+)
+
+alter table mtc_measure
+add constraint FK_mtc_measure_serie
+foreign key (
+  serie_id
+) references mtc_serie (
+  serie_id
 )
