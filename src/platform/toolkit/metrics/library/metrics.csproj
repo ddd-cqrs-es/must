@@ -51,6 +51,7 @@
     <Compile Include="core\Meter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="core\MetricContext.cs" />
     <Compile Include="core\MetricType.cs" />
     <Compile Include="core\MetricTypeTag.cs" />
     <Compile Include="core\MinGauge.cs" />
@@ -61,14 +62,11 @@
     <Compile Include="core\Tags.cs" />
     <Compile Include="core\ICounter.cs" />
     <Compile Include="core\CallableGauge.cs" />
-    <Compile Include="core\DottedMetricName.cs" />
     <Compile Include="core\IHistogram.cs" />
     <Compile Include="core\IMeter.cs" />
     <Compile Include="core\MetricConfig.cs" />
     <Compile Include="core\Tag.cs" />
     <Compile Include="core\ITimer.cs" />
-    <Compile Include="core\MetricReportCallback.cs" />
-    <Compile Include="core\MetricValueSet.cs" />
     <Compile Include="core\Measure.cs" />
     <Compile Include="core\Timer.cs">
       <SubType>Code</SubType>

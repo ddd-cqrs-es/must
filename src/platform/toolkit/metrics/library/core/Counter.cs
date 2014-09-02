@@ -29,7 +29,7 @@ namespace Nohros.Metrics
     /// increment/decrement).
     /// </summary>
     public Counter(MetricConfig config, long initial)
-      : this(config, new Mailbox<Action>(x => x()), initial) {
+      : this(config, initial, new MetricContext()) {
     }
 
     /// <summary>
@@ -37,10 +37,9 @@ namespace Nohros.Metrics
     /// uses the specified executor to perform the counter updates (
     /// increment/decrement).
     /// </summary>
-    internal Counter(MetricConfig config, Mailbox<Action> mailbox, long initial)
-      : base(config.WithAdditionalTag(MetricType.Counter.AsTag())) {
+    public Counter(MetricConfig config, long initial, MetricContext context)
+      : base(config.WithAdditionalTag(MetricType.Counter.AsTag()), context) {
       count_ = initial;
-      mailbox_ = mailbox;
     }
 
 
@@ -51,7 +50,7 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public void Increment(long n) {
-      mailbox_.Send(() => Update(n));
+      context_.Send(() => Update(n));
     }
 
     /// <inheritdoc/>
@@ -61,7 +60,7 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public void Decrement(long n) {
-      mailbox_.Send(() => Update(-n));
+      context_.Send(() => Update(-n));
     }
 
     /// <inheritdoc/>

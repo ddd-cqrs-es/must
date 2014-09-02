@@ -18,9 +18,8 @@ namespace Nohros.Metrics
     {
       public Builder(MetricConfig config) {
         Config = config;
-        Mailbox = new Mailbox<Action>(x => x());
         TimeUnit = TimeUnit.Seconds;
-        Clock = new StopwatchClock();
+        Context = new MetricContext();
         Resevoir = new ExponentiallyDecayingResevoir();
         SnapshotConfig = new SnapshotConfig.Builder().Build();
       }
@@ -40,13 +39,8 @@ namespace Nohros.Metrics
         return this;
       }
 
-      internal Builder WithClock(Clock clock) {
-        Clock = clock;
-        return this;
-      }
-
-      internal Builder WithMailbox(Mailbox<Action> mailbox) {
-        Mailbox = mailbox;
+      public Builder WithContext(MetricContext context) {
+        Context = context;
         return this;
       }
 
@@ -59,27 +53,23 @@ namespace Nohros.Metrics
       public TimeUnit TimeUnit { get; private set; }
       public SnapshotConfig SnapshotConfig { get; internal set; }
 
-      internal Clock Clock { get; private set; }
-      internal Mailbox<Action> Mailbox { get; private set; }
+      internal MetricContext Context { get; private set; }
     }
 
-    readonly Clock clock_;
     readonly TimeUnit unit_;
     readonly Histogram histogram_;
     readonly Meter meter_;
     readonly ReadOnlyCollection<IMetric> metrics_;
 
-    Timer(Builder builder) : base(builder.Config, builder.Mailbox) {
+    Timer(Builder builder) : base(builder.Config, builder.Context) {
       unit_ = builder.TimeUnit;
-      clock_ = builder.Clock;
 
       MetricConfig unit_config = Config.WithAdditionalTag("unit", unit_.Name());
 
-      meter_ = new Meter(unit_config, builder.Mailbox, builder.TimeUnit,
-        builder.Clock);
+      meter_ = new Meter(unit_config, builder.TimeUnit, context_);
 
-      histogram_ = new Histogram(unit_config, builder.Mailbox,
-        builder.SnapshotConfig, builder.Resevoir);
+      histogram_ = new Histogram(unit_config, builder.SnapshotConfig,
+        builder.Resevoir, context_);
 
       metrics_ = new ReadOnlyCollection<IMetric>(
         new IMetric[] {
@@ -94,8 +84,8 @@ namespace Nohros.Metrics
     /// The length of the duration.
     /// </param>
     public void Update(TimeSpan duration) {
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => Update(duration, timestamp));
+      long timestamp = context_.Tick;
+      context_.Send(() => Update(duration, timestamp));
     }
 
     public T Time<T>(Func<T> method) {

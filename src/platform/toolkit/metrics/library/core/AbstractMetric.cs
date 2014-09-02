@@ -8,7 +8,7 @@ namespace Nohros.Metrics
   /// </summary>
   public abstract class AbstractMetric : IMetric
   {
-    protected Mailbox<Action> mailbox_;
+    protected MetricContext context_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AbstractMetric"/> class
@@ -19,7 +19,7 @@ namespace Nohros.Metrics
     /// for the metric.
     /// </param>
     protected AbstractMetric(MetricConfig config)
-      : this(config, new Mailbox<Action>(runnable => runnable())) {
+      : this(config, new MetricContext()) {
     }
 
     /// <summary>
@@ -30,27 +30,27 @@ namespace Nohros.Metrics
     /// A <see cref="MetricConfig"/> containing the configuration settings
     /// for the metric.
     /// </param>
-    /// <param name="mailbox">
-    /// A <see cref="Mailbox{T}"/> that can be used to asynchrously process
-    /// metrics operations.
+    /// <param name="context">
+    /// A <see cref="MetricContext"/> that contains the shared
+    /// <see cref="Mailbox{T}"/> and <see cref="Clock"/>.
     /// </param>
-    protected AbstractMetric(MetricConfig config, Mailbox<Action> mailbox) {
-      if (config == null || mailbox == null) {
-        throw new ArgumentNullException(config == null ? "config" : "mailbox");
+    protected AbstractMetric(MetricConfig config, MetricContext context) {
+      if (config == null || context == null) {
+        throw new ArgumentNullException(config == null ? "config" : "context");
       }
       Config = config;
-      mailbox_ = mailbox;
+      context_ = context;
     }
 
     /// <inheritdoc/>
     public virtual void GetMeasure(Action<Measure> callback) {
       DateTime now = DateTime.Now;
-      mailbox_.Send(() => callback(Compute()));
+      context_.Send(() => callback(Compute()));
     }
 
     /// <inheritdoc/>
-    public virtual void GetMeasure<T>(Action<Measure, T> callback, T context) {
-      mailbox_.Send(() => callback(Compute(), context));
+    public virtual void GetMeasure<T>(Action<Measure, T> callback, T state) {
+      context_.Send(() => callback(Compute(), state));
     }
 
     /// <summary>

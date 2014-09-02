@@ -57,10 +57,6 @@ namespace Nohros.Metrics
     /// A <see cref="MetricConfig"/> containing the configuration settings
     /// for the metric.
     /// </param>
-    /// <param name="mailbox">
-    /// A <see cref="Mailbox{T}"/> that can be used to asynchrously process
-    /// metrics operations.
-    /// </param>
     /// <param name="stats">
     /// A <see cref="SnapshotConfig"/> that defines the statistics that should
     /// be computed.
@@ -69,12 +65,15 @@ namespace Nohros.Metrics
     /// A <see cref="IResevoir"/> that can be used to store the computed
     /// values.
     /// </param>
-    internal Histogram(MetricConfig config, Mailbox<Action> mailbox,
-      SnapshotConfig stats, IResevoir resevoir)
-      : base(config, mailbox) {
+    /// <param name="context">
+    /// A <see cref="MetricContext"/> that contains the shared
+    /// <see cref="Mailbox{T}"/> and <see cref="Clock"/>.
+    /// </param>
+    public Histogram(MetricConfig config, SnapshotConfig stats,
+      IResevoir resevoir, MetricContext context)
+      : base(config, context) {
       stats_ = stats;
       resevoir_ = resevoir;
-      mailbox_ = mailbox;
 
       gauges_ = new List<CallableGaugeWrapper>();
 
@@ -160,11 +159,11 @@ namespace Nohros.Metrics
     /// <inheritdoc/>
     public void Update(long value) {
       long timestamp = resevoir_.Timestamp;
-      mailbox_.Send(() => Update(value, timestamp));
+      context_.Send(() => Update(value, timestamp));
     }
 
     public void Update(long value, long timestamp) {
-      mailbox_.Send(() => resevoir_.Update(value, timestamp));
+      context_.Send(() => resevoir_.Update(value, timestamp));
     }
 
     /// <inheritdoc/>

@@ -21,7 +21,6 @@ namespace Nohros.Metrics
   /// </remarks>
   public class Meter : AbstractMetric, IMeter, ICompositeMetric
   {
-    readonly Clock clock_;
     readonly ExponentialWeightedMovingAverage ewma_15_rate_;
     readonly ExponentialWeightedMovingAverage ewma_1_rate_;
     readonly ExponentialWeightedMovingAverage ewma_5_rate_;
@@ -40,7 +39,7 @@ namespace Nohros.Metrics
     /// The time unit of the meter's rate.
     /// </param>
     public Meter(MetricConfig config, TimeUnit rate_unit)
-      : this(config, rate_unit, new StopwatchClock()) {
+      : this(config, rate_unit, new MetricContext()) {
     }
 
     /// <summary>
@@ -54,36 +53,12 @@ namespace Nohros.Metrics
     /// <param name="rate_unit">
     /// The time unit of the meter's rate.
     /// </param>
-    /// <param name="clock">
-    /// The clock that should be used to mark the passage of time.
+    /// <param name="context">
+    /// A <see cref="MetricContext"/> that contains the shared
+    /// <see cref="Mailbox{T}"/> and <see cref="Clock"/>.
     /// </param>
-    internal Meter(MetricConfig config, TimeUnit rate_unit, Clock clock)
-      : this(config, new Mailbox<Action>(runnable => runnable()), rate_unit,
-        clock) {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref=" Meter"/> class by using
-    /// the specified meter name, rate unit and clock.
-    /// </summary>
-    /// <param name="config">
-    /// A <see cref="MetricConfig"/> containing the configuration settings
-    /// for the metric.
-    /// </param>
-    /// <param name="rate_unit">
-    /// The time unit of the meter's rate.
-    /// </param>
-    /// <param name="clock">
-    /// The clock that should be used to mark the passage of time.
-    /// </param>
-    /// <param name="mailbox">
-    /// A <see cref="Mailbox{T}"/> that can be used to asynchrously process
-    /// metrics operations.
-    /// </param>
-    internal Meter(MetricConfig config, Mailbox<Action> mailbox,
-      TimeUnit rate_unit, Clock clock) : base(config, mailbox) {
-      clock_ = clock;
-
+    internal Meter(MetricConfig config, TimeUnit rate_unit,
+      MetricContext context) : base(config, context) {
       const string kStatistic = "statistic";
 
       Tag unit_tag = new Tag("unit", rate_unit.Name());
@@ -91,24 +66,22 @@ namespace Nohros.Metrics
 
       mean_rate_ = new MeanRate(
         config.WithAdditionalTag(new Tag(kStatistic, "mean_rate")), rate_unit,
-        mailbox, clock);
+        context);
 
       ewma_1_rate_ = ExponentialWeightedMovingAverage
         .ForOneMinute(
           unit_config.WithAdditionalTag(new Tag(kStatistic, "m1_rate")),
-          mailbox, rate_unit, clock);
+          rate_unit, context);
 
       ewma_5_rate_ = ExponentialWeightedMovingAverage
         .ForFiveMinutes(
           unit_config.WithAdditionalTag(new Tag(kStatistic, "m5_rate")),
-          mailbox, rate_unit, clock);
+          rate_unit, context);
 
       ewma_15_rate_ = ExponentialWeightedMovingAverage
         .ForFifteenMinutes(
           unit_config.WithAdditionalTag(new Tag(kStatistic, "m15_rate")),
-          mailbox, rate_unit, clock);
-
-      mailbox_ = mailbox;
+          rate_unit, context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(
         new IMetric[] {
@@ -130,12 +103,12 @@ namespace Nohros.Metrics
     /// The number of events.
     /// </param>
     public void Mark(long n) {
-      long timestamp = clock_.Tick;
+      long timestamp = context_.Tick;
 
       // The mean_rate.Mauk method is asynchrnous, so we need to perform
       // it before the synchonrnous Mark method of the ewma rates.
       mean_rate_.Mark(n);
-      mailbox_.Send(() => Mark(n, timestamp));
+      context_.Send(() => Mark(n, timestamp));
     }
 
     /// <inheritdoc/>

@@ -24,27 +24,7 @@ namespace Nohros.Metrics
     /// The time unit of the meter's rate.
     /// </param>
     public MeanRate(MetricConfig config, TimeUnit rate_unit)
-      : this(config, rate_unit, new Mailbox<Action>(runnable => runnable()),
-        new StopwatchClock()) {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref=" MeanRate"/> class by using
-    /// the specified config and rate unit.
-    /// </summary>
-    /// <param name="config">
-    /// A <see cref="MetricConfig"/> containing the configuration settings
-    /// for the metric.
-    /// </param>
-    /// <param name="rate_unit">
-    /// The time unit of the meter's rate.
-    /// </param>
-    /// <param name="clock">
-    /// The clock that should be used to mark the passage of time.
-    /// </param>
-    public MeanRate(MetricConfig config, TimeUnit rate_unit, Clock clock)
-      : this(config, rate_unit, new Mailbox<Action>(runnable => runnable()),
-        clock) {
+      : this(config, rate_unit, new MetricContext()) {
     }
 
     /// <summary>
@@ -58,14 +38,14 @@ namespace Nohros.Metrics
     /// <param name="unit">
     /// The time unit of the meter's rate.
     /// </param>
-    /// <param name="clock">
-    /// The clock that should be used to mark the passage of time.
+    /// <param name="context">
+    /// A <see cref="MetricContext"/> that contains the shared
+    /// <see cref="Mailbox{T}"/> and <see cref="Clock"/>.
     /// </param>
-    internal MeanRate(MetricConfig config, TimeUnit unit,
-      Mailbox<Action> mailbox, Clock clock) : base(config, mailbox) {
-      clock_ = clock;
-      start_time_ = clock.Tick;
-      count_ = new Counter(config, mailbox, 0);
+    public MeanRate(MetricConfig config, TimeUnit unit,
+      MetricContext context) : base(config, context) {
+      start_time_ = context_.Tick;
+      count_ = new Counter(config, 0, context);
       ticks_per_unit_ = 1.ToTicks(unit);
     }
 
@@ -82,13 +62,13 @@ namespace Nohros.Metrics
     /// <inheritdoc/>
     public override void GetMeasure(Action<Measure> callback) {
       long ticks = clock_.Tick;
-      mailbox_.Send(() => callback(Compute(ticks)));
+      context_.Send(() => callback(Compute(ticks)));
     }
 
     /// <inheritdoc/>
-    public override void GetMeasure<T>(Action<Measure, T> callback, T context) {
+    public override void GetMeasure<T>(Action<Measure, T> callback, T state) {
       long ticks = clock_.Tick;
-      mailbox_.Send(() => callback(Compute(ticks), context));
+      context_.Send(() => callback(Compute(ticks), state));
     }
 
     internal Measure Compute(long ticks) {

@@ -66,7 +66,6 @@ namespace Nohros.Metrics
 
     readonly double alpha_;
     readonly long ticks_per_unit_;
-    readonly Clock clock_;
     readonly double interval_;
     bool initialized_;
 
@@ -134,8 +133,7 @@ namespace Nohros.Metrics
     /// </param>
     public ExponentialWeightedMovingAverage(MetricConfig config, double alpha,
       TimeSpan interval, TimeUnit unit)
-      : this(config, new Mailbox<Action>(runnable => runnable()), alpha,
-        interval, unit, new StopwatchClock()) {
+      : this(config, alpha, interval, unit, new MetricContext()) {
     }
 
     /// <summary>
@@ -148,10 +146,6 @@ namespace Nohros.Metrics
     /// A <see cref="MetricConfig"/> containing the configuration settings
     /// for the metric.
     /// </param>
-    /// <param name="mailbox">
-    /// A <see cref="Mailbox{T}"/> that can be used to asynchrously process
-    /// metrics operations.
-    /// </param>
     /// <param name="alpha">
     /// The smoothing constant.
     /// </param>
@@ -161,19 +155,19 @@ namespace Nohros.Metrics
     /// <param name="unit">
     /// The time unit that should be used to compute the rate.
     /// </param>
-    /// <param name="clock">
-    /// The clock that should be used to mark the passage of time.
+    /// <param name="context">
+    /// A <see cref="MetricContext"/> that contains the shared
+    /// <see cref="Mailbox{T}"/> and <see cref="Clock"/>.
     /// </param>
-    internal ExponentialWeightedMovingAverage(MetricConfig config,
-      Mailbox<Action> mailbox, double alpha, TimeSpan interval, TimeUnit unit,
-      Clock clock) : base(config, mailbox) {
+    public ExponentialWeightedMovingAverage(MetricConfig config, double alpha,
+      TimeSpan interval, TimeUnit unit, MetricContext context)
+      : base(config, context) {
       interval_ = interval.Ticks;
       alpha_ = alpha;
       ticks_per_unit_ = 1.ToTicks(unit);
-      clock_ = clock;
       uncounted_ = 0;
       rate_ = 0.0;
-      last_tick_ = clock_.Tick;
+      last_tick_ = context_.Tick;
       initialized_ = false;
     }
 
@@ -184,20 +178,20 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public void Mark(long n) {
-      long timestamp = clock_.Tick;
-      mailbox_.Send(() => Mark(n, timestamp));
+      long timestamp = context_.Tick;
+      context_.Send(() => Mark(n, timestamp));
     }
 
     /// <inheritdoc/>
     public override void GetMeasure(Action<Measure> callback) {
-      long ticks = clock_.Tick;
-      mailbox_.Send(() => callback(Compute(ticks)));
+      long ticks = context_.Tick;
+      context_.Send(() => callback(Compute(ticks)));
     }
 
     /// <inheritdoc/>
-    public override void GetMeasure<T>(Action<Measure, T> callback, T context) {
-      long tick = clock_.Tick;
-      mailbox_.Send(() => callback(Compute(tick), context));
+    public override void GetMeasure<T>(Action<Measure, T> callback, T state) {
+      long tick = context_.Tick;
+      context_.Send(() => callback(Compute(tick), state));
     }
 
     /// <inheritdoc/>

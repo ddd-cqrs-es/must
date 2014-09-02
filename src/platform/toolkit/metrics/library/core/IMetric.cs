@@ -24,10 +24,10 @@ namespace Nohros.Metrics
     /// A <see cref="Action"/> that should be called when the current measure
     /// for the current metric was computed.
     /// </param>
-    /// <param name="context">
+    /// <param name="state">
     /// A value that will be passed to the callback when it is executed.
     /// </param>
-    void GetMeasure<T>(Action<Measure, T> callback, T context);
+    void GetMeasure<T>(Action<Measure, T> callback, T state);
 
     /// <summary>
     /// Gets or sets the associated <see cref="MetricConfig"/> that is used to
