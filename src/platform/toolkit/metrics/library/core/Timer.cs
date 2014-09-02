@@ -64,12 +64,10 @@ namespace Nohros.Metrics
     Timer(Builder builder) : base(builder.Config, builder.Context) {
       unit_ = builder.TimeUnit;
 
-      MetricConfig unit_config = Config.WithAdditionalTag("unit", unit_.Name());
+      meter_ = new Meter(builder.Config, builder.TimeUnit, builder.Context);
 
-      meter_ = new Meter(unit_config, builder.TimeUnit, context_);
-
-      histogram_ = new Histogram(unit_config, builder.SnapshotConfig,
-        builder.Resevoir, context_);
+      histogram_ = new Histogram(builder.Config, builder.SnapshotConfig,
+        builder.Resevoir, builder.Context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(
         new IMetric[] {

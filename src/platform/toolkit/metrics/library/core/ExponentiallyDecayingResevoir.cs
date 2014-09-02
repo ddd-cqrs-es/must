@@ -154,6 +154,10 @@ namespace Nohros.Metrics
       }
     }
 
+    public string Name {
+      get { return "ExponentiallyDecaying"; }
+    }
+
     /// <inheritdoc/>
     public long Timestamp {
       get { return clock_.Tick; }

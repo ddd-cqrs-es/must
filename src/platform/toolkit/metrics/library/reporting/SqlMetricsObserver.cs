@@ -62,7 +62,7 @@ namespace Nohros.Metrics.Reporting
     /// A number that uniquely identifies the tags within the metrics database.
     /// </returns>
     long TagsIdFromDatabase(string name, Tags tags) {
-      int hash = Hash(tags);
+      int hash = Hash(name, tags);
       IEnumerable<long> ids = metrics_dao_.GetSeriesIds(name, hash, tags.Count);
 
       // The |GetTagsIds| return all the ids that has the same hash and
@@ -75,16 +75,16 @@ namespace Nohros.Metrics.Reporting
       }
 
       // A matching tags was not found, lets create a new one.
-      long tags_id = metrics_dao_.RegisterSerie(name, hash, tags.Count);
+      long serie_id = metrics_dao_.RegisterSerie(name, hash, tags.Count);
       foreach (Tag tag in tags) {
-        metrics_dao_.RegisterTag(tag.Name, tag.Value, tags_id);
+        metrics_dao_.RegisterTag(tag.Name, tag.Value, serie_id);
       }
-      return tags_id;
+      return serie_id;
     }
 
-    bool IsSameTags(long tags_id, Tags tags) {
+    bool IsSameTags(long serie_id, Tags tags) {
       foreach (var tag in tags) {
-        if (!metrics_dao_.ContainsTag(tag.Name, tag.Value, tags_id)) {
+        if (!metrics_dao_.ContainsTag(tag.Name, tag.Value, serie_id)) {
           return false;
         }
       }
@@ -100,7 +100,7 @@ namespace Nohros.Metrics.Reporting
       list.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
       unchecked {
         int hash = 17;
-        hash = name.GetHashCode();
+        hash += name.GetHashCode();
         foreach (var tag in tags) {
           hash = hash*31 + tag.GetHashCode();
         }

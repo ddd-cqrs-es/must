@@ -70,17 +70,17 @@ namespace Nohros.Metrics
 
       ewma_1_rate_ = ExponentialWeightedMovingAverage
         .ForOneMinute(
-          unit_config.WithAdditionalTag(new Tag(kStatistic, "m1_rate")),
+          unit_config.WithAdditionalTag(new Tag(kStatistic, "m1_ewma_rate")),
           rate_unit, context);
 
       ewma_5_rate_ = ExponentialWeightedMovingAverage
         .ForFiveMinutes(
-          unit_config.WithAdditionalTag(new Tag(kStatistic, "m5_rate")),
+          unit_config.WithAdditionalTag(new Tag(kStatistic, "m5_ewma_rate")),
           rate_unit, context);
 
       ewma_15_rate_ = ExponentialWeightedMovingAverage
         .ForFifteenMinutes(
-          unit_config.WithAdditionalTag(new Tag(kStatistic, "m15_rate")),
+          unit_config.WithAdditionalTag(new Tag(kStatistic, "m15_ewma_rate")),
           rate_unit, context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(

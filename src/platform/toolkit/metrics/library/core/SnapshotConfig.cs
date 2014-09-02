@@ -89,9 +89,9 @@ namespace Nohros.Metrics
         Percentiles = new double[percentiles.Length];
         for (int i = 0; i < percentiles.Length; i++) {
           double percentile = percentiles[i];
-          if (percentile < 0.0 || percentile > 100.0) {
+          if (percentile < 0.0 || percentile > 1.0) {
             throw new ArgumentOutOfRangeException("percentiles",
-              Resources.ArgIsNotInRange.Fmt(0.0, 100.0));
+              Resources.ArgIsNotInRange.Fmt(0.0, 1.0));
           }
           Percentiles[i] = percentile;
         }

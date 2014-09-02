@@ -11,7 +11,7 @@ namespace Nohros.Metrics.Sql
             builder
               .AddParameter("@name", name)
               .AddParameter("@hash", hash)
-              .AddParameter("@count", count));
+              .AddParameter("@tags_count", count));
     }
   }
 }

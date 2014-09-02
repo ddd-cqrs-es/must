@@ -150,7 +150,7 @@ namespace Nohros.Metrics
       return
         new CallableGaugeWrapper(
           config.WithAdditionalTag("statistic",
-            "percentile_" + percentile.ToString("#.####")),
+            "percentile_" + (percentile*100).ToString("#.####")),
           snapshot => snapshot.Quantile(percentile));
     }
 

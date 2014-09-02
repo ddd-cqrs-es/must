@@ -20,14 +20,16 @@ namespace Nohros.Metrics
       string default_metrics_registry_class =
         ConfigurationManager.AppSettings[kDefaultMetricsRegistryKey];
 
-      var runtime_type = new RuntimeType(default_metrics_registry_class);
+      if (default_metrics_registry_class != null) {
+        var runtime_type = new RuntimeType(default_metrics_registry_class);
 
-      Type type = RuntimeType.GetSystemType(runtime_type);
+        Type type = RuntimeType.GetSystemType(runtime_type);
 
-      if (type != null) {
-        ForCurrentProcess =
-          RuntimeTypeFactory<IMetricsRegistry>
-            .CreateInstanceFallback(runtime_type);
+        if (type != null) {
+          ForCurrentProcess =
+            RuntimeTypeFactory<IMetricsRegistry>
+              .CreateInstanceFallback(runtime_type);
+        }
       }
 
       if (ForCurrentProcess == null) {
