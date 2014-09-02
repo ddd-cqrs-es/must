@@ -1,17 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// A singleton <see cref="IMetricsRegistry"/> that fowards its methods to
-  /// another <see cref="IMetricsRegistry"/> and uses the
-  /// <see cref="MetricsRegistry"/> as the default registry.
+  /// A default registry that delegates all actions to a class specified by
+  /// the key "DefaultMetricsRegistry" in the
+  /// <see cref="ConfigurationManager.AppSettings"/> configuration section. The
+  /// specified registry class must have a cinstructor with no arguments. If
+  /// the property is not specified ir the class cannot be loaded an instance
+  /// of the <see cref="MetricsRegistry"/> will be used.
   /// </summary>
   public class AppMetrics
   {
+    const string kDefaultMetricsRegistryKey = "DefaultMetricsRegistry";
+
     static AppMetrics() {
-      ForCurrentProcess = new MetricsRegistry();
+      string default_metrics_registry_class =
+        ConfigurationManager.AppSettings[kDefaultMetricsRegistryKey];
+
+      var runtime_type = new RuntimeType(default_metrics_registry_class);
+
+      Type type = RuntimeType.GetSystemType(runtime_type);
+
+      if (type != null) {
+        ForCurrentProcess =
+          RuntimeTypeFactory<IMetricsRegistry>
+            .CreateInstanceFallback(runtime_type);
+      }
+
+      if (ForCurrentProcess == null) {
+        ForCurrentProcess = new MetricsRegistry();
+      }
     }
 
     /// <inheritdoc/>
@@ -34,8 +55,8 @@ namespace Nohros.Metrics
     public ICollection<IMetric> Metrics { get; private set; }
 
     /// <summary>
-    /// Gets the current <see cref="IMetricsRegistry"/>.
+    /// Gets the default configured <see cref="IMetricsRegistry"/>.
     /// </summary>
-    public static IMetricsRegistry ForCurrentProcess { get; set; }
+    public static IMetricsRegistry ForCurrentProcess { get; private set; }
   }
 }

@@ -34,9 +34,5 @@ namespace Nohros.Metrics
     /// identify and provide metadata for a <see cref="IMetric"/>.
     /// </summary>
     MetricConfig Config { get; }
-
-#if DEBUG
-    void Run(Action action);
-#endif
   }
 }

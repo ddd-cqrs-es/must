@@ -6,7 +6,6 @@ namespace Nohros.Metrics
 {
   public class MeanRate : AbstractMetric, IMeter
   {
-    readonly Clock clock_;
     readonly long ticks_per_unit_;
     readonly long start_time_;
     readonly Counter count_;
@@ -24,7 +23,7 @@ namespace Nohros.Metrics
     /// The time unit of the meter's rate.
     /// </param>
     public MeanRate(MetricConfig config, TimeUnit rate_unit)
-      : this(config, rate_unit, new MetricContext()) {
+      : this(config, rate_unit, MetricContext.ForCurrentProcess) {
     }
 
     /// <summary>
@@ -61,13 +60,13 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public override void GetMeasure(Action<Measure> callback) {
-      long ticks = clock_.Tick;
+      long ticks = context_.Tick;
       context_.Send(() => callback(Compute(ticks)));
     }
 
     /// <inheritdoc/>
     public override void GetMeasure<T>(Action<Measure, T> callback, T state) {
-      long ticks = clock_.Tick;
+      long ticks = context_.Tick;
       context_.Send(() => callback(Compute(ticks), state));
     }
 

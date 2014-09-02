@@ -23,7 +23,6 @@ namespace Nohros.Metrics
       }
     }
 
-    readonly SnapshotConfig stats_;
     readonly IResevoir resevoir_;
     readonly List<CallableGaugeWrapper> gauges_;
 
@@ -46,7 +45,7 @@ namespace Nohros.Metrics
     /// </param>
     public Histogram(MetricConfig config, SnapshotConfig stats,
       IResevoir resevoir)
-      : this(config, new Mailbox<Action>(x => x()), stats, resevoir) {
+      : this(config, stats, resevoir, MetricContext.ForCurrentProcess) {
     }
 
     /// <summary>
@@ -72,7 +71,6 @@ namespace Nohros.Metrics
     public Histogram(MetricConfig config, SnapshotConfig stats,
       IResevoir resevoir, MetricContext context)
       : base(config, context) {
-      stats_ = stats;
       resevoir_ = resevoir;
 
       gauges_ = new List<CallableGaugeWrapper>();

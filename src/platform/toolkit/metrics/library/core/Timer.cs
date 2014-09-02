@@ -19,7 +19,7 @@ namespace Nohros.Metrics
       public Builder(MetricConfig config) {
         Config = config;
         TimeUnit = TimeUnit.Seconds;
-        Context = new MetricContext();
+        Context = MetricContext.ForCurrentProcess;
         Resevoir = new ExponentiallyDecayingResevoir();
         SnapshotConfig = new SnapshotConfig.Builder().Build();
       }

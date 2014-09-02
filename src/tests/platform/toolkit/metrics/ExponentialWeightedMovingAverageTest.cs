@@ -19,8 +19,8 @@ namespace Nohros.Metrics.Tests
     [Test]
     public void should_decrease_the_average_at_each_minute() {
       var m1_ewma = ExponentialWeightedMovingAverage
-        .ForOneMinute(new MetricConfig("test1"), mailbox_, TimeUnit.Seconds,
-          step_clock_);
+        .ForOneMinute(new MetricConfig("test1"), TimeUnit.Seconds,
+          new MetricContext(mailbox_, step_clock_));
 
       double offset = 0.000001;
 
@@ -62,8 +62,8 @@ namespace Nohros.Metrics.Tests
     [Test]
     public void should_decrease_the_average_at_each_five_minutes() {
       var m1_ewma = ExponentialWeightedMovingAverage
-        .ForFiveMinutes(new MetricConfig("test1"), mailbox_, TimeUnit.Seconds,
-          step_clock_);
+        .ForFiveMinutes(new MetricConfig("test1"), TimeUnit.Seconds,
+          new MetricContext(mailbox_, step_clock_));
 
       double offset = 0.000001;
 
@@ -103,8 +103,8 @@ namespace Nohros.Metrics.Tests
     [Test]
     public void should_decrease_the_average_at_each_fifteen_minutes() {
       var m1_ewma = ExponentialWeightedMovingAverage
-        .ForFifteenMinutes(new MetricConfig("test1"), mailbox_, TimeUnit.Seconds,
-          step_clock_);
+        .ForFifteenMinutes(new MetricConfig("test1"), TimeUnit.Seconds,
+          new MetricContext(mailbox_, step_clock_));
 
       double offset = 0.000001;
 

@@ -29,7 +29,7 @@ namespace Nohros.Metrics
     /// increment/decrement).
     /// </summary>
     public Counter(MetricConfig config, long initial)
-      : this(config, initial, new MetricContext()) {
+      : this(config, initial, MetricContext.ForCurrentProcess) {
     }
 
     /// <summary>

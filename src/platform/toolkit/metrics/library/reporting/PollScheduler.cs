@@ -19,7 +19,7 @@ namespace Nohros.Metrics.Reporting
     }
 
     public void Start() {
-      scheduler_.Runnable(poller_.Poll);
+      scheduler_.Run(poller_.Poll);
     }
 
     public WaitHandle Stop() {

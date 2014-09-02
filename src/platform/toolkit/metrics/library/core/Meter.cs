@@ -39,7 +39,7 @@ namespace Nohros.Metrics
     /// The time unit of the meter's rate.
     /// </param>
     public Meter(MetricConfig config, TimeUnit rate_unit)
-      : this(config, rate_unit, new MetricContext()) {
+      : this(config, rate_unit, MetricContext.ForCurrentProcess) {
     }
 
     /// <summary>

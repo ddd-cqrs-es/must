@@ -8,7 +8,7 @@ namespace Nohros.Metrics
   /// </summary>
   public abstract class AbstractMetric : IMetric
   {
-    protected MetricContext context_;
+    protected internal MetricContext context_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AbstractMetric"/> class
@@ -19,7 +19,7 @@ namespace Nohros.Metrics
     /// for the metric.
     /// </param>
     protected AbstractMetric(MetricConfig config)
-      : this(config, new MetricContext()) {
+      : this(config, MetricContext.ForCurrentProcess) {
     }
 
     /// <summary>
@@ -73,12 +73,6 @@ namespace Nohros.Metrics
     protected internal abstract Measure Compute();
 
     /// <inheritdoc/>
-    public MetricConfig Config { get; set; }
-
-#if DEBUG
-    public void Run(Action action) {
-      mailbox_.Send(action);
-    }
-#endif
+    public MetricConfig Config { get; private set; }
   }
 }

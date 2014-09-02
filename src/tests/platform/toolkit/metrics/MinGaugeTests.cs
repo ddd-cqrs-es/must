@@ -9,14 +9,14 @@ namespace Nohros.Metrics.Tests
       var gauge = new MinGauge(new MetricConfig("min1"));
       gauge.Update(42L);
 
-      Measure measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure);
+      Measure measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure, gauge.context_);
       Assert.That(measure.Value, Is.EqualTo(42.0));
 
       gauge = new MinGauge(new MetricConfig("min1"));
       gauge.Update(42L);
       gauge.Update(420L);
 
-      measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure);
+      measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure, gauge.context_);
       Assert.That(measure.Value, Is.EqualTo(42.0));
 
       gauge = new MinGauge(new MetricConfig("min1"));
@@ -24,7 +24,7 @@ namespace Nohros.Metrics.Tests
       gauge.Update(420L);
       gauge.Update(1L);
 
-      measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure);
+      measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure, gauge.context_);
       Assert.That(measure.Value, Is.EqualTo(1.0));
     }
   }

@@ -133,7 +133,7 @@ namespace Nohros.Metrics
     /// </param>
     public ExponentialWeightedMovingAverage(MetricConfig config, double alpha,
       TimeSpan interval, TimeUnit unit)
-      : this(config, alpha, interval, unit, new MetricContext()) {
+      : this(config, alpha, interval, unit, MetricContext.ForCurrentProcess) {
     }
 
     /// <summary>
