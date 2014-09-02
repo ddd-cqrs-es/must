@@ -82,13 +82,11 @@ namespace Nohros.Metrics.Reporting
       return serie_id;
     }
 
-    bool IsSameTags(long serie_id, Tags tags) {
-      foreach (var tag in tags) {
-        if (!metrics_dao_.ContainsTag(tag.Name, tag.Value, serie_id)) {
-          return false;
-        }
-      }
-      return false;
+    bool IsSameTags(long serie_id, IEnumerable<Tag> tags) {
+      return
+        tags.All(
+          tag =>
+            metrics_dao_.ContainsTag(tag.Name, tag.Value, serie_id));
     }
 
     string CacheKey(Tags tags) {
