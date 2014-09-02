@@ -75,7 +75,7 @@ namespace Nohros.Metrics.Reporting
       }
 
       // A matching tags was not found, lets create a new one.
-      long tags_id = metrics_dao_.RegisterSerie(hash, tags.Count);
+      long tags_id = metrics_dao_.RegisterSerie(name, hash, tags.Count);
       foreach (Tag tag in tags) {
         metrics_dao_.RegisterTag(tag.Name, tag.Value, tags_id);
       }
@@ -95,11 +95,12 @@ namespace Nohros.Metrics.Reporting
       return kClassName + "::tags::" + tags.Id.ToString("N");
     }
 
-    int Hash(Tags tags) {
+    int Hash(string name, Tags tags) {
       var list = tags.ToList();
       list.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
       unchecked {
         int hash = 17;
+        hash = name.GetHashCode();
         foreach (var tag in tags) {
           hash = hash*31 + tag.GetHashCode();
         }
