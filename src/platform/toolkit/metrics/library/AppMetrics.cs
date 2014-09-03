@@ -38,7 +38,7 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    public static AppMetrics Register(IMetric metric) {
+    public static void Register(IMetric metric) {
       ForCurrentProcess.Register(metric);
     }
 
