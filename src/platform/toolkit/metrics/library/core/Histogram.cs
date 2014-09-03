@@ -147,11 +147,14 @@ namespace Nohros.Metrics
     }
 
     CallableGaugeWrapper PercentileGauge(MetricConfig config, double percentile) {
+      // We need to divide the percentile to 100 because the percentiles from
+      // the SnapshotConfig is in range 0 to 100 and the Snapshot.Quantile
+      // methof computes percentiles in range 0.0 to 1.0.
       return
         new CallableGaugeWrapper(
           config.WithAdditionalTag("statistic",
-            "percentile_" + (percentile*100).ToString("#.####")),
-          snapshot => snapshot.Quantile(percentile));
+            "percentile_" + (percentile).ToString("#0.####")),
+          snapshot => snapshot.Quantile(percentile/100));
     }
 
     /// <inheritdoc/>

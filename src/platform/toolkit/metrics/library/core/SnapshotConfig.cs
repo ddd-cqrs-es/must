@@ -179,12 +179,8 @@ namespace Nohros.Metrics
       ComputeMin = builder.ComputeMin;
       ComputeStdDev = builder.ComputeStdDev;
 
-      double[] percentiles = builder.Percentiles;
-      int length = percentiles.Length;
-      Percentiles = new double[length];
-      for (int i = 0; i < length; i++) {
-        Percentiles[i] = percentiles[i]/100.0;
-      }
+      Percentiles = new double[builder.Percentiles.Length];
+      Array.Copy(builder.Percentiles, Percentiles, Percentiles.Length);
     }
 
     /// <summary>
