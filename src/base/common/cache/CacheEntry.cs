@@ -43,7 +43,7 @@ namespace Nohros.Caching
       public CacheEntry(string key) {
         key_ = key;
 
-        long now = TimeUnitHelper.ToNanos(0, TimeUnit.Milliseconds);
+        long now = (long) 0.ToNanos(TimeUnit.Milliseconds);
         access_time_ = new AtomicLong(now);
         write_time_ = new AtomicLong(now);
         value_reference_ = (IValueReference<T>) UnsetValueReference<T>.UNSET;

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Nohros.Caching.Providers;
 using Nohros.Extensions.Time;
 
@@ -112,7 +111,7 @@ namespace Nohros.Caching
       if (duration < TimeSpan.Zero) {
         Thrower.ThrowArgumentOutOfRangeException(ExceptionArgument.duration);
       }
-      expiry_after_access_nanos_ = duration.ToUnit(TimeUnit.Nanoseconds);
+      expiry_after_access_nanos_ = (long) duration.Convert(TimeUnit.Nanoseconds);
       return this;
     }
 
@@ -140,7 +139,7 @@ namespace Nohros.Caching
       if (duration < TimeSpan.Zero) {
         Thrower.ThrowArgumentOutOfRangeException(ExceptionArgument.duration);
       }
-      expiry_after_write_nanos_ = duration.ToUnit(TimeUnit.Nanoseconds);
+      expiry_after_write_nanos_ = (long) duration.Convert(TimeUnit.Nanoseconds);
       return this;
     }
 
@@ -163,10 +162,10 @@ namespace Nohros.Caching
     /// </para>
     /// </remarks>
     public CacheBuilder<T> RefreshAfterWrite(TimeSpan duration) {
-      if(duration < TimeSpan.Zero) {
+      if (duration < TimeSpan.Zero) {
         Thrower.ThrowArgumentOutOfRangeException(ExceptionArgument.duration);
       }
-      refresh_nanos_ = duration.ToUnit(TimeUnit.Nanoseconds);
+      refresh_nanos_ = (long) duration.Convert(TimeUnit.Nanoseconds);
       return this;
     }
 
