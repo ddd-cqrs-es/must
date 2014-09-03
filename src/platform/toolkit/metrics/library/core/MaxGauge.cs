@@ -10,7 +10,7 @@ namespace Nohros.Metrics
   /// <remarks>
   /// Updates should be non-negative. The reset value is zero.
   /// </remarks>
-  public class MaxGauge : AbstractMetric
+  public class MaxGauge : AbstractMetric, IResettable
   {
     long value_;
 
@@ -23,8 +23,7 @@ namespace Nohros.Metrics
     /// for the metric.
     /// </param>
     public MaxGauge(MetricConfig config)
-      : base(config.WithAdditionalTag(MetricType.Gauge.AsTag()))
-    {
+      : base(config.WithAdditionalTag(MetricType.Gauge.AsTag())) {
     }
 
     /// <summary>
@@ -42,6 +41,11 @@ namespace Nohros.Metrics
         }
         current = Interlocked.Read(ref value_);
       }
+    }
+
+    /// <inheritdoc/>
+    public void Reset() {
+      Interlocked.Exchange(ref value_, 0);
     }
 
     /// <inheritdoc/>

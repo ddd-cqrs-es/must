@@ -45,6 +45,10 @@ namespace Nohros.Metrics
       }
     }
 
+    public void Reset() {
+      Interlocked.Exchange(ref value_, long.MaxValue);
+    }
+
     /// <inheritdoc/>
     protected internal override Measure Compute() {
       long v = Interlocked.Read(ref value_);

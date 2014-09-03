@@ -58,19 +58,11 @@ namespace Nohros.Metrics
 
     readonly TimeUnit unit_;
     readonly Histogram histogram_;
-    readonly Meter meter_;
     readonly Counter count_;
     readonly ReadOnlyCollection<IMetric> metrics_;
 
     Timer(Builder builder) : base(builder.Config, builder.Context) {
       unit_ = builder.TimeUnit;
-
-      var unit_config =
-        builder
-          .Config
-          .WithAdditionalTag("unit", "request/" + unit_.Abbreviation());
-
-      meter_ = new Meter(unit_config, builder.TimeUnit, builder.Context);
 
       // remove the count from the histogram, because we need to add a
       // tag for the time unit and this tag will make no sense for count
@@ -80,26 +72,32 @@ namespace Nohros.Metrics
           .WithCount(false)
           .Build();
 
+      MetricConfig histogram_config =
+        builder
+          .Config
+          .WithAdditionalTag("unit", unit_.Name());
       histogram_ =
-        new Histogram(builder.Config, snapshot_config, builder.Resevoir,
+        new Histogram(histogram_config, snapshot_config, builder.Resevoir,
           builder.Context);
 
       count_ = new Counter(builder.Config, builder.Context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(
         new IMetric[] {
-          meter_, count_,
-          new CompositMetricTransformer(histogram_, ConvertToUnit)
+          count_, new CompositMetricTransformer(histogram_, ConvertToUnit)
         });
     }
 
     ICollection<IMetric> ConvertToUnit(ICollection<IMetric> metrics) {
       return
         metrics
-          .Select(
-            m => new MeasureTransformer(m, d => d.Convert(unit_)))
+          .Select(m => new MeasureTransformer(m, ConvertToUnit))
           .Cast<IMetric>()
           .ToList();
+    }
+
+    double ConvertToUnit(double d) {
+      return TimeUnit.Ticks.Convert(d, unit_);
     }
 
     /// <summary>
@@ -171,8 +169,7 @@ namespace Nohros.Metrics
     void Update(TimeSpan duration, long timestamp) {
       if (duration > TimeSpan.Zero) {
         histogram_.Update(duration.Ticks, timestamp);
-        meter_.Mark(1, timestamp);
-        count_.Increment(timestamp);
+        count_.Increment();
       }
     }
   }
