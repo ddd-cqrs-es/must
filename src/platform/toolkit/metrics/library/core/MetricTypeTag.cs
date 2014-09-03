@@ -9,7 +9,7 @@ namespace Nohros.Metrics
   /// </summary>
   public static class MetricTypeTag
   {
-    const string kDefaultName = "nohros.metrics.type";
+    const string kDefaultName = "type";
 
     /// <summary>
     /// Creates a <see cref="Tag"/> by using  the string "nohros.metrics.type"
