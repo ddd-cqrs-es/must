@@ -20,62 +20,82 @@ namespace Nohros.Metrics
       /// <summary>
       /// Initializes a new instance of the <see cref="Builder"/> class that
       /// builds a <see cref="SnapshotConfig"/> that computes the mean,
-      /// standard deviation, min, max and the the 95, 99 and 99.999
-      /// percentiles.
+      /// standard deviation, min, max and the the 95, 99 and 99.999 by
+      /// percentiles by default.
       /// </summary>
-      public Builder() {
-        Percentiles = new[] {95.0, 99.0, 99.999};
-        ComputeCount = true;
-        ComputeMax = true;
-        ComputeMin = true;
-        ComputeStdDev = true;
+      /// <param name="defaults">
+      /// A flag indicating if the default values should be set.
+      /// </param>
+      public Builder(bool defaults = true) {
+        if (defaults) {
+          Percentiles = new[] {95.0, 99.0, 99.999};
+          ComputeCount = true;
+          ComputeMax = true;
+          ComputeMin = true;
+          ComputeStdDev = true;
+        }
+      }
+
+      /// <summary>
+      /// Initializes a new instance of the <see cref="Builder"/> class by
+      /// copying the configuration from the given <paramref name="config"/>.
+      /// </summary>
+      /// <param name="config"></param>
+      public Builder(SnapshotConfig config) {
+        Percentiles = config.Percentiles;
+        ComputeCount = config.ComputeCount;
+        ComputeMax = config.ComputeMax;
+        ComputeMean = config.ComputeMean;
+        ComputeMedian = config.ComputeMedian;
+        ComputeMin = config.ComputeMin;
+        ComputeStdDev = config.ComputeStdDev;
       }
 
       /// <summary>
       /// Defines that the count measure should be computed.
       /// </summary>
-      public Builder WithCount() {
-        ComputeMin = true;
+      public Builder WithCount(bool enable = true) {
+        ComputeMin = enable;
         return this;
       }
 
       /// <summary>
       /// Defines that the median measure should be computed.
       /// </summary>
-      public Builder WithMedian() {
-        ComputeMedian = true;
+      public Builder WithMedian(bool enable = true) {
+        ComputeMedian = enable;
         return this;
       }
 
       /// <summary>
       /// Defines that the max measure should be computed.
       /// </summary>
-      public Builder WithMax() {
-        ComputeMax = true;
+      public Builder WithMax(bool enable = true) {
+        ComputeMax = enable;
         return this;
       }
 
       /// <summary>
       /// Defines that the min measure should be computed.
       /// </summary>
-      public Builder WithMin() {
-        ComputeMin = true;
+      public Builder WithMin(bool enable = true) {
+        ComputeMin = enable;
         return this;
       }
 
       /// <summary>
       /// Defines that the mean measure should be computed.
       /// </summary>
-      public Builder WithMean() {
-        ComputeMean = true;
+      public Builder WithMean(bool enable = true) {
+        ComputeMean = enable;
         return this;
       }
 
       /// <summary>
       /// Defines that the standard deviation measure should be computed.
       /// </summary>
-      public Builder WithStdDev() {
-        ComputeStdDev = true;
+      public Builder WithStdDev(bool enable = true) {
+        ComputeStdDev = enable;
         return this;
       }
 

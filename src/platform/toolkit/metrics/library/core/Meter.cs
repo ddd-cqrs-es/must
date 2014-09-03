@@ -61,26 +61,23 @@ namespace Nohros.Metrics
       MetricContext context) : base(config, context) {
       const string kStatistic = "statistic";
 
-      Tag unit_tag = new Tag("unit", rate_unit.Name());
-      MetricConfig unit_config = config.WithAdditionalTag(unit_tag);
-
       mean_rate_ = new MeanRate(
         config.WithAdditionalTag(new Tag(kStatistic, "mean_rate")), rate_unit,
         context);
 
       ewma_1_rate_ = ExponentialWeightedMovingAverage
         .ForOneMinute(
-          unit_config.WithAdditionalTag(new Tag(kStatistic, "m1_ewma_rate")),
+          config.WithAdditionalTag(new Tag(kStatistic, "ewma_m1_rate")),
           rate_unit, context);
 
       ewma_5_rate_ = ExponentialWeightedMovingAverage
         .ForFiveMinutes(
-          unit_config.WithAdditionalTag(new Tag(kStatistic, "m5_ewma_rate")),
+          config.WithAdditionalTag(new Tag(kStatistic, "ewma_m5_rate")),
           rate_unit, context);
 
       ewma_15_rate_ = ExponentialWeightedMovingAverage
         .ForFifteenMinutes(
-          unit_config.WithAdditionalTag(new Tag(kStatistic, "m15_ewma_rate")),
+          config.WithAdditionalTag(new Tag(kStatistic, "ewma_m15_rate")),
           rate_unit, context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(

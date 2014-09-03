@@ -24,6 +24,15 @@ namespace Nohros.Metrics
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Counter"/> class.
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="context"></param>
+    public Counter(MetricConfig config, MetricContext context)
+      : this(config, 0, context) {
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Counter"/> class that
     /// uses the specified executor to perform the counter updates (
     /// increment/decrement).

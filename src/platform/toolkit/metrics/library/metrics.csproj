@@ -45,6 +45,7 @@
     <Compile Include="core\Counter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="core\MeasureTransformer.cs" />
     <Compile Include="core\Histogram.cs" />
     <Compile Include="core\ICompositeMetric.cs" />
     <Compile Include="core\MaxGauge.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="core\Tag.cs" />
     <Compile Include="core\ITimer.cs" />
     <Compile Include="core\Measure.cs" />
+    <Compile Include="core\CompositMetricTransformer.cs" />
     <Compile Include="core\Timer.cs">
       <SubType>Code</SubType>
     </Compile>

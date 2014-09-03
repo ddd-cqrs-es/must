@@ -6,7 +6,7 @@ namespace Nohros.Metrics
 {
   public class MeanRate : AbstractMetric, IMeter
   {
-    readonly long ticks_per_unit_;
+    readonly double ticks_per_unit_;
     readonly long start_time_;
     readonly Counter count_;
 

@@ -224,7 +224,7 @@ namespace Nohros.Metrics
     }
 
     long TimeInSeconds(long ticks) {
-      return ticks.ToSeconds(TimeUnit.Ticks);
+      return (long) ticks.ToSeconds(TimeUnit.Ticks);
     }
   }
 }

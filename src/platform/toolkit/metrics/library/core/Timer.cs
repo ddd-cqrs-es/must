@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Nohros.Concurrent;
+using System.Linq;
 using Nohros.Extensions.Time;
 
 namespace Nohros.Metrics
@@ -59,20 +59,47 @@ namespace Nohros.Metrics
     readonly TimeUnit unit_;
     readonly Histogram histogram_;
     readonly Meter meter_;
+    readonly Counter count_;
     readonly ReadOnlyCollection<IMetric> metrics_;
 
     Timer(Builder builder) : base(builder.Config, builder.Context) {
       unit_ = builder.TimeUnit;
 
-      meter_ = new Meter(builder.Config, builder.TimeUnit, builder.Context);
+      var unit_config =
+        builder
+          .Config
+          .WithAdditionalTag("unit", "request/" + unit_.Abbreviation());
 
-      histogram_ = new Histogram(builder.Config, builder.SnapshotConfig,
-        builder.Resevoir, builder.Context);
+      meter_ = new Meter(unit_config, builder.TimeUnit, builder.Context);
+
+      // remove the count from the histogram, because we need to add a
+      // tag for the time unit and this tag will make no sense for count
+      // values.
+      var snapshot_config =
+        new SnapshotConfig.Builder(builder.SnapshotConfig)
+          .WithCount(false)
+          .Build();
+
+      histogram_ =
+        new Histogram(builder.Config, snapshot_config, builder.Resevoir,
+          builder.Context);
+
+      count_ = new Counter(builder.Config, builder.Context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(
         new IMetric[] {
-          meter_, histogram_
+          meter_, count_,
+          new CompositMetricTransformer(histogram_, ConvertToUnit)
         });
+    }
+
+    ICollection<IMetric> ConvertToUnit(ICollection<IMetric> metrics) {
+      return
+        metrics
+          .Select(
+            m => new MeasureTransformer(m, d => d.Convert(unit_)))
+          .Cast<IMetric>()
+          .ToList();
     }
 
     /// <summary>
@@ -143,8 +170,9 @@ namespace Nohros.Metrics
 
     void Update(TimeSpan duration, long timestamp) {
       if (duration > TimeSpan.Zero) {
-        histogram_.Update(duration.ToUnit(unit_), timestamp);
+        histogram_.Update(duration.Ticks, timestamp);
         meter_.Mark(1, timestamp);
+        count_.Increment(timestamp);
       }
     }
   }
