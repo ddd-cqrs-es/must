@@ -109,9 +109,9 @@ namespace Nohros.Metrics
         Percentiles = new double[percentiles.Length];
         for (int i = 0; i < percentiles.Length; i++) {
           double percentile = percentiles[i];
-          if (percentile < 0.0 || percentile > 1.0) {
+          if (percentile < 0.0 || percentile > 100.0) {
             throw new ArgumentOutOfRangeException("percentiles",
-              Resources.ArgIsNotInRange.Fmt(0.0, 1.0));
+              Resources.ArgIsNotInRange.Fmt(0.0, 100.0));
           }
           Percentiles[i] = percentile;
         }
@@ -179,8 +179,12 @@ namespace Nohros.Metrics
       ComputeMin = builder.ComputeMin;
       ComputeStdDev = builder.ComputeStdDev;
 
-      Percentiles = new double[builder.Percentiles.Length];
-      Array.Copy(Percentiles, builder.Percentiles, builder.Percentiles.Length);
+      double[] percentiles = builder.Percentiles;
+      int length = percentiles.Length;
+      Percentiles = new double[length];
+      for (int i = 0; i < length; i++) {
+        Percentiles[i] = percentiles[i]/100.0;
+      }
     }
 
     /// <summary>
