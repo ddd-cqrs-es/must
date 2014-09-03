@@ -80,7 +80,11 @@ namespace Nohros.Metrics
         new Histogram(histogram_config, snapshot_config, builder.Resevoir,
           builder.Context);
 
-      count_ = new Counter(builder.Config, builder.Context);
+      var counter_config =
+        builder
+          .Config
+          .WithAdditionalTag(MetricType.Counter.AsTag());
+      count_ = new Counter(counter_config, builder.Context);
 
       metrics_ = new ReadOnlyCollection<IMetric>(
         new IMetric[] {

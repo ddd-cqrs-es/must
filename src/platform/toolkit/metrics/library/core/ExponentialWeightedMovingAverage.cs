@@ -161,7 +161,7 @@ namespace Nohros.Metrics
     /// </param>
     public ExponentialWeightedMovingAverage(MetricConfig config, double alpha,
       TimeSpan interval, TimeUnit unit, MetricContext context)
-      : base(config, context) {
+      : base(config.WithAdditionalTag(MetricType.EWMA.AsTag()), context) {
       interval_ = interval.Ticks;
       alpha_ = alpha;
       ticks_per_unit_ = 1.ToTicks(unit);

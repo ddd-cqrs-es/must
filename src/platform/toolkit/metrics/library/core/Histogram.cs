@@ -26,6 +26,22 @@ namespace Nohros.Metrics
     readonly IResevoir resevoir_;
     readonly List<CallableGaugeWrapper> gauges_;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Histogram"/> that uses
+    /// the <see cref="ExponentiallyDecayingResevoir"/> as resevoir.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> containing the configuration settings
+    /// for the metric.
+    /// </param>
+    /// <param name="stats">
+    /// A <see cref="SnapshotConfig"/> that defines the statistics that should
+    /// be computed.
+    /// </param>
+    public Histogram(MetricConfig config, SnapshotConfig stats)
+      : this(config, stats, new ExponentiallyDecayingResevoir(),
+        MetricContext.ForCurrentProcess) {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Histogram"/> by using the

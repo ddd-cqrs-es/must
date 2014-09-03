@@ -51,7 +51,6 @@ namespace Nohros.Metrics
       count_ = initial;
     }
 
-
     /// <inheritdoc/>
     public void Increment() {
       Increment(1);

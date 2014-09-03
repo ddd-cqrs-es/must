@@ -27,6 +27,11 @@
     /// <summary>
     /// A rate if for numeric value that represents a rate per time unit.
     /// </summary>
-    Rate = 3
+    Rate = 3,
+
+    /// <summary>
+    /// An exponentially-weighted moving average of count per time
+    /// </summary>
+    EWMA = 4,
   }
 }
