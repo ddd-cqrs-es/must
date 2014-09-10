@@ -344,7 +344,7 @@
     <Compile Include="type\suppliers\ISupplierStream.cs" />
     <Compile Include="type\suppliers\SupplierOfInstance.cs" />
     <Compile Include="type\suppliers\Suppliers.cs" />
-    <Compile Include="type\TimeUnit.cs" />
+    <Compile Include="time\TimeUnit.cs" />
     <Compile Include="type\values\FundamentalValue.cs" />
     <Compile Include="type\GenericValue.cs" />
     <Compile Include="type\collections\values\IDictionaryValue.cs" />
@@ -420,7 +420,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
