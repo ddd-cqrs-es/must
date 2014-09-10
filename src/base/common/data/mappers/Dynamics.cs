@@ -122,23 +122,33 @@ namespace Nohros.Dynamics
       if (type == typeof (short)) {
         return "GetInt16";
       }
+      if (type == typeof (TimeSpan)) {
+        return "GetTimeSpan";
+      }
       throw new ArgumentException(
         string
           .Format(Resources.Resources.Arg_WrongType, type.Name, "ValueType"));
     }
 
-    public static MethodInfo GetDataReaderMethod(string method) {
-      MethodInfo method_info;
-      if (!data_reader_methods_.TryGetValue(method, out method_info)) {
-        // Most of the IDataReader method is inherited from the IDataRecord
-        // interface. We have more probability to found the requested
-        // method on the IDataRecord interface than in the IDataReader
-        // interface.
-        method_info =
-          typeof (IDataRecord).GetMethod(method) ??
-            typeof (IDataReader).GetMethod(method);
+    internal static MethodInfo GetDataReaderMethod(string method,
+      Type derived = null) {
+      MethodInfo method_info = null;
+      //if (!data_reader_methods_.TryGetValue(method, out method_info)) {
+
+      // If derived was specified the chance that 
+      if (derived != null) {
+        method_info = derived.GetMethod(method);
       }
-      return method_info;
+
+      // Most of the IDataReader method is inherited from the IDataRecord
+      // interface. We have more probability to found the requested
+      // method on the IDataRecord interface than in the IDataReader
+      // interface.
+      return method_info ??
+        typeof (IDataRecord).GetMethod(method) ??
+          typeof (IDataReader).GetMethod(method);
+      //}
+      //return method_info;
     }
 
     public static ModuleBuilder ModuleBuilder {

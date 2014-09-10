@@ -54,6 +54,7 @@ namespace Nohros.Data
     readonly IDictionary<string, ITypeMap> mappings_;
     readonly Type type_t_;
     readonly string type_t_type_name_;
+    readonly Type data_reader_type_;
     bool auto_map_;
     CallableDelegate<T> factory_;
 
@@ -63,8 +64,12 @@ namespace Nohros.Data
     /// <see cref="DataReaderMapperBuilder{T}"/> class that uses the namespace
     /// of the type <typeparamref name="T"/> as the class name prefix.
     /// </summary>
-    public DataReaderMapperBuilder()
-      : this(typeof (T), typeof (T).Namespace) {
+    /// <param name="data_rader_type">
+    /// The type of the <see cref="IDataReader"/> that should be used to
+    /// search for the Get(...) methods.
+    /// </param>
+    public DataReaderMapperBuilder(Type data_rader_type = null)
+      : this(typeof (T), typeof (T).Namespace, data_rader_type) {
     }
 
     /// <summary>
@@ -72,13 +77,21 @@ namespace Nohros.Data
     /// <see cref="DataReaderMapperBuilder{T}"/> class using the specified
     /// class name prefix.
     /// </summary>
-    public DataReaderMapperBuilder(string prefix) : this(typeof (T), prefix) {
+    /// <param name="prefix">
+    /// </param>
+    /// <param name="data_rader_type">
+    /// The type of the <see cref="IDataReader"/> that should be used to
+    /// search for the Get...(int i) methods.
+    /// </param>
+    public DataReaderMapperBuilder(string prefix, Type data_rader_type = null)
+      : this(typeof (T), prefix, null) {
       if (prefix == null) {
         throw new ArgumentNullException("prefix");
       }
+      data_reader_type_ = data_rader_type;
     }
 
-    DataReaderMapperBuilder(Type type_t, string prefix) {
+    DataReaderMapperBuilder(Type type_t, string prefix, Type data_reader_type) {
       if (type_t == null) {
         throw new ArgumentNullException("type_t");
       }
@@ -86,6 +99,7 @@ namespace Nohros.Data
         StringComparer.OrdinalIgnoreCase);
       type_t_ = type_t;
       type_t_type_name_ = prefix;
+      data_reader_type_ = data_reader_type;
       auto_map_ = false;
     }
     #endregion
@@ -739,7 +753,7 @@ namespace Nohros.Data
         MethodInfo get_x_method =
           Dynamics_.GetDataReaderMethod(
             Dynamics_.GetDataReaderMethodName(field.RawType ??
-              property.PropertyType));
+              property.PropertyType), data_reader_type_);
 
         // Get the set method of the current property. If the property does
         // not have a set method ignores it.
@@ -942,7 +956,7 @@ namespace Nohros.Data
 
     bool IsReferenceType(PropertyInfo property) {
       Type type = property.PropertyType;
-      if (type.IsValueType || type.Name == "String") {
+      if (type.IsValueType || type.Name == "String" || type.Name == "TimeSpan") {
         return false;
       }
       return true;
