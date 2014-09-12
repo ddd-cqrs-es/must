@@ -242,6 +242,22 @@ namespace Nohros.Data
     void SetIfLessThan(string name, long state);
 
     /// <summary>
+    /// Set, in an atomic operation, the value of the state associated
+    /// with the key <paramref name="name"/> if the current value is equals to
+    /// than given state.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the state to set.
+    /// </param>
+    /// <param name="state">
+    /// The value of the state to set.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="string"/>
+    /// </exception>
+    void SetIfEqualsTo<T>(string name, T state);
+
+    /// <summary>
     /// Removes the state associated with the given <paramref name="name"/>.
     /// </summary>
     /// <param name="name">

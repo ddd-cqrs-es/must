@@ -54,6 +54,7 @@
     <Compile Include="repositories\SqlDaoFactory.cs" />
     <Compile Include="repositories\SqlThreadSafeHiLoGenerator.cs" />
     <Compile Include="repositories\StateByNameQuery.cs" />
+    <Compile Include="SetIfEqualsToQuery.cs" />
     <Compile Include="SetIfGreaterThanQuery.cs" />
     <Compile Include="SetIfLessThanQuery.cs" />
     <Compile Include="SqlAppStateFactory.cs" />

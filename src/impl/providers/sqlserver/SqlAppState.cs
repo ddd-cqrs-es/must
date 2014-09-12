@@ -21,6 +21,7 @@ namespace Nohros.Data.SqlServer
     readonly UpdateStateQuery update_state_;
     readonly SetIfGreaterThanQuery if_greater_than_query_;
     readonly SetIfLessThanQuery if_less_than_query_;
+    readonly SetIfEqualsToQuery if_equals_to_query_;
     readonly RemoveStateQuery remove_state_;
 
     bool supress_dtc_;
@@ -33,6 +34,7 @@ namespace Nohros.Data.SqlServer
       if_greater_than_query_ = new SetIfGreaterThanQuery(sql_connection_provider);
       if_less_than_query_ = new SetIfLessThanQuery(sql_connection_provider);
       remove_state_ = new RemoveStateQuery(sql_connection_provider);
+      if_equals_to_query_ = new SetIfEqualsToQuery(sql_connection_provider);
 
       SupressTransactions = supress_dtc;
     }
@@ -144,6 +146,26 @@ namespace Nohros.Data.SqlServer
       SetIfLessThan(name, state, kLongTableName);
     }
 
+    /// <inheritdoc/>
+    public void SetIfEqualsTo<T>(string name, T state) {
+      string table_name = GetTableNameForType<T>();
+      // lets try to update the value upfront and if nothing changes,
+      // check if the value exists and create a new one if not.
+      if (!if_equals_to_query_.Execute(name, table_name, state)) {
+        long obj;
+        if (!get_state_.Execute(name, table_name, out obj)) {
+          // If a insert is performed after our update attempt and before
+          // our insert attempt a unique constraint exception will be throw.
+          // In that case we will try to perform the update again.
+          try {
+            add_state_.Execute(name, table_name, state);
+          } catch (UniqueConstraintViolationException) {
+            if_equals_to_query_.Execute(name, table_name, state);
+          }
+        }
+      }
+    }
+
     void SetIfGreater(string name, long state, string table_name) {
       // lets try to update the value upfront and if nothing changes,
       // check if the value exists and create a new one if not.
@@ -226,6 +248,7 @@ namespace Nohros.Data.SqlServer
         get_state_.SupressTransactions = value;
         add_state_.SupressTransactions = value;
         remove_state_.SupressTransactions = value;
+        if_equals_to_query_.SupressTransactions = value;
       }
     }
   }
