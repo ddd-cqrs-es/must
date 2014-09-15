@@ -4,6 +4,105 @@ using System.Collections.Generic;
 namespace Nohros.Data
 {
   /// <summary>
+  /// Extensions method for <see cref="IAppState"/> interface.
+  /// </summary>
+  public static class AppStateExtensions
+  {
+    /// <summary>
+    /// Sets, in an atomic operation, the values of the state associated
+    /// with the key <paramref name="name"/> if the current value is greater
+    /// the given state or if the key is not found.
+    /// </summary>
+    /// <param name="states">
+    /// A <see cref="IAppState"/> to extend.
+    /// </param>
+    /// <param name="name">
+    /// The name of the state to set.
+    /// </param>
+    /// <param name="state">
+    /// The value of the state to set.
+    /// </param>
+    /// <param name="comparand">
+    /// The value that is compared to the current state.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="T"/>
+    /// </exception>
+    public static bool SetIfGreaterThan<T>(this IAppState states, string name,
+      T state, T comparand) {
+      return states.SetIf(ComparisonOperator.GreaterThan, name, state, comparand);
+    }
+
+    /// <summary>
+    /// Sets, in an atomic operation, the values of the state associated
+    /// with the key <paramref name="name"/> if the current value is less
+    /// the given state or if the key is not found.
+    /// </summary>
+    /// <param name="states">
+    /// A <see cref="IAppState"/> to extend.
+    /// </param>
+    /// <param name="name">
+    /// The name of the state to set.
+    /// </param>
+    /// <param name="state">
+    /// The value of the state to set.
+    /// </param>
+    /// <param name="comparand">
+    /// The value that is compared to the current state.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="T"/>
+    /// </exception>
+    public static bool SetIfLessThan<T>(this IAppState states, string name,
+      T state, T comparand) {
+      return states.SetIf(ComparisonOperator.LessThan, name, state, comparand);
+    }
+
+    /// <summary>
+    /// Sets, in an atomic operation, the values of the state associated
+    /// with the key <paramref name="name"/> if the current value is less
+    /// the given state or if the key is not found.
+    /// </summary>
+    /// <param name="states">
+    /// A <see cref="IAppState"/> to extend.
+    /// </param>
+    /// <param name="name">
+    /// The name of the state to set.
+    /// </param>
+    /// <param name="state">
+    /// The value of the state to set.
+    /// </param>
+    /// <param name="comparand">
+    /// The value that is compared to the current state.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="T"/>
+    /// </exception>
+    public static bool SetIfEqualsTo<T>(this IAppState states, string name,
+      T state, T comparand) {
+      return states.SetIf(ComparisonOperator.Equals, name, state, comparand);
+    }
+
+    /// <summary>
+    /// Increments (increases by one) the value of the state associated with
+    /// the given <paramref name="name"/> as an atomic operation or associates
+    /// the the specified <paramref name="name"/> with the value one.
+    /// </summary>
+    /// <param name="states">
+    /// A <see cref="IAppState"/> to extend.
+    /// </param>
+    /// <param name="name">
+    /// The name of the state to be increased.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="int"/>
+    /// </exception>
+    public static void Increment(this IAppState states, string name) {
+      states.Merge(name, 1);
+    }
+  }
+
+  /// <summary>
   /// Represents an application state repository which is an object that
   /// contains a collection of key/value pairs representing application states.
   /// </summary>
@@ -178,84 +277,33 @@ namespace Nohros.Data
     void Set<T>(string name, T state);
 
     /// <summary>
-    /// Sets ,in an atomic operation., the values of the state associated
-    /// with the key <paramref name="name"/> if the current value is greater
-    /// than given state
-    /// </summary>
-    /// <param name="name">
-    /// The name of the state to set.
-    /// </param>
-    /// <param name="state">
-    /// The value of the state to set.
-    /// </param>
-    /// <exception cref="NotSupportedException">
-    /// The local database does not support the type <see cref="int"/>
-    /// </exception>
-    void SetIfGreaterThan(string name, int state);
-
-    /// <summary>
-    /// Sets ,in an atomic operation., the values of the state associated
-    /// with the key <paramref name="name"/> if the current value is greater
-    /// than given state
-    /// </summary>
-    /// <param name="name">
-    /// The name of the state to set.
-    /// </param>
-    /// <param name="state">
-    /// The value of the state to set.
-    /// </param>
-    /// <exception cref="NotSupportedException">
-    /// The local database does not support the type <see cref="long"/>
-    /// </exception>
-    void SetIfGreaterThan(string name, long state);
-
-    /// <summary>
-    /// Sets ,in an atomic operation., the values of the state associated
-    /// with the key <paramref name="name"/> if the current value is less
-    /// than given state
-    /// </summary>
-    /// <param name="name">
-    /// The name of the state to set.
-    /// </param>
-    /// <param name="state">
-    /// The value of the state to set.
-    /// </param>
-    /// <exception cref="NotSupportedException">
-    /// The local database does not support the type <see cref="int"/>
-    /// </exception>
-    void SetIfLessThan(string name, int state);
-
-    /// <summary>
-    /// Sets ,in an atomic operation., the values of the state associated
-    /// with the key <paramref name="name"/> if the current value is less
-    /// than given state
-    /// </summary>
-    /// <param name="name">
-    /// The name of the state to set.
-    /// </param>
-    /// <param name="state">
-    /// The value of the state to set.
-    /// </param>
-    /// <exception cref="NotSupportedException">
-    /// The local database does not support the type <see cref="long"/>
-    /// </exception>
-    void SetIfLessThan(string name, long state);
-
-    /// <summary>
     /// Set, in an atomic operation, the value of the state associated
-    /// with the key <paramref name="name"/> if the current value is equals to
-    /// than given state.
+    /// with the key <paramref name="name"/> if the operation described by
+    /// the <paramref name="op"/> when applied over the current
+    /// state's value and using the given <paramref name="comparand"/> is
+    /// <c>true</c> or if the key is not found.
     /// </summary>
     /// <param name="name">
     /// The name of the state to set.
     /// </param>
     /// <param name="state">
-    /// The value of the state to set.
+    /// The value that replaces the current state if the compariso results in
+    /// equality.
     /// </param>
+    /// <param name="comparand">
+    /// The value that is compared to the current state.
+    /// </param>
+    /// <param name="op">
+    /// The operation to be applied over the current state's value using the
+    /// given <paramref name="comparand"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the state was set; otherwise, <c>false</c>.
+    /// </returns>
     /// <exception cref="NotSupportedException">
     /// The local database does not support the type <see cref="string"/>
     /// </exception>
-    void SetIfEqualsTo<T>(string name, T state);
+    bool SetIf<T>(ComparisonOperator op, string name, T state, T comparand);
 
     /// <summary>
     /// Removes the state associated with the given <paramref name="name"/>.
@@ -279,5 +327,25 @@ namespace Nohros.Data
     /// The number of states that was removed.
     /// </returns>
     int RemoveForPrefix<T>(string prefix);
+
+    /// <summary>
+    /// Merges, in an atomic operation, the current state's value with the
+    /// given <paramref name="state"/> or associates the given
+    /// <paramref name="state"/> with the specified <paramref name="name"/>
+    /// if <paramref name="name"/> if not found.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The state's data type.
+    /// </typeparam>
+    /// <param name="name">
+    /// The name of the state to be merged.
+    /// </param>
+    /// <param name="state">
+    /// The value to be merged with the current state.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="string"/>
+    /// </exception>
+    void Merge<T>(string name, T state);
   }
 }

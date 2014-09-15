@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Transactions;
-using Nohros.Data;
 using Nohros.Data.SqlServer.Extensions;
 using Nohros.Logging;
-using Nohros.Resources;
-using Nohros.Extensions;
-using Nohros.Resources;
 
 namespace Nohros.Data.SqlServer
 {
-  public class SetIfEqualsToQuery
+  public class MergeStateQuery
   {
     const string kClassName = "Nohros.Data.SqlCe.SetIfGreaterThanQuery";
 
@@ -20,20 +15,20 @@ namespace Nohros.Data.SqlServer
     readonly SqlConnectionProvider sql_connection_provider_;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SetIfGreaterThanQuery"/>
+    /// Initializes a new instance of the <see cref="MergeStateQuery"/>
     /// using the given <param ref="sql_connection_provider" />
     /// </summary>
     /// <param name="sql_connection_provider">
     /// A <see cref="SqlConnectionProvider"/> object that can be used to
     /// create connections to the data provider.
     /// </param>
-    public SetIfEqualsToQuery(SqlConnectionProvider sql_connection_provider) {
+    public MergeStateQuery(SqlConnectionProvider sql_connection_provider) {
       sql_connection_provider_ = sql_connection_provider;
       logger_ = MustLogger.ForCurrentProcess;
       SupressTransactions = true;
     }
 
-    public bool Execute(string name, string table_name, object state) {
+    public bool Execute<T>(string name, string table_name, T state) {
       using (var scope =
         new TransactionScope(SupressTransactions
           ? TransactionScopeOption.Suppress
@@ -44,9 +39,8 @@ namespace Nohros.Data.SqlServer
           IDbCommand cmd = builder
             .SetText(@"
 update " + table_name + @"
-set state = @state" + @"
-where state_name = @name
-  and state = @state")
+set state = state + @state" + @"
+where state_name = @name")
             .SetType(CommandType.Text)
             .AddParameter("@name", name)
             .AddParameterWithValue("@state", state)

@@ -19,10 +19,9 @@ namespace Nohros.Data.SqlServer
     readonly AddStateQuery add_state_;
     readonly GetStateQuery get_state_;
     readonly UpdateStateQuery update_state_;
-    readonly SetIfGreaterThanQuery if_greater_than_query_;
-    readonly SetIfLessThanQuery if_less_than_query_;
-    readonly SetIfEqualsToQuery if_equals_to_query_;
+    readonly SetIfQuery if_query_;
     readonly RemoveStateQuery remove_state_;
+    readonly MergeStateQuery merge_state_;
 
     bool supress_dtc_;
 
@@ -31,10 +30,9 @@ namespace Nohros.Data.SqlServer
       update_state_ = new UpdateStateQuery(sql_connection_provider);
       get_state_ = new GetStateQuery(sql_connection_provider);
       add_state_ = new AddStateQuery(sql_connection_provider);
-      if_greater_than_query_ = new SetIfGreaterThanQuery(sql_connection_provider);
-      if_less_than_query_ = new SetIfLessThanQuery(sql_connection_provider);
       remove_state_ = new RemoveStateQuery(sql_connection_provider);
-      if_equals_to_query_ = new SetIfEqualsToQuery(sql_connection_provider);
+      merge_state_ = new MergeStateQuery(sql_connection_provider);
+      if_query_ = new SetIfQuery(sql_connection_provider);
 
       SupressTransactions = supress_dtc;
     }
@@ -127,31 +125,12 @@ namespace Nohros.Data.SqlServer
     }
 
     /// <inheritdoc/>
-    public void SetIfGreaterThan(string name, int state) {
-      SetIfGreater(name, state, kIntTableName);
-    }
-
-    /// <inheritdoc/>
-    public void SetIfGreaterThan(string name, long state) {
-      SetIfGreater(name, state, kLongTableName);
-    }
-
-    /// <inheritdoc/>
-    public void SetIfLessThan(string name, int state) {
-      SetIfLessThan(name, state, kIntTableName);
-    }
-
-    /// <inheritdoc/>
-    public void SetIfLessThan(string name, long state) {
-      SetIfLessThan(name, state, kLongTableName);
-    }
-
-    /// <inheritdoc/>
-    public void SetIfEqualsTo<T>(string name, T state) {
+    public bool SetIf<T>(ComparisonOperator op, string name, T state,
+      T comparand) {
       string table_name = GetTableNameForType<T>();
       // lets try to update the value upfront and if nothing changes,
       // check if the value exists and create a new one if not.
-      if (!if_equals_to_query_.Execute(name, table_name, state)) {
+      if (!if_query_.Execute(op, name, table_name, state, comparand)) {
         long obj;
         if (!get_state_.Execute(name, table_name, out obj)) {
           // If a insert is performed after our update attempt and before
@@ -160,16 +139,20 @@ namespace Nohros.Data.SqlServer
           try {
             add_state_.Execute(name, table_name, state);
           } catch (UniqueConstraintViolationException) {
-            if_equals_to_query_.Execute(name, table_name, state);
+            return if_query_.Execute(op, name, table_name, state,
+              comparand);
           }
         }
       }
+      return true;
     }
 
-    void SetIfGreater(string name, long state, string table_name) {
+    /// <inheritdoc/>
+    public void Merge<T>(string name, T state) {
+      string table_name = GetTableNameForType<T>();
       // lets try to update the value upfront and if nothing changes,
       // check if the value exists and create a new one if not.
-      if (!if_greater_than_query_.Execute(name, table_name, state)) {
+      if (!merge_state_.Execute(name, table_name, state)) {
         long obj;
         if (!get_state_.Execute(name, table_name, out obj)) {
           // If a insert is performed after our update attempt and before
@@ -178,25 +161,7 @@ namespace Nohros.Data.SqlServer
           try {
             add_state_.Execute(name, table_name, state);
           } catch (UniqueConstraintViolationException) {
-            if_greater_than_query_.Execute(name, table_name, state);
-          }
-        }
-      }
-    }
-
-    void SetIfLessThan(string name, long state, string table_name) {
-      // lets try to update the value upfront and if nothing changes,
-      // check if the value exists and create a new one if not.
-      if (!if_less_than_query_.Execute(name, table_name, state)) {
-        long obj;
-        if (!get_state_.Execute(name, table_name, out obj)) {
-          // If a insert is performed after our update attempt and before
-          // our insert attempt a unique constraint exception will be throw.
-          // In that case we will try to perform the update again.
-          try {
-            add_state_.Execute(name, table_name, state);
-          } catch (UniqueConstraintViolationException) {
-            if_less_than_query_.Execute(name, table_name, state);
+            merge_state_.Execute(name, table_name, state);
           }
         }
       }
@@ -248,7 +213,8 @@ namespace Nohros.Data.SqlServer
         get_state_.SupressTransactions = value;
         add_state_.SupressTransactions = value;
         remove_state_.SupressTransactions = value;
-        if_equals_to_query_.SupressTransactions = value;
+        merge_state_.SupressTransactions = value;
+        if_query_.SupressTransactions = value;
       }
     }
   }

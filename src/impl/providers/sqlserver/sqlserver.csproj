@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="AddStateQuery.cs" />
     <Compile Include="GetStateQuery.cs" />
+    <Compile Include="MergeStateQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoveStateQuery.cs" />
     <Compile Include="repositories\AbstractSqlDaoFactory.cs" />
@@ -54,9 +55,7 @@
     <Compile Include="repositories\SqlDaoFactory.cs" />
     <Compile Include="repositories\SqlThreadSafeHiLoGenerator.cs" />
     <Compile Include="repositories\StateByNameQuery.cs" />
-    <Compile Include="SetIfEqualsToQuery.cs" />
-    <Compile Include="SetIfGreaterThanQuery.cs" />
-    <Compile Include="SetIfLessThanQuery.cs" />
+    <Compile Include="SetIfQuery.cs" />
     <Compile Include="SqlAppStateFactory.cs" />
     <Compile Include="SqlAppState.cs" />
     <Compile Include="SqlConnectionProvider.cs" />
