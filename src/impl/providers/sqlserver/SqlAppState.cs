@@ -131,18 +131,20 @@ namespace Nohros.Data.SqlServer
       // lets try to update the value upfront and if nothing changes,
       // check if the value exists and create a new one if not.
       if (!if_query_.Execute(op, name, table_name, state, comparand)) {
-        long obj;
+        T obj;
         if (!get_state_.Execute(name, table_name, out obj)) {
           // If a insert is performed after our update attempt and before
           // our insert attempt a unique constraint exception will be throw.
           // In that case we will try to perform the update again.
           try {
             add_state_.Execute(name, table_name, state);
+            return true;
           } catch (UniqueConstraintViolationException) {
             return if_query_.Execute(op, name, table_name, state,
               comparand);
           }
         }
+        return false;
       }
       return true;
     }
@@ -153,7 +155,7 @@ namespace Nohros.Data.SqlServer
       // lets try to update the value upfront and if nothing changes,
       // check if the value exists and create a new one if not.
       if (!merge_state_.Execute(name, table_name, state)) {
-        long obj;
+        T obj;
         if (!get_state_.Execute(name, table_name, out obj)) {
           // If a insert is performed after our update attempt and before
           // our insert attempt a unique constraint exception will be throw.

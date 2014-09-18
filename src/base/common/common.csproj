@@ -201,6 +201,7 @@
     <Compile Include="data\repositories\CriteriaResolver.cs" />
     <Compile Include="data\TransactionScopes.cs" />
     <Compile Include="exception\ConstraintViolationException.cs" />
+    <Compile Include="exception\CustomProviderException.cs" />
     <Compile Include="exception\NetworkException.cs" />
     <Compile Include="exception\NoResultException.cs" />
     <Compile Include="exception\NotReachedException.cs" />
@@ -421,7 +422,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

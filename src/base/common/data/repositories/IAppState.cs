@@ -100,6 +100,27 @@ namespace Nohros.Data
     public static void Increment(this IAppState states, string name) {
       states.Merge(name, 1);
     }
+
+    /// <summary>
+    /// Increments (increases by n) the value of the state associated with
+    /// the given <paramref name="name"/> as an atomic operation or associates
+    /// the the specified <paramref name="name"/> with the value <paramref name="n"/>.
+    /// </summary>
+    /// <param name="states">
+    /// A <see cref="IAppState"/> to extend.
+    /// </param>
+    /// <param name="name">
+    /// The name of the state to be increased.
+    /// </param>
+    /// <param name="n">
+    /// The number to increment.
+    /// </param>
+    /// <exception cref="NotSupportedException">
+    /// The local database does not support the type <see cref="int"/>
+    /// </exception>
+    public static void Increment(this IAppState states, string name, int n) {
+      states.Merge(name, n);
+    }
   }
 
   /// <summary>

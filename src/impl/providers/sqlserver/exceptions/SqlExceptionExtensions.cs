@@ -13,6 +13,10 @@ namespace Nohros.Data.SqlServer.Extensions
           case 2627: // duplicate check constraint
             return new UniqueConstraintViolationException(exception);
         }
+
+        if (exception.Number >= 50000) {
+          return new CustomProviderException(exception);
+        }
       }
       return new ProviderException(exception);
     }
