@@ -159,6 +159,40 @@ namespace Nohros.Concurrent
       return true;
     }
 
+    /// <summary>
+    /// Get the number of elements contained in the
+    /// <see cref="Mailbox{T}"/>.
+    /// </summary>
+    /// <remarks>
+    /// For determining whether the collection contains any items, use of the
+    /// <see cref="IsEmpty"/> property is recommended rather than retrieving
+    /// the number of items from the <see cref="Count"/> property and
+    /// comparing it to 0.
+    /// </remarks>
+    public int Count {
+      get { return message_queue_.Count; }
+    }
+
+    /// <summary>
+    /// Gets a value that indicates whether the <see cref="Mailbox{T}"/> is
+    /// empty.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the <see cref="Mailbox{T}"/> is empty; otherwise,
+    /// <c>false</c>.
+    /// </value>
+    /// <remarks>
+    /// For determining whether the collection contains any items, use of this
+    /// property is recommended rather than retrieving the number of items
+    /// from the <see cref="Count"/> property and comparing it to 0. However,
+    /// as this collection is intended to be accessed concurrently, it may
+    /// be the case that another thread will modify the collection after
+    /// <see cref="IsEmpty"/> returns, thus invalidating the result.
+    /// </remarks>
+    public bool IsEmpty {
+      get { return message_queue_.IsEmpty; }
+    }
+
     void ThreadMain(object obj) {
       var context = (SynchronizationContext) obj;
       if (context == null) {
