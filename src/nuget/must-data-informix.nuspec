@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>must.data.informix</id>
+        <version>0.1.0</version>
+        <title>Must Data for IBM Informix</title>
+        <authors>Nohros Inc</authors>
+        <owners>Nohros Inc</owners>
+        <projectUrl>http://code.google.com/p/nohros-must</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This project contains the IBM Informix implementation of the nohros data API.</description>
+        <summary>The IBM Informix implementation of the nohros data API.</summary>
+        <copyright>Nohros Inc</copyright>
+        <language>en-US</language>
+        <tags>csharp framework nohros log4net logging</tags>
+        <dependencies>
+            <dependency id="must.common" version="1.12.1" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\bin\release\informix\IBM.Data.Informix.dll" target="lib\net40\IBM.Data.Informix.dll" />
+        <file src="..\bin\release\informix\nohros.data.informix.dll" target="lib\net40\nohros.data.informix.dll" />
+    </files>
+</package>

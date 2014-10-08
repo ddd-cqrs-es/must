@@ -421,14 +421,14 @@ namespace Nohros.Data
     /// The name of the source column to be mapped.
     /// </param>
     /// <returns></returns>
-    public DataReaderMapperBuilder<T> Map<TProperty, TConverted>(
+    public DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
       Func<TConverted, TProperty> conversor) {
       Map(expression, source, conversor);
       return this;
     }
 
-    DataReaderMapperBuilder<T> Map<TProperty, TConverted>(
+    DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
       Type type, Func<TConverted, TProperty> conversor) {
       MemberExpression member;
