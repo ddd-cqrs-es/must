@@ -36,21 +36,40 @@ alter proc mtc_add_tag (
 )
 as
 
-if not exists(
-  select tag_id
-  from mtc_tag
-  where tag_name = @name
-    and tag_value = @value
-    and serie_id = @serie_id
-)
+declare @tag_id bigint
+
+select @tag_id = tag_id
+from mtc_tag
+where tag_name = @name
+  and tag_value = @value
+
+if (@tag_id is null)
 begin
-  insert into mtc_tag (
+  insert into mtc_tag(
      tag_name
     ,tag_value
-    ,serie_id
   ) values (
      @name
     ,@value
+  )
+
+  set @tag_id = scope_identity()
+end
+
+if not exists(
+  select tag_id
+  from mtc_tag_serie
+  where serie_id = @serie_id
+    and tag_id = @tag_id
+)
+begin
+  insert into mtc_tag_serie(
+     tag_id
+    ,serie_id
+  ) values (
+     @tag_id
     ,@serie_id
   )
 end
+
+select @tag_id

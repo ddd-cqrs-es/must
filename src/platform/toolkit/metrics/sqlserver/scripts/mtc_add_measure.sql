@@ -36,12 +36,15 @@ alter proc mtc_add_measure (
 )
 as
 
-insert into mtc_measure (
-   measure_value
-  ,measure_time
-  ,serie_id
-) values (
-   @measure
-  ,@timestamp
-  ,@serie_id
-)
+if @measure > 0
+begin
+  insert into mtc_measure (
+     measure_value
+    ,measure_time
+    ,serie_id
+  ) values (
+     @measure
+    ,@timestamp
+    ,@serie_id
+  )
+end

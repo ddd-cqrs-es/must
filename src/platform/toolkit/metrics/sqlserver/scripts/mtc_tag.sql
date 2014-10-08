@@ -11,8 +11,7 @@ go
 create table mtc_tag (
   tag_id bigint identity(1,1) not null,
   tag_name varchar(64) not null,
-  tag_value varchar(128) not null,
-  serie_id bigint not null
+  tag_value varchar(128) not null
 )
 
 alter table mtc_tag
@@ -21,17 +20,8 @@ primary key (
   tag_id
 )
 
-alter table mtc_tag
-add constraint FK_mtc_tag_serie
-foreign key (
-  serie_id
-) references mtc_serie (
-  serie_id
-)
-
 create unique nonclustered index IX_mtc_tag_natural
 on mtc_tag (
    tag_name
   ,tag_value
-  ,serie_id
 )

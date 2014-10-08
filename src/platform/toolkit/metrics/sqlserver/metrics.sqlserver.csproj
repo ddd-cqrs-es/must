@@ -71,7 +71,9 @@
     <Content Include="scripts\mtc_get_id_of_tag.sql" />
     <Content Include="scripts\mtc_measure.sql" />
     <Content Include="scripts\mtc_serie.sql" />
+    <Content Include="scripts\mtc_serie_contains_tag.sql" />
     <Content Include="scripts\mtc_tag.sql" />
+    <Content Include="scripts\mtc_tag_serie.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

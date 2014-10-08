@@ -31,8 +31,7 @@ go
  */
 alter proc mtc_get_id_of_tag (
   @name varchar(800),
-  @value varchar(800),
-  @serie_id bigint
+  @value varchar(800)
 )
 as
 
@@ -40,4 +39,3 @@ select tag_id
 from mtc_tag
 where tag_name = @name
   and tag_value = @value
-  and serie_id = @serie_id
