@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Nohros.Data
 {
@@ -52,5 +54,11 @@ namespace Nohros.Data
     /// Gets or sets the type of the underlying column data.
     /// </summary>
     public Type RawType { get; set; }
+
+    /// <summary>
+    /// Gets or sets a expression that should be used to convert the value
+    /// returned from the database to another type.
+    /// </summary>
+    public Delegate Conversor { get; set; }
   }
 }

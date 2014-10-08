@@ -25,6 +25,7 @@ namespace Nohros.Data
       public string Key { get; set; }
       public PropertyInfo Value { get; set; }
       public Type RawType { get; set; }
+      public Delegate Conversor { get; set; }
     }
 
     class OrdinalMap
@@ -38,6 +39,7 @@ namespace Nohros.Data
       public int Key { get; set; }
       public PropertyInfo Value { get; set; }
       public Type RawType { get; set; }
+      public Delegate Conversor { get; set; }
     }
 
     class MappingResult
@@ -210,12 +212,22 @@ namespace Nohros.Data
     /// </returns>
     public DataReaderMapperBuilder<T> Map(string destination, string source,
       Type type) {
+      return Map(destination, GetTypeMap(source, type));
+    }
+
+    ITypeMap GetTypeMap(string source, Type type, Delegate expression = null) {
       if (source == null) {
-        return Map(destination, new IgnoreMapType());
+        return new IgnoreMapType();
       }
-      return Map(destination, new StringTypeMap(source) {
-        RawType = type
-      });
+
+      if (expression != null && expression.Target != null) {
+        throw new ArgumentException(
+          "The conversor method should not be an instance method.\r\n It shoud be a static method, a lambda expression or an anonymous method");
+      }
+      return new StringTypeMap(source) {
+        RawType = type,
+        Conversor = expression
+      };
     }
 
     /// <summary>
@@ -392,6 +404,33 @@ namespace Nohros.Data
     /// <returns></returns>
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
+      return Map(expression, source, null, (Func<TProperty, TProperty>) null);
+    }
+
+    /// <summary>
+    /// Maps the source column <see cref="source"/> to a object property.
+    /// </summary>
+    /// <typeparam name="TProperty">
+    /// The type of the property to be mapped
+    /// </typeparam>
+    /// <param name="expression">
+    /// A <see cref="Expression{TDelegate}"/> that describes the property to
+    /// be mapped.
+    /// </param>
+    /// <param name="source">
+    /// The name of the source column to be mapped.
+    /// </param>
+    /// <returns></returns>
+    public DataReaderMapperBuilder<T> Map<TProperty, TConverted>(
+      Expression<Func<T, TProperty>> expression, string source,
+      Func<TConverted, TProperty> conversor) {
+      Map(expression, source, conversor);
+      return this;
+    }
+
+    DataReaderMapperBuilder<T> Map<TProperty, TConverted>(
+      Expression<Func<T, TProperty>> expression, string source,
+      Type type, Func<TConverted, TProperty> conversor) {
       MemberExpression member;
       if (expression.Body is UnaryExpression) {
         member = ((UnaryExpression) expression.Body).Operand as MemberExpression;
@@ -402,7 +441,7 @@ namespace Nohros.Data
       if (member == null) {
         throw new ArgumentException("[member] should be a class property");
       }
-      return Map(member.Member.Name, source, type);
+      return Map(member.Member.Name, GetTypeMap(source, type, conversor));
     }
 
     /// <summary>
@@ -587,6 +626,7 @@ namespace Nohros.Data
 
       EmitConstructor(builder, result);
       EmitGetOrdinals(builder, result);
+      //EmitConversors(builder, result);
       EmitNewT(builder, result);
       EmitMapMethod(builder, result);
 
@@ -639,6 +679,19 @@ namespace Nohros.Data
       // return from the constructor
       il.Emit(OpCodes.Ret);
     }
+
+    /*void EmitConversors(TypeBuilder type, MappingResult result) {
+      for (int i = 0; i < result.OrdinalsMapping.Length; i++) {
+        ValueMap field = result.ValueMappings[i];
+        if (field.Conversor != null) {
+          MethodBuilder method =
+            type.DefineMethod("_Convert" + field.Value.Name,
+              MethodAttributes.Private | MethodAttributes.Static);
+          field.Conversor.CompileToMethod(method);
+          result.OrdinalsMapping[i].Conversor = method;
+        }
+      }
+    }*/
 
     void EmitNewT(TypeBuilder type, MappingResult result) {
       MethodBuilder builder = type
@@ -769,6 +822,13 @@ namespace Nohros.Data
         EmitLoad(il, ordinal);
         il.Emit(OpCodes.Ldelem_I4);
         il.Emit(OpCodes.Callvirt, get_x_method);
+
+        // convert the result of get method and...
+        if (field.Conversor != null) {
+          il.Emit(OpCodes.Callvirt, field.Conversor.Method);
+        }
+
+        // store it on the loaded field.
         il.Emit(OpCodes.Callvirt, set_x_property);
       }
 
@@ -944,7 +1004,9 @@ namespace Nohros.Data
           il.Emit(OpCodes.Stelem_I4);
 
           ordinals_mapping[i] =
-            new OrdinalMap(i, fields[i].Value, fields[i].RawType);
+            new OrdinalMap(i, fields[i].Value, fields[i].RawType) {
+              Conversor = fields[i].Conversor
+            };
         }
       }
       return ordinals_mapping;
@@ -1010,7 +1072,9 @@ namespace Nohros.Data
         } else if (mapping.MapType == TypeMapType.String) {
           var map = mapping as StringTypeMap;
           value_mappings.Add(
-            new ValueMap((string) map.Value, property, map.RawType));
+            new ValueMap((string) map.Value, property, map.RawType) {
+              Conversor = map.Conversor
+            });
         } else {
           const_mappings.Add(new ConstantMap(mapping, property));
         }

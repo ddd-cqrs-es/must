@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Nohros.Data;
 
 namespace Nohros.Data
@@ -10,9 +11,6 @@ namespace Nohros.Data
     /// </summary>
     object Value { get; }
 
-    /// <summary>
-    /// Gets the type
-    /// </summary>
     TypeMapType MapType { get; }
   }
 }
