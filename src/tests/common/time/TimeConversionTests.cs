@@ -3,7 +3,7 @@ using Nohros.Extensions.Time;
 
 namespace Nohros.Concurrent
 {
-  public class TimeUnitHelperTests
+  public class TimeConversionTests
   {
     const long C1 = 1L;
     const long C2 = C1*100;

@@ -109,14 +109,14 @@ namespace Nohros.Common
       public int Id { get; set; }
       public string Text { get; set; }
       public DateTime CreationDate { get; set; }
-      public int Counter1 { get; set; }
+      public TimeSpan Counter1 { get; set; }
       public int Counter2 { get; set; }
     }
 
     [Test]
     public void ShouldMapInternalClass() {
       var builder = new SqlConnectionStringBuilder();
-      builder.DataSource = ".\\SQLEX";
+      builder.DataSource = "192.168.203.207";
       builder.UserID = "nohros";
       builder.Password = "Noors03";
 
@@ -129,10 +129,19 @@ namespace Nohros.Common
         conn.Open();
         using (var reader = cmd.ExecuteReader()) {
           var mapper = new DataReaderMapperBuilder<PostPoco>()
+            .Map<TimeSpan, int>(poco => poco.Counter1, "counter1",
+              i => TimeSpan.FromSeconds(i))
             .Build();
           reader.Read();
         }
       }
+      Dynamics_.AssemblyBuilder.Save("dynamics.dll");
+    }
+
+    [Test]
+    public void test() {
+      Func<int, TimeSpan> a = i => TimeSpan.FromSeconds(i);
+      a(10);
     }
 
     [Test]
@@ -200,7 +209,7 @@ namespace Nohros.Common
     [Test]
     public void ShouldMapCustomColumnToProperty() {
       var builder = new SqlConnectionStringBuilder();
-      builder.DataSource = ".";
+      builder.DataSource = "192.168.203.207";
       builder.UserID = "nohros";
       builder.Password = "Noors03";
 
