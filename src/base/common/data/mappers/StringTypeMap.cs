@@ -59,6 +59,6 @@ namespace Nohros.Data
     /// Gets or sets a expression that should be used to convert the value
     /// returned from the database to another type.
     /// </summary>
-    public Delegate Conversor { get; set; }
+    public LambdaExpression Conversor { get; set; }
   }
 }

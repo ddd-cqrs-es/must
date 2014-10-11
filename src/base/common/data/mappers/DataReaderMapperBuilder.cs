@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Nohros.Dynamics;
+using Nohros.Extensions;
 using PropertyAttributes = System.Reflection.PropertyAttributes;
 using ConstantMap =
   System.Collections.Generic.KeyValuePair
@@ -25,7 +28,7 @@ namespace Nohros.Data
       public string Key { get; set; }
       public PropertyInfo Value { get; set; }
       public Type RawType { get; set; }
-      public Delegate Conversor { get; set; }
+      public LambdaExpression Conversor { get; set; }
     }
 
     class OrdinalMap
@@ -39,7 +42,7 @@ namespace Nohros.Data
       public int Key { get; set; }
       public PropertyInfo Value { get; set; }
       public Type RawType { get; set; }
-      public Delegate Conversor { get; set; }
+      public LambdaExpression Conversor { get; set; }
     }
 
     class MappingResult
@@ -215,15 +218,16 @@ namespace Nohros.Data
       return Map(destination, GetTypeMap(source, type));
     }
 
-    ITypeMap GetTypeMap(string source, Type type, Delegate expression = null) {
+    ITypeMap GetTypeMap(string source, Type type,
+      LambdaExpression expression = null) {
       if (source == null) {
         return new IgnoreMapType();
       }
 
-      if (expression != null && expression.Target != null) {
-        throw new ArgumentException(
-          "The conversor method should not be an instance method.\r\n It shoud be a static method, a lambda expression or an anonymous method");
-      }
+      //if (expression != null && expression.Target != null) {
+      //throw new ArgumentException(
+      //"The conversor method should not be an instance method.\r\n It shoud be a static method, a lambda expression or an anonymous method");
+      //}
       return new StringTypeMap(source) {
         RawType = type,
         Conversor = expression
@@ -404,7 +408,8 @@ namespace Nohros.Data
     /// <returns></returns>
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
-        return Map(expression, source, type, (Func<TProperty, TProperty>)null);
+      return Map(expression, source, type,
+        (Expression<Func<TProperty, TProperty>>) null);
     }
 
     /// <summary>
@@ -423,14 +428,14 @@ namespace Nohros.Data
     /// <returns></returns>
     public DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
-      Func<TConverted, TProperty> conversor) {
-      Map(expression, source, typeof(TConverted), conversor);
+      Expression<Func<TConverted, TProperty>> conversor) {
+      Map(expression, source, typeof (TConverted), conversor);
       return this;
     }
 
     DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
-      Type type, Func<TConverted, TProperty> conversor) {
+      Type type, Expression<Func<TConverted, TProperty>> conversor) {
       MemberExpression member;
       if (expression.Body is UnaryExpression) {
         member = ((UnaryExpression) expression.Body).Operand as MemberExpression;
@@ -787,6 +792,21 @@ namespace Nohros.Data
             MethodAttributes.Virtual, typeof (T),
           new Type[] {typeof (IDataReader)});
 
+      // define that the method is allowed to acess non-public members.
+      /*Type permission = typeof(ReflectionPermissionAttribute);
+      ConstructorInfo ctor =
+        permission
+          .GetConstructor(new[] { typeof(SecurityAction) });
+      PropertyInfo access = permission.GetProperty("Flags");
+      var reflection_permission_attribute =
+        new CustomAttributeBuilder(ctor, new object[] { SecurityAction.Demand },
+          new[] { access },
+          new object[] {
+            ReflectionPermissionFlag.MemberAccess |
+              ReflectionPermissionFlag.RestrictedMemberAccess
+          });
+
+      builder.SetCustomAttribute(reflection_permission_attribute);*/
       ILGenerator il = builder.GetILGenerator();
 
       // Create a new instance of the T using the associated class loader and
@@ -817,17 +837,45 @@ namespace Nohros.Data
           continue;
         }
 
+        // loaded the "data transfer object"
         il.Emit(OpCodes.Ldloc_0);
+
+        // if the conversor method is defined we need to load the
+        // "this" pointer onto the stack before the data reader, so we can
+        // chain the conversion method call after the value is retrieved
+        // from the data reader.
+        MethodInfo conversor = null;
+        if (field.Conversor != null) {
+          conversor = (field.Conversor.Body as MethodCallExpression).Method;
+          if (!conversor.IsStatic || !conversor.IsPublic) {
+            throw new ArgumentException(
+              "The \"conversor\" method of the property {0} is not static or public"
+                .Fmt(property.Name));
+          }
+        }
+
+        // loads the data reader
         il.Emit(OpCodes.Ldarg_1);
+
+        // load the ordinals_ array
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Ldfld, result.OrdinalsField);
+
+        // load the element of the array at |ordinal| position
         EmitLoad(il, ordinal);
         il.Emit(OpCodes.Ldelem_I4);
+
+        // call the "get...(int i)" method of the datareader
+        //   -> i will be equals to the element loaded from the
+        //      array at positiom "ordinal"
         il.Emit(OpCodes.Callvirt, get_x_method);
 
+        // the stack now contains the returned value of "get...(int i)"
+        // method.
+
         // convert the result of get method and...
-        if (field.Conversor != null) {
-          il.Emit(OpCodes.Callvirt, field.Conversor.Method);
+        if (conversor != null) {
+          il.Emit(OpCodes.Call, conversor);
         }
 
         // store it on the loaded field.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Permissions;
 
 namespace Nohros.Dynamics
 {
@@ -12,7 +13,6 @@ namespace Nohros.Dynamics
 
     static readonly ModuleBuilder module_;
     static readonly IDictionary<string, MethodInfo> data_reader_methods_;
-
 #if DEBUG
     static readonly AssemblyBuilder assembly_;
 #endif
@@ -22,6 +22,20 @@ namespace Nohros.Dynamics
       AppDomain app = AppDomain.CurrentDomain;
       AssemblyName asm_name = new AssemblyName();
       asm_name.Name = kDynamicAssemblyName;
+
+      // define that the method is allowed to acess non-public members.
+      /*Type permission = typeof(ReflectionPermissionAttribute);
+      ConstructorInfo ctor =
+        permission
+          .GetConstructor(new[] { typeof(SecurityAction) });
+      PropertyInfo access = permission.GetProperty("Flags");
+      var reflection_permission_attribute =
+        new CustomAttributeBuilder(ctor, new object[] { SecurityAction.Demand },
+          new[] { access },
+          new object[] {
+            ReflectionPermissionFlag.MemberAccess |
+              ReflectionPermissionFlag.RestrictedMemberAccess
+          });*/
 #if DEBUG
       AssemblyBuilder asm_builder = app
         .DefineDynamicAssembly(asm_name, AssemblyBuilderAccess.RunAndSave);
@@ -30,10 +44,11 @@ namespace Nohros.Dynamics
         .DefineDynamicModule(asm_builder.GetName().Name,
           "nohros.dynamics.dll");
 #else
-      AssemblyBuilder asm_builder = app
+      AssemblyBuilder assembly = app
         .DefineDynamicAssembly(asm_name, AssemblyBuilderAccess.Run);
-      module_ = asm_builder
-        .DefineDynamicModule(asm_builder.GetName().Name, false);
+          //new[] {reflection_permission_attribute});
+      module_ = assembly
+        .DefineDynamicModule(assembly.GetName().Name, false);
 #endif
       data_reader_methods_ = new Dictionary<string, MethodInfo>();
     }
@@ -150,6 +165,12 @@ namespace Nohros.Dynamics
       //}
       //return method_info;
     }
+
+#if DEBUG
+    public static void Save(string file_name) {
+      assembly_.Save(file_name);
+    }
+#endif
 
     public static ModuleBuilder ModuleBuilder {
       get { return module_; }
