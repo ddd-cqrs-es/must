@@ -404,7 +404,7 @@ namespace Nohros.Data
     /// <returns></returns>
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
-      return Map(expression, source, null, (Func<TProperty, TProperty>) null);
+        return Map(expression, source, type, (Func<TProperty, TProperty>)null);
     }
 
     /// <summary>
@@ -424,7 +424,7 @@ namespace Nohros.Data
     public DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
       Func<TConverted, TProperty> conversor) {
-      Map(expression, source, conversor);
+      Map(expression, source, typeof(TConverted), conversor);
       return this;
     }
 
@@ -565,9 +565,11 @@ namespace Nohros.Data
     Type GetDynamicType(string prefix) {
       string dynamic_type_name =
         Dynamics_.GetDynamicTypeName(prefix, type_t_);
-      return Dynamics_.ModuleBuilder
-                      .GetType(dynamic_type_name) ??
-        MakeDynamicType(dynamic_type_name);
+      return
+        Dynamics_
+          .ModuleBuilder
+          .GetType(dynamic_type_name) ??
+          MakeDynamicType(dynamic_type_name);
     }
 
     /// <summary>
