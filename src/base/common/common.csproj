@@ -168,6 +168,9 @@
     <Compile Include="data\mappers\ConstStringMapType.cs" />
     <Compile Include="data\mappers\DataReaderMapper.cs" />
     <Compile Include="data\mappers\DataReaderMapperBuilder.cs" />
+    <Compile Include="data\mappers\IQueryExecutor.cs" />
+    <Compile Include="data\mappers\IQueryMapper.cs" />
+    <Compile Include="data\mappers\QueryMapper.cs" />
     <Compile Include="data\mappers\ValueTypeDataReaderMapper.cs" />
     <Compile Include="data\mappers\DecimalMapType.cs" />
     <Compile Include="data\mappers\DoubleMapType.cs" />
@@ -422,7 +425,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
