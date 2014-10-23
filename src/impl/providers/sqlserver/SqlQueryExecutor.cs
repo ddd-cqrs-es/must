@@ -338,12 +338,14 @@ namespace Nohros.Data.SqlServer
         conn.Open();
         IDataReader reader = cmd.ExecuteReader();
         var m = (IDataReaderMapper<T>) cache_.GetOrAdd(query, s => mapper());
-        return new QueryMapper<T>(m, reader);
+        return new QueryMapper<T>(m, reader, new IDisposable[] {builder, conn});
       } catch (SqlException e) {
         logger_.Error(
           StringResources
             .Log_MethodThrowsException
             .Fmt("ExecuteQuery", kClassName), e);
+        builder.Dispose();
+        conn.Dispose();
         throw e.AsProviderException();
       } catch {
         builder.Dispose();
