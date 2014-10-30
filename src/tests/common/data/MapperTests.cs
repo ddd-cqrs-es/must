@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Permissions;
 using NUnit.Framework;
 using Nohros.Data;
 using Nohros.Dynamics;
@@ -114,6 +116,8 @@ namespace Nohros.Common
     }
 
     [Test]
+    [ReflectionPermission(SecurityAction.Demand,
+      Flags = ReflectionPermissionFlag.RestrictedMemberAccess | ReflectionPermissionFlag.MemberAccess)]
     public void ShouldMapInternalClass() {
       var builder = new SqlConnectionStringBuilder();
       builder.DataSource = "192.168.203.207";
@@ -129,13 +133,18 @@ namespace Nohros.Common
         conn.Open();
         using (var reader = cmd.ExecuteReader()) {
           var mapper = new DataReaderMapperBuilder<PostPoco>()
-            .Map<TimeSpan, int>(poco => poco.Counter1, "counter1",
-              i => TimeSpan.FromSeconds(i))
+            .Map<int, TimeSpan>(poco => poco.Counter1, "counter1",
+              i => FromSeconds(i))
             .Build();
-          reader.Read();
+          //Assert.Pass("Value:" + mapper.Map(reader).Counter1);
+          mapper.Map(reader);
         }
       }
-      Dynamics_.AssemblyBuilder.Save("dynamics.dll");
+       Dynamics_.AssemblyBuilder.Save("dynamics.dll");
+    }
+
+    public static TimeSpan FromSeconds(int i ) {
+      return TimeSpan.FromSeconds(i);
     }
 
     [Test]
@@ -198,10 +207,11 @@ namespace Nohros.Common
         .Arrange(() => reader.GetString(0))
         .Returns("name-value");
 
-      var mapper = new DataReaderMapperBuilder<IgnoreMapperTest>("ShouldIgnoreProperty")
-        .AutoMap()
-        .Ignore("name")
-        .Build();
+      var mapper =
+        new DataReaderMapperBuilder<IgnoreMapperTest>("ShouldIgnoreProperty")
+          .AutoMap()
+          .Ignore("name")
+          .Build();
       Assert.That(() => mapper.Map(reader).Name, Is.Null);
       //Dynamics_.AssemblyBuilder.Save("nohros.tests.dll");
     }
@@ -254,6 +264,54 @@ namespace Nohros.Common
         .Map("name", new ConstStringMapType("myname"))
         .Build();
       Assert.That(mapper.Map(reader).Name, Is.EqualTo("myname"));
+    }
+
+    [Test]
+    public TimeSpan name() {
+      return TimeSpan.FromSeconds(10);
+    }
+
+    public interface IMapper
+    {
+      void Map();
+    }
+
+    [Test]
+    public void dynamic() {
+      AppDomain app = AppDomain.CurrentDomain;
+      AssemblyName name = new AssemblyName("assemblyB");
+      AssemblyBuilder assembly = app
+        .DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave);
+      ModuleBuilder module = assembly
+        .DefineDynamicModule(assembly.GetName().Name, "b.dll");
+
+      TypeBuilder type = module.DefineType("MyType",
+        TypeAttributes.Public |
+          TypeAttributes.Class |
+          TypeAttributes.AutoClass |
+          TypeAttributes.AutoLayout, null, new[] {typeof (IMapper)});
+
+      MethodBuilder method = type
+        .DefineMethod("Map",
+          MethodAttributes.Public |
+            MethodAttributes.HideBySig |
+            MethodAttributes.Virtual);
+
+      ILGenerator il = method.GetILGenerator();
+
+      Func<int, TimeSpan> func = i => TimeSpan.FromSeconds(i);
+
+      il.Emit(OpCodes.Ldc_I4_0);
+      //il.Emit(OpCodes.Call, typeof(TimeSpan).GetMethod("FromSeconds"));
+      il.EmitCall(OpCodes.Call, func.Method, null);
+      il.Emit(OpCodes.Ret);
+
+      Type t = type.CreateType();
+
+      assembly.Save("b.dll");
+
+      IMapper mapper = (IMapper) Activator.CreateInstance(t);
+      mapper.Map();
     }
   }
 }

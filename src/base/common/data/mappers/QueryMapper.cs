@@ -22,7 +22,7 @@ namespace Nohros.Data
   {
     readonly IDataReaderMapper<T> mapper_;
     readonly IDataReader reader_;
-    readonly IEnumerable<IDisposable> disposables_;
+    readonly IDisposable[] disposables_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataReaderReader"/>
@@ -59,7 +59,7 @@ namespace Nohros.Data
       IEnumerable<IDisposable> disposables) {
       mapper_ = mapper;
       reader_ = reader;
-      disposables_ = disposables;
+      disposables_ = disposables.ToArray();
     }
 
     /// <summary>

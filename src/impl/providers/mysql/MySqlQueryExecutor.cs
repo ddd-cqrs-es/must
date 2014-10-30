@@ -206,6 +206,8 @@ namespace Nohros.Data.SqlServer
           StringResources
             .Log_MethodThrowsException
             .Fmt("ExecuteQuery", kClassName), e);
+        builder.Dispose();
+        conn.Dispose();
         throw e.AsProviderException();
       } catch {
         builder.Dispose();
@@ -213,7 +215,6 @@ namespace Nohros.Data.SqlServer
         throw;
       }
     }
-
 
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
