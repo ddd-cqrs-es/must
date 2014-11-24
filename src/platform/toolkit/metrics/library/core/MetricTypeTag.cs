@@ -41,6 +41,8 @@ namespace Nohros.Metrics
           return new Tag(name, "gauge");
         case MetricType.Rate:
           return new Tag(name, "rate");
+          case MetricType.EWMA:
+          return new Tag(name, "ewma");
         default:
           throw new ArgumentOutOfRangeException(
             Resources.ArgIsInvalid.Fmt((int) type, typeof (MetricType).Name));
