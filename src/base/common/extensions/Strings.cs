@@ -181,7 +181,7 @@ namespace Nohros.Extensions
           builder.Append(normalized_string[i]);
         }
       }
-      return builder.ToString();
+      return builder.ToString().Normalize(NormalizationForm.FormC);
     }
 
     /// <summary>

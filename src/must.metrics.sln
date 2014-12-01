@@ -17,6 +17,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlserver", "impl\providers
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(impl)", "(impl)", "{48DC215D-58A0-4A91-BD21-3A83EC5418F0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{A47D450F-BB33-4D3B-A419-FAC44016CB53}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\must-metrics-annotations-install.ps1 = nuget\must-metrics-annotations-install.ps1
+		nuget\must-metrics-annotations-uninstall.ps1 = nuget\must-metrics-annotations-uninstall.ps1
+		nuget\must-metrics-annotations.nuspec = nuget\must-metrics-annotations.nuspec
+		nuget\must-metrics.nuspec = nuget\must-metrics.nuspec
+		nuget\ToBeDeleted.txt = nuget\ToBeDeleted.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics.annotations", "platform\toolkit\metrics\annotations\metrics.annotations.csproj", "{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +88,16 @@ Global
 		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.Release|x86.ActiveCfg = Release|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3596E622-2737-4ECD-8DC8-0CD7033BA4A8}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
