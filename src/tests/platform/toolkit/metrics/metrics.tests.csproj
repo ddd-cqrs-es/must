@@ -40,25 +40,25 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CallableGaugeTests.cs">
+    <Compile Include="core\CallableGaugeTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CounterTest.cs">
+    <Compile Include="core\CounterTest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ExponentiallyDecayingReservoirTests.cs" />
-    <Compile Include="ExponentialWeightedMovingAverageTest.cs" />
-    <Compile Include="MaxGaugeTests.cs" />
-    <Compile Include="MeanRateTests.cs" />
-    <Compile Include="MetricsConfigTest.cs" />
-    <Compile Include="MinGaugeTests.cs" />
+    <Compile Include="core\ExponentiallyDecayingReservoirTests.cs" />
+    <Compile Include="core\ExponentialWeightedMovingAverageTest.cs" />
+    <Compile Include="core\MaxGaugeTests.cs" />
+    <Compile Include="core\MeanRateTests.cs" />
+    <Compile Include="core\MetricsConfigTest.cs" />
+    <Compile Include="core\MinGaugeTests.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="SnapshotTests.cs" />
-    <Compile Include="StepClock.cs" />
+    <Compile Include="core\SnapshotTests.cs" />
+    <Compile Include="core\StepClock.cs" />
     <Compile Include="Testing.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UniformResevoirTest.cs" />
+    <Compile Include="core\UniformResevoirTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.ServiceLocation">
@@ -94,6 +94,9 @@
       <Project>{EE140ABF-C917-44D7-B89F-D6946332F507}</Project>
       <Name>metrics</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="attributes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
