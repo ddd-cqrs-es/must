@@ -708,22 +708,28 @@ namespace Nohros.Data
 
       ILGenerator il = builder.GetILGenerator();
 
-      // Calls the default constructor of the type T
-      ConstructorInfo t_constructor = type_t_
-        .GetConstructor(
-          BindingFlags.Public |
-            BindingFlags.NonPublic | BindingFlags.Instance,
-          null, Type.EmptyTypes, null);
+      if (factory_ == null) {
+        // Calls the default constructor of the type T
+        ConstructorInfo t_constructor = type_t_
+          .GetConstructor(
+            BindingFlags.Public |
+              BindingFlags.NonPublic | BindingFlags.Instance,
+            null, Type.EmptyTypes, null);
 
-      if (t_constructor == null) {
-        throw new MissingMethodException(type_t_.Name, "ctor()");
+        if (t_constructor == null) {
+          throw new MissingMethodException(type_t_.Name, "ctor()");
+        }
+
+        LocalBuilder local_t = il.DeclareLocal(type_t_);
+        il.Emit(OpCodes.Newobj, t_constructor);
+        il.Emit(OpCodes.Stloc_0, local_t);
+        il.Emit(OpCodes.Ldloc_0);
+        il.Emit(OpCodes.Ret);
+      } else {
+        // If the factory was defined there is no need to create the NewT
+        // method since it will not be used.
+        il.ThrowException(typeof (NotImplementedException));
       }
-
-      LocalBuilder local_t = il.DeclareLocal(type_t_);
-      il.Emit(OpCodes.Newobj, t_constructor);
-      il.Emit(OpCodes.Stloc_0, local_t);
-      il.Emit(OpCodes.Ldloc_0);
-      il.Emit(OpCodes.Ret);
     }
 
     void EmitGetOrdinals(TypeBuilder type, MappingResult result) {
@@ -834,7 +840,8 @@ namespace Nohros.Data
         // not have a set method ignores it.
         MethodInfo set_x_property = property.GetSetMethod(true);
         if (set_x_property == null) {
-          continue;
+          throw new ArgumentException(
+            "The property {0} does not have a set method.".Fmt(property.Name));
         }
 
         // loaded the "data transfer object"
@@ -1075,28 +1082,68 @@ namespace Nohros.Data
     }
 
     PropertyInfo[] GetProperties() {
-      Type[] interfaces = type_t_.GetInterfaces();
-      if (interfaces.Length == 0) {
-        return type_t_.GetProperties();
-      }
+      var properties = new Dictionary<string, PropertyInfo>();
+      var considered = new HashSet<Type>();
+      var queue = new Queue<Type>(5);
 
-      // The interfaces that was already considered.
-      List<Type> considered = new List<Type>(5);
-      Queue<Type> queue = new Queue<Type>(5);
-      List<PropertyInfo> properties = new List<PropertyInfo>(5*6);
       considered.Add(type_t_);
       queue.Enqueue(type_t_);
+
       while (queue.Count > 0) {
         Type type = queue.Dequeue();
         foreach (Type t in type.GetInterfaces()) {
-          if (!considered.Contains(t)) {
-            considered.Add(t);
+          if (considered.Add(t)) {
             queue.Enqueue(t);
           }
         }
-        properties.AddRange(type.GetProperties());
+
+        foreach (var property in type.GetProperties()) {
+          PropertyInfo existent;
+
+          // If a property with the same name already exists, check if it
+          // has a set property and replac it if not.
+          if (properties.TryGetValue(property.Name, out existent)) {
+            MethodInfo method = existent.GetSetMethod(true);
+            if (method == null) {
+              properties.Remove(property.Name);
+              properties.Add(property.Name, property);
+            }
+          } else {
+            properties.Add(property.Name, property);
+          }
+        }
       }
-      return properties.ToArray();
+
+      // If the factory was defined, check if it have set properties that does
+      // not have it in the base type.
+      if (factory_ != null) {
+        T t = factory_();
+        Type derived = t.GetType();
+        var properties_to_replace =
+          new List<Tuple<PropertyInfo, PropertyInfo>>();
+        foreach (var property in properties.Values) {
+          MethodInfo set_method = property.GetSetMethod(true);
+          if (set_method == null) {
+            PropertyInfo derived_property = derived.GetProperty(property.Name);
+            if (derived_property != null) {
+              set_method = derived_property.GetSetMethod(true);
+              if (set_method != null) {
+                properties_to_replace.Add(
+                  new Tuple<PropertyInfo, PropertyInfo>(property,
+                    derived_property));
+              }
+            }
+          }
+        }
+
+        foreach (var property in properties_to_replace) {
+          properties.Remove(property.Item1.Name);
+          properties.Add(property.Item2.Name, property.Item2);
+        }
+      }
+
+      // Properties with no set method should be ignored
+      return properties.Values.ToArray();
     }
 
     void GetMappings(PropertyInfo[] properties, MappingResult result) {

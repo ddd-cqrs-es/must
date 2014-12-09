@@ -106,7 +106,25 @@ namespace Nohros.Common
       public MapperTest Nested { get; set; }
     }
 
-    public class PostPoco
+    public interface IPostPoco
+    {
+      int Id { get; }
+      string Text { get; }
+      DateTime CreationDate { get; }
+      TimeSpan Counter1 { get; }
+      int Counter2 { get; }
+    }
+
+    public class PostPoco : IPostPoco
+    {
+      public int Id { get; set; }
+      public string Text { get; set; }
+      public DateTime CreationDate { get; set; }
+      public TimeSpan Counter1 { get; set; }
+      public int Counter2 { get { return 0; } }
+    }
+
+    public class PostPoco2 : PostPoco
     {
       public int Id { get; set; }
       public string Text { get; set; }
@@ -115,9 +133,12 @@ namespace Nohros.Common
       public int Counter2 { get; set; }
     }
 
+
     [Test]
     [ReflectionPermission(SecurityAction.Demand,
-      Flags = ReflectionPermissionFlag.RestrictedMemberAccess | ReflectionPermissionFlag.MemberAccess)]
+      Flags =
+        ReflectionPermissionFlag.RestrictedMemberAccess |
+          ReflectionPermissionFlag.MemberAccess)]
     public void ShouldMapInternalClass() {
       var builder = new SqlConnectionStringBuilder();
       builder.DataSource = "192.168.203.207";
@@ -140,17 +161,50 @@ namespace Nohros.Common
           mapper.Map(reader);
         }
       }
-       Dynamics_.AssemblyBuilder.Save("dynamics.dll");
+      Dynamics_.AssemblyBuilder.Save("dynamics.dll");
     }
 
-    public static TimeSpan FromSeconds(int i ) {
+    public static TimeSpan FromSeconds(int i) {
       return TimeSpan.FromSeconds(i);
+    }
+
+    [Test]
+    public void ShouldMapInteerfaces() {
+      var builder = new SqlConnectionStringBuilder();
+      builder.DataSource = "192.168.203.207";
+      builder.UserID = "nohros";
+      builder.Password = "Noors03";
+
+      using (var conn = new SqlConnection(builder.ToString()))
+      using (
+        var cmd =
+          new SqlCommand(
+            "select 15 as Id, 'post' as text, Getdate() as CreationDate, 9 as Counter1, 10 as Counter2",
+            conn)) {
+        conn.Open();
+        using (var reader = cmd.ExecuteReader()) {
+          var mapper = new DataReaderMapperBuilder<IPostPoco>()
+            .Map<int, TimeSpan>(poco => poco.Counter1, "counter1",
+              i => FromSeconds(i))
+            .Map(x => x.Counter2, "counter2")
+            .SetFactory(() => new PostPoco2())
+            .Build();
+          Assert.Pass("Value:" + mapper.Map(reader).Counter1);
+          //mapper.Map(reader);
+        }
+      }
+      Dynamics_.AssemblyBuilder.Save("dynamics.dll");
     }
 
     [Test]
     public void test() {
       Func<int, TimeSpan> a = i => TimeSpan.FromSeconds(i);
       a(10);
+    }
+
+    [Test]
+    public void signature() {
+      throw new NotImplementedException();
     }
 
     [Test]
