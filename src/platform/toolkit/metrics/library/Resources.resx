@@ -124,6 +124,9 @@
     <value>Argument is not in range [{0}..{1}]</value>
   </data>
   <data name="metric_name_no_group_or_type" xml:space="preserve">
-    <value>Both group and type need to be specified.</value>
+    <value>Both group and type need to be specified</value>
+  </data>
+  <data name="NullAnnotatedField" xml:space="preserve">
+    <value>Field [{0}] in class [{1}] is null. All metric fields must be initialized before registering.</value>
   </data>
 </root>

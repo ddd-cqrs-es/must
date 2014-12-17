@@ -40,6 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="annotations\MetricAttribute.cs" />
+    <Compile Include="core\BasicCompositeMetric.cs" />
+    <Compile Include="core\MetricWrapper.cs" />
+    <Compile Include="core\ResevoirType.cs" />
+    <Compile Include="annotations\TagAttribute.cs" />
     <Compile Include="AppMetrics.cs" />
     <Compile Include="core\AbstractMetric.cs" />
     <Compile Include="core\Counter.cs">
@@ -56,7 +61,6 @@
     </Compile>
     <Compile Include="core\MetricContext.cs" />
     <Compile Include="core\MetricType.cs" />
-    <Compile Include="core\MetricTypeTag.cs" />
     <Compile Include="core\MinGauge.cs" />
     <Compile Include="core\Snapshot.cs">
       <SubType>Code</SubType>

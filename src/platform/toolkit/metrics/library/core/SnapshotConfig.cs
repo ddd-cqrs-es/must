@@ -8,8 +8,7 @@ namespace Nohros.Metrics
   /// through a <see cref="Snapshot"/>.
   /// </summary>
   /// <remarks>
-  /// The default <see cref="SnapshotConfig"/> computes the mean, standard
-  /// deviation, min, max and the the 95, 99 and 99.999 percentiles.
+  /// The default <see cref="SnapshotConfig"/> computes the count, min and max.
   /// </remarks>
   /// <seealso cref="Snapshot"/>
   /// <seealso cref="Histogram"/>
@@ -28,12 +27,11 @@ namespace Nohros.Metrics
       /// </param>
       public Builder(bool defaults = true) {
         if (defaults) {
-          Percentiles = new[] {95.0, 99.0, 99.999};
           ComputeCount = true;
           ComputeMax = true;
           ComputeMin = true;
-          ComputeStdDev = true;
         }
+        Percentiles = new double[0];
       }
 
       /// <summary>

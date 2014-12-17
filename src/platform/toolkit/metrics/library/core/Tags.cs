@@ -5,6 +5,13 @@ using System.Linq;
 
 namespace Nohros.Metrics
 {
+  public static class TagsExtensions
+  {
+    public static Tags ToTags(this IEnumerable<Tag> tags) {
+      return new Tags(tags);
+    }
+  }
+
   /// <summary>
   /// Represents a collection of <see cref="Tag"/>.
   /// </summary>

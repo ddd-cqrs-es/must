@@ -7,7 +7,7 @@ namespace Nohros.Metrics
 {
   /// <summary>
   /// A implementation of the <see cref="ICompositeMetric"/> that forwards
-  /// all the <see cref="IMetric"/> methods another
+  /// all the <see cref="IMetric"/> methods to another
   /// <see cref="ICompositeMetric"/> and transform the
   /// <see cref="ICompositeMetric.Metrics"/> in another collection using a
   /// <see cref="Func{T1, TResult}"/>.

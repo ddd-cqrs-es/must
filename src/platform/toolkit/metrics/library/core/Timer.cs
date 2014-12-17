@@ -92,6 +92,61 @@ namespace Nohros.Metrics
         });
     }
 
+    /// <summary>
+    /// Creates a new timer by using the specified name and the default
+    /// values for resevoir, time unit and snapshot config.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the timer
+    /// </param>
+    /// <returns>
+    /// A <see cref="Timer"/> whose name is <paramref name="name"/> and uses
+    /// the default resevoir, time unit and snapshot config.
+    /// </returns>
+    public static Timer Create(string name) {
+      return new Builder(new MetricConfig(name)).Build();
+    }
+
+    /// <summary>
+    /// Creates a new timer by using the specified name and time unit and the
+    /// default values for resevoir and snapshot config.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the timer
+    /// </param>
+    /// <param name="unit">
+    /// </param>
+    /// <returns>
+    /// A <see cref="Timer"/> whose name is <paramref name="name"/> and uses
+    /// the specified time unit and default resevoir and snapshot config.
+    /// </returns>
+    public static Timer Create(string name, TimeUnit unit) {
+      return
+        new Builder(new MetricConfig(name))
+          .WithTimeUnit(unit)
+          .Build();
+    }
+
+    /// <summary>
+    /// Creates a new timer by using the specified name and resevoir and the
+    /// default values for time unit and snapshot config.
+    /// </summary>
+    /// <param name="name">
+    /// The name of the timer
+    /// </param>
+    /// <param name="reservoir">
+    /// </param>
+    /// <returns>
+    /// A <see cref="Timer"/> whose name is <paramref name="name"/> and uses
+    /// the specified resevoir and default time unit and snapshot config.
+    /// </returns>
+    public static Timer Create(string name, IResevoir reservoir) {
+      return
+        new Builder(new MetricConfig(name))
+          .WithResevoir(reservoir)
+          .Build();
+    }
+
     ICollection<IMetric> ConvertToUnit(ICollection<IMetric> metrics) {
       return
         metrics

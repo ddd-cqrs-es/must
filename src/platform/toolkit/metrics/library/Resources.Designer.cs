@@ -79,11 +79,20 @@ namespace Nohros.Metrics {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Both group and type need to be specified..
+        ///   Looks up a localized string similar to Both group and type need to be specified.
         /// </summary>
         internal static string metric_name_no_group_or_type {
             get {
                 return ResourceManager.GetString("metric_name_no_group_or_type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field [{0}] in class [{1}] is null. All metric fields must be initialized before registering..
+        /// </summary>
+        internal static string NullAnnotatedField {
+            get {
+                return ResourceManager.GetString("NullAnnotatedField", resourceCulture);
             }
         }
     }
