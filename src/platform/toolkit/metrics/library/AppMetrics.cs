@@ -89,12 +89,14 @@ namespace Nohros.Metrics
       // defined for the fields and methods of the class.
       Type klass = obj.GetType();
       Tags tags =
-        new Tags.Builder(GetTags(klass, true))
+        new Tags.Builder()
+          .WithTags(GetTags(klass, true)) // static class tags
+          .WithTags(GetTagsList(obj)) // dynamic class tags
           .WithTag("class", klass.Name)
           .Build();
 
       var metrics = new List<IMetric>();
-      for (Type type = obj.GetType(); type != null; type = type.BaseType) {
+      for (Type type = klass; type != null; type = type.BaseType) {
         AddMetrics(metrics, tags, obj, type);
       }
       var config = new MetricConfig("annotated", tags);
@@ -121,19 +123,11 @@ namespace Nohros.Metrics
     /// </param>
     static void AddMetrics(List<IMetric> metrics, Tags tags, object obj,
       Type type) {
-      const BindingFlags kFlags =
-        BindingFlags.Instance |
-          BindingFlags.Static |
-          BindingFlags.Public |
-          BindingFlags.NonPublic |
-          BindingFlags.DeclaredOnly;
-
-      IEnumerable<FieldInfo> fields =
-        type
-          .GetFields(kFlags)
+      IEnumerable<FieldInfo> metric_fields =
+        GetFields(type)
           .Where(IsMetricType);
 
-      foreach (FieldInfo field in fields) {
+      foreach (FieldInfo field in metric_fields) {
         var metric = field.GetValue(obj) as IMetric;
         if (metric == null) {
           throw new ArgumentNullException(Resources.NullAnnotatedField.Fmt());
@@ -154,19 +148,79 @@ namespace Nohros.Metrics
       return new MetricWrapper(config, metric);
     }
 
+    static IEnumerable<Tag> GetTagsList(object obj) {
+      FieldInfo field =
+        GetFields(obj.GetType())
+          .Where(IsTagList)
+          .FirstOrDefault();
+
+      if (field != null) {
+        return (IEnumerable<Tag>) field.GetValue(obj);
+      }
+
+      MethodInfo method =
+        GetMethods(obj.GetType())
+          .Where(IsTagList)
+          .FirstOrDefault();
+
+      if (method != null) {
+        return (IEnumerable<Tag>) method.Invoke(obj, new object[0]);
+      }
+      return Enumerable.Empty<Tag>();
+    }
+
     static bool IsMetricType(FieldInfo field) {
       return typeof (IMetric).IsAssignableFrom(field.FieldType);
     }
 
+    static bool IsTagList(FieldInfo field) {
+      return IsTagList(field.FieldType);
+    }
+
+    static bool IsTagList(MethodInfo method) {
+      return IsTagList(method.ReturnType);
+    }
+
+    static bool IsTagList(Type type) {
+      return typeof (IEnumerable<Tag>).IsAssignableFrom(type);
+    }
+
+    static IEnumerable<FieldInfo> GetFields(Type type) {
+      const BindingFlags kFlags =
+        BindingFlags.Instance |
+          BindingFlags.Static |
+          BindingFlags.Public |
+          BindingFlags.NonPublic |
+          BindingFlags.DeclaredOnly;
+
+      return type.GetFields(kFlags);
+    }
+
+    static IEnumerable<MethodInfo> GetMethods(Type type) {
+      const BindingFlags kFlags =
+        BindingFlags.Instance |
+          BindingFlags.Static |
+          BindingFlags.Public |
+          BindingFlags.NonPublic |
+          BindingFlags.DeclaredOnly;
+
+      return type.GetMethods(kFlags);
+    }
+
     /// <summary>
-    /// Gets the tags declared at class level.
+    /// Gets the tags declared for the given member.
     /// </summary>
     /// <param name="member">
     /// The type to get the tags.
     /// </param>
+    /// <param name="inherit">
+    /// <c>true</c> to search this member's inheritance chain to find the
+    /// tags; otherwise, <c>false</c>. This parameter is ignored for
+    /// fields.
+    /// </param>
     /// <returns>
-    /// A <see cref="Tags"/> object containing the tags declared at the class
-    /// level.
+    /// A <see cref="Tags"/> object containing the tags declared for the
+    /// given member.
     /// </returns>
     static IEnumerable<Tag> GetTags(MemberInfo member, bool inherit = false) {
       return

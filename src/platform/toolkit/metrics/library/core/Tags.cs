@@ -13,11 +13,19 @@ namespace Nohros.Metrics
   }
 
   /// <summary>
-  /// Represents a collection of <see cref="Tag"/>.
+  /// Represents a set of <see cref="Tag"/>.
   /// </summary>
+  /// <remarks>
+  /// The <see cref="Tags"/> uses the <see cref=" Tag.Name"/> to compare for
+  /// equality, which means that there is just one tag with a given name in
+  /// the set.
+  /// </remarks>
   /// <seealso cref="Tag"/>
   public class Tags : IEnumerable<Tag>
   {
+    /// <summary>
+    /// Provides a way to build a <see cref="Tags"/> object fluently.
+    /// </summary>
     public class Builder
     {
       internal readonly List<Tag> tags_;
@@ -109,14 +117,14 @@ namespace Nohros.Metrics
       }
     }
 
-    readonly HashSet<Tag> tags_;
+    readonly Dictionary<string, Tag> tags_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tags"/> that contains no
     /// tags.
     /// </summary>
     public Tags() {
-      tags_ = new HashSet<Tag>();
+      tags_ = new Dictionary<string, Tag>();
       Id = Guid.NewGuid();
     }
 
@@ -128,7 +136,7 @@ namespace Nohros.Metrics
     /// The single and unique tag of the collection.
     /// </param>
     public Tags(Tag tag) : this() {
-      tags_.Add(tag);
+      tags_[tag.Name] = tag;
     }
 
     /// <summary>
@@ -141,23 +149,23 @@ namespace Nohros.Metrics
     /// </param>
     public Tags(IEnumerable<Tag> tags) : this() {
       foreach (var tag in tags) {
-        tags_.Add(tag);
+        tags_[tag.Name] = tag;
       }
     }
 
     /// <summary>
-    /// Determines whether a <see cref="Tags"/> object and the specified
-    /// collection contain the same elements.
+    /// Determines whether a <see cref="Tags"/> object contains all the
+    /// <see cref="Tag"/> of the specified tags collection.
     /// </summary>
     /// <param name="other">
     /// The collection to compare with the current <see cref="Tags"/> object.
     /// </param>
     /// <returns>
-    /// <c>true</c> if the specified collection contain the same elements as
-    /// the current <see cref="Tags"/> object.
+    /// <c>true</c> if the current <see cref="Tags"/> object contains all
+    /// the <see cref="Tag"/> of the specified collection.
     /// </returns>
     public bool EqualsTo(IEnumerable<Tag> other) {
-      return tags_.SetEquals(other);
+      return other.All(tag => tags_.ContainsKey(tag.Name));
     }
 
     /// <inheritdoc/>
@@ -167,7 +175,7 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public IEnumerator<Tag> GetEnumerator() {
-      return tags_.GetEnumerator();
+      return tags_.Values.GetEnumerator();
     }
 
     /// <summary>
@@ -187,7 +195,6 @@ namespace Nohros.Metrics
     /// for equality, because each object will have your own id.
     /// </remarks>
     public Guid Id { get; private set; }
-
 
     public int Count {
       get { return tags_.Count; }

@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="annotations\MetricAttribute.cs" />
+    <Compile Include="annotations\TagsAttribute.cs" />
     <Compile Include="core\BasicCompositeMetric.cs" />
     <Compile Include="core\MetricWrapper.cs" />
     <Compile Include="core\ResevoirType.cs" />

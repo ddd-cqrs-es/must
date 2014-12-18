@@ -7,7 +7,13 @@ namespace Nohros.Metrics.Annotations
   /// </summary>
   /// <remarks>
   /// The tags will be queried when the instance is registered with the
-  /// <see cref="AppMetrics.Register(object)"/>
+  /// <see cref="AppMetrics.RegisterObject(object)"/>
+  /// <para>
+  /// Tags declared at class level will be used to provide a common base tags
+  /// for all fields of type <see cref="IMetric"/>. Tags provided on the fields
+  /// will override the tags defined on the class level if there is a common
+  /// key.
+  /// </para>
   /// </remarks>
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field,
     AllowMultiple = true)]
