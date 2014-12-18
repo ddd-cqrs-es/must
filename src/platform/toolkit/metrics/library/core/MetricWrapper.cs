@@ -29,12 +29,16 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public void GetMeasure(Action<Measure> callback) {
-      metric_.GetMeasure(callback);
+      metric_.GetMeasure(m => callback(WrapMeasure(m)));
     }
 
     /// <inheritdoc/>
     public void GetMeasure<T>(Action<Measure, T> callback, T state) {
-      metric_.GetMeasure(callback, state);
+      metric_.GetMeasure(m => callback(WrapMeasure(m), (state)));
+    }
+
+    Measure WrapMeasure(Measure measure) {
+      return new Measure(Config, measure.Value);
     }
 
     /// <inheritdoc/>
