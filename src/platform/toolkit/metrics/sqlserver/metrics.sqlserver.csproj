@@ -40,14 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContainsTagQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegisterMeasureQuery.cs" />
-    <Compile Include="RegisterTagQuery.cs" />
-    <Compile Include="RegisterSerieQuery.cs" />
     <Compile Include="SqlMetricsDao.cs" />
-    <Compile Include="SerieDto.cs" />
-    <Compile Include="SeriesIdQuery.cs" />
+    <Compile Include="Serie.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\base\common\common.csproj">
