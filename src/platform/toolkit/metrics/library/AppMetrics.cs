@@ -99,8 +99,12 @@ namespace Nohros.Metrics
       for (Type type = klass; type != null; type = type.BaseType) {
         AddMetrics(metrics, tags, obj, type);
       }
+
       var config = new MetricConfig("annotated", tags);
-      return new BasicCompositeMetric(config, metrics);
+      var composite = new BasicCompositeMetric(config, metrics);
+      Register((IMetric) composite);
+
+      return composite;
     }
 
     /// <summary>
