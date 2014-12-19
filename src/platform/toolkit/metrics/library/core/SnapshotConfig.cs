@@ -53,7 +53,7 @@ namespace Nohros.Metrics
       /// Defines that the count measure should be computed.
       /// </summary>
       public Builder WithCount(bool enable = true) {
-        ComputeMin = enable;
+        ComputeCount = enable;
         return this;
       }
 
