@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +20,83 @@ namespace Nohros.Metrics
   /// </summary>
   public class AppMetrics
   {
+    /// <summary>
+    /// Wraps another <see cref="ICompositeMetric"/> object providing an
+    /// alternative configuration.
+    /// </summary>
+    class CompositeMetricWrapper : AbstractMetric, ICompositeMetric
+    {
+      public CompositeMetricWrapper(Tags tags, ICompositeMetric composite)
+        : base(composite.Config.WithAdditionalTags(tags)) {
+        List<IMetric> wrapped =
+          composite
+            .Metrics
+            .Select(x => Wrap(x, Config.Tags))
+            .ToList();
+        Metrics = new ReadOnlyCollection<IMetric>(wrapped);
+      }
+
+      /// <inheritdoc/>
+      protected internal override Measure Compute() {
+        return CreateMeasure(Metrics.Count);
+      }
+
+      /// <inheritdoc/>
+      public IEnumerator<IMetric> GetEnumerator() {
+        return Metrics.GetEnumerator();
+      }
+
+      /// <inheritdoc/>
+      IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
+      }
+
+      /// <inheritdoc/>
+      public ICollection<IMetric> Metrics { get; private set; }
+    }
+
+    /// <summary>
+    /// Wraps another <see cref="IMetric"/> object providing an alternative
+    /// configuration.
+    /// </summary>
+    class MetricWrapper : IMetric
+    {
+      readonly IMetric metric_;
+
+      /// <summary>
+      /// Initializes a new instance of the <see cref="MetricWrapper"/> class
+      /// by using the given <paramref name="tags"/> and
+      /// <paramref name="metric"/>.
+      /// </summary>
+      /// <param name="tags">
+      /// The alternate configuration.
+      /// </param>
+      /// <param name="metric">
+      /// The metric to be wrapped.
+      /// </param>
+      public MetricWrapper(Tags tags, IMetric metric) {
+        Config = metric.Config.WithAdditionalTags(tags);
+        metric_ = metric;
+      }
+
+      /// <inheritdoc/>
+      public void GetMeasure(Action<Measure> callback) {
+        metric_.GetMeasure(m => callback(WrapMeasure(m)));
+      }
+
+      /// <inheritdoc/>
+      public void GetMeasure<T>(Action<Measure, T> callback, T state) {
+        metric_.GetMeasure(m => callback(WrapMeasure(m), (state)));
+      }
+
+      Measure WrapMeasure(Measure measure) {
+        return new Measure(Config, measure.Value);
+      }
+
+      /// <inheritdoc/>
+      public MetricConfig Config { get; private set; }
+    }
+
     const string kDefaultMetricsRegistryKey = "DefaultMetricsRegistry";
 
     static AppMetrics() {
@@ -93,6 +172,7 @@ namespace Nohros.Metrics
           .WithTags(GetTags(klass, true)) // static class tags
           .WithTags(GetTagsList(obj)) // dynamic class tags
           .WithTag("class", klass.Name)
+          .WithTag("namespace", klass.Namespace)
           .Build();
 
       var metrics = new List<IMetric>();
@@ -147,9 +227,14 @@ namespace Nohros.Metrics
           .WithTags(metric.Config.Tags)
           .WithTags(GetTags(field))
           .Build();
+      return Wrap(metric, field_tags);
+    }
 
-      var config = new MetricConfig(metric.Config.Name, field_tags);
-      return new MetricWrapper(config, metric);
+    static IMetric Wrap(IMetric metric, Tags tags) {
+      if (metric is ICompositeMetric) {
+        return new CompositeMetricWrapper(tags, metric as ICompositeMetric);
+      }
+      return new MetricWrapper(tags, metric);
     }
 
     static IEnumerable<Tag> GetTagsList(object obj) {

@@ -36,7 +36,7 @@ namespace Nohros.Metrics
     public static Tag AsTag(this MetricType type, string name) {
       switch (type) {
         case MetricType.Counter:
-          return new Tag(name, "counter");
+          return new Tag(name, "count");
         case MetricType.Gauge:
           return new Tag(name, "gauge");
         case MetricType.Timer:
