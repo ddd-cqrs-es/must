@@ -4,9 +4,10 @@ using System.Diagnostics;
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// A timing context
+  /// A timing context.
   /// </summary>
-  /// <seealso cref="Timer.Time{T}"/>
+  /// <seealso cref="StatsTimer"/>
+  /// <seealso cref="BucketTimer"/>
   public class TimerContext
   {
     readonly ITimer timer_;
@@ -16,10 +17,10 @@ namespace Nohros.Metrics
     /// <summary>
     /// Initializes a new instance of the <see cref="TimerContext"/> with the
     /// current time as its starting value and with the given
-    /// <see cref="Timer"/>.
+    /// <see cref="StatsTimer"/>.
     /// </summary>
     /// <param name="timer">
-    /// The <see cref="Timer"/> to report elapsed time.
+    /// The <see cref="StatsTimer"/> to report elapsed time.
     /// </param>
     public TimerContext(ITimer timer) {
       timer_ = timer;

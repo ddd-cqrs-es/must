@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Nohros.Metrics
 {
   /// <summary>
   /// Defines a mixin for metrics that are composed of a number of sub-metrics.
   /// </summary>
-  /// <seealso cref="Timer"/>
+  /// <seealso cref="StatsTimer"/>
   /// <seealso cref="Histogram"/>
   public interface ICompositeMetric : IMetric, IEnumerable<IMetric>
   {

@@ -43,6 +43,9 @@
     <Compile Include="annotations\MetricAttribute.cs" />
     <Compile Include="annotations\TagsAttribute.cs" />
     <Compile Include="core\BasicCompositeMetric.cs" />
+    <Compile Include="core\BucketTimer.cs" />
+    <Compile Include="core\ResettableMaxGauge.cs" />
+    <Compile Include="core\ResettableMinGauge.cs" />
     <Compile Include="core\ResevoirType.cs" />
     <Compile Include="annotations\TagAttribute.cs" />
     <Compile Include="AppMetrics.cs" />
@@ -76,9 +79,10 @@
     <Compile Include="core\ITimer.cs" />
     <Compile Include="core\Measure.cs" />
     <Compile Include="core\CompositMetricTransformer.cs" />
-    <Compile Include="core\Timer.cs">
+    <Compile Include="core\StatsTimer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="core\Timer.cs" />
     <Compile Include="core\Unit.cs" />
     <Compile Include="ForwardingMetricsRegistry.cs" />
     <Compile Include="IMetricsRegistry.cs" />
