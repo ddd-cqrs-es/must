@@ -10,7 +10,7 @@ namespace Nohros.Metrics
   /// <remarks>
   /// Updates should be non-negative. The reset value is zero.
   /// </remarks>
-  public class MaxGauge : AbstractMetric, IResettable
+  public class MaxGauge : AbstractMetric
   {
     long value_;
 
