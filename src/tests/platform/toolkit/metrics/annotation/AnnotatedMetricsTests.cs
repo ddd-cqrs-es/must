@@ -17,7 +17,7 @@ namespace Nohros.Metrics.Tests.Annotation
 
       public Annottated(bool initialize = true) {
         if (initialize) {
-          timer_ = Timer.Create("latency");
+          timer_ = StatsTimer.Create("latency");
         }
       }
     }

@@ -32,7 +32,8 @@ namespace Nohros.Metrics
       metric_.GetMeasure(
         measure =>
           callback(
-            new Measure(metric_.Config, transform_(measure.Value))));
+            new Measure(metric_.Config, transform_(measure.Value),
+              measure.IsObservable)));
     }
 
     /// <inheritdoc/>
@@ -40,7 +41,8 @@ namespace Nohros.Metrics
       metric_.GetMeasure(
         measure =>
           callback(
-            new Measure(metric_.Config, transform_(measure.Value)), state));
+            new Measure(metric_.Config, transform_(measure.Value),
+              measure.IsObservable), state));
     }
 
     public MetricConfig Config {

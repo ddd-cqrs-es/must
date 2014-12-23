@@ -90,7 +90,7 @@ namespace Nohros.Metrics
       }
 
       Measure WrapMeasure(Measure measure) {
-        return new Measure(Config, measure.Value);
+        return new Measure(Config, measure.Value, measure.IsObservable);
       }
 
       /// <inheritdoc/>

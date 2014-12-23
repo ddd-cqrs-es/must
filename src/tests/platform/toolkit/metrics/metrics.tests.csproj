@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="annotation\AnnotatedMetricsTests.cs" />
+    <Compile Include="core\BucketTimerTests.cs" />
     <Compile Include="core\CallableGaugeTests.cs">
       <SubType>Code</SubType>
     </Compile>

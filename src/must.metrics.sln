@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{A47D
 		nuget\must-metrics-annotations-uninstall.ps1 = nuget\must-metrics-annotations-uninstall.ps1
 		nuget\must-metrics-annotations.nuspec = nuget\must-metrics-annotations.nuspec
 		nuget\must-metrics.nuspec = nuget\must-metrics.nuspec
+		nuget\must-metrics.sqlserver.nuspec = nuget\must-metrics.sqlserver.nuspec
 		nuget\ToBeDeleted.txt = nuget\ToBeDeleted.txt
 	EndProjectSection
 EndProject
