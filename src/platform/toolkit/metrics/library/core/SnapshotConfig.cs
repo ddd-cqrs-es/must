@@ -30,8 +30,10 @@ namespace Nohros.Metrics
           ComputeCount = true;
           ComputeMax = true;
           ComputeMin = true;
+          Percentiles = new[] {95.0, 99.0};
+        } else {
+          Percentiles = new double[0];
         }
-        Percentiles = new double[0];
       }
 
       /// <summary>
