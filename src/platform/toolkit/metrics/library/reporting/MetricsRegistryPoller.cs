@@ -71,8 +71,10 @@ namespace Nohros.Metrics.Reporting
     }
 
     void Observe(Measure measure, DateTime timestamp) {
-      foreach (var observer in observers_) {
-        observer.Observe(measure, timestamp);
+      if (measure.IsObservable) {
+        foreach (var observer in observers_) {
+          observer.Observe(measure, timestamp);
+        }
       }
     }
   }

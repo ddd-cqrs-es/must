@@ -1,9 +1,11 @@
 ﻿using System;
+using Nohros.Metrics.Reporting;
 
 namespace Nohros.Metrics
 {
   /// <summary>
-  /// Represents the instantaneous value of a metric at agiven point in time.
+  /// Represents the instantaneous value of a metric at a given point in time.
+  /// A measure should represent a valid
   /// </summary>
   public class Measure
   {
@@ -17,9 +19,14 @@ namespace Nohros.Metrics
     /// <param name="config">
     /// The <see cref="MetricConfig"/> object that has produced the measure.
     /// </param>
-    public Measure(MetricConfig config, double value) {
+    /// <param name="observable">
+    /// A value that indicates if the measure shoud be dispatched to a
+    /// <see cref="IMeasureObserver"/>.
+    /// </param>
+    public Measure(MetricConfig config, double value, bool observable = true) {
       MetricConfig = config;
       Value = value;
+      IsObservable = observable;
     }
 
     /// <summary>
@@ -29,19 +36,25 @@ namespace Nohros.Metrics
     public MetricConfig MetricConfig { get; private set; }
 
     /// <summary>
-    /// Gets a collection of <see cref="Tag"/> object that is associated with
-    /// the measure.
-    /// </summary>
-    /// <remarks>
-    /// The <see cref="Tags"/> property contain only the metrics that is
-    /// directly related with the measure. If you want to get the tags that is
-    /// associated with the source <see cref="IMetric"/> object use the
-    /// <see cref="MetricConfig"/> property to obtain them.
-    /// </remarks>
-    //public Tags Tags { get; private set; }
-    /// <summary>
     /// Gets the instantaneous metric's value
     /// </summary>
     public double Value { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating if <see cref="Value"/> is observable, which
+    /// means that it contains a value that could be dispatch to a
+    /// <see cref="IMeasureObserver"/>.
+    /// </summary>
+    /// <remarks>
+    /// Some <see cref="ICompositeMetric"/> could contains metrics that is
+    /// not observable at a given point in time. For example, the
+    /// <see cref="BucketTimer"/> contains metrics that reports how many times
+    /// a given call took a specific time. For that composite reporting the
+    /// value for the buckets that was never updated is a waste of time and
+    /// space. The 'never updated buckets' will set the
+    /// <see cref="IsObservable"/> property of the metrics that it report to
+    /// <c>false</c> and the observables could just ignore it.
+    /// </remarks>
+    public bool IsObservable { get; private set; }
   }
 }

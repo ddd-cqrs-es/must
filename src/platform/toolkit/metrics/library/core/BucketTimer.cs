@@ -106,6 +106,36 @@ namespace Nohros.Metrics
       internal MetricContext Context { get; private set; }
     }
 
+    class BucketCounter : Counter
+    {
+      public BucketCounter(MetricConfig config) : base(config) {
+      }
+
+      public BucketCounter(MetricConfig config, MetricContext context)
+        : base(config, context) {
+      }
+
+      public override void GetMeasure(Action<Measure> callback) {
+        base.GetMeasure(m => {
+          Measure measure =
+            (m.Value > 0)
+              ? m
+              : new Measure(m.MetricConfig, m.Value, false);
+          callback(measure);
+        });
+      }
+
+      public override void GetMeasure<T>(Action<Measure, T> callback, T state) {
+        base.GetMeasure((m, s) => {
+          Measure measure =
+            (m.Value > 0)
+              ? m
+              : new Measure(m.MetricConfig, m.Value, false);
+          callback(measure, s);
+        }, state);
+      }
+    }
+
     const string kBucket = "metrics.bucket";
     const string kStatistic = "statistic";
     const string kTotal = "total";
@@ -114,10 +144,10 @@ namespace Nohros.Metrics
     const string kMax = "max";
 
     readonly TimeUnit unit_;
-    readonly Counter count_;
-    readonly Counter total_time_;
-    readonly Counter overflow_count_;
-    readonly Counter[] bucket_count_;
+    readonly BucketCounter count_;
+    readonly BucketCounter total_time_;
+    readonly BucketCounter overflow_count_;
+    readonly BucketCounter[] bucket_count_;
     readonly long[] buckets_;
     readonly ResettableMaxGauge max_;
     readonly ResettableMinGauge min_;
@@ -139,13 +169,14 @@ namespace Nohros.Metrics
           .Config
           .WithAdditionalTag("unit", unit_.Name());
 
-      count_ = new Counter(config.WithAdditionalTag(kStatistic, kCount), context);
+      count_ = new BucketCounter(config.WithAdditionalTag(kStatistic, kCount),
+        context);
       max_ = new ResettableMaxGauge(config.WithAdditionalTag(kStatistic, kMax));
       min_ = new ResettableMinGauge(config.WithAdditionalTag(kStatistic, kMin));
       total_time_ =
-        new Counter(config.WithAdditionalTag(kStatistic, kTotal), context);
+        new BucketCounter(config.WithAdditionalTag(kStatistic, kTotal), context);
       overflow_count_ =
-        new Counter(
+        new BucketCounter(
           config
             .WithAdditionalTag(kStatistic, kCount)
             .WithAdditionalTag(kBucket, "bucket=overflow"));
@@ -159,9 +190,9 @@ namespace Nohros.Metrics
 
       string label = unit_.Abbreviation();
 
-      bucket_count_ = new Counter[buckets_.Length];
+      bucket_count_ = new BucketCounter[buckets_.Length];
       for (int i = 0; i < buckets_.Length; i++) {
-        bucket_count_[i] = new Counter(
+        bucket_count_[i] = new BucketCounter(
           config
             .WithAdditionalTag(kStatistic, kCount)
             .WithAdditionalTag(kBucket,
