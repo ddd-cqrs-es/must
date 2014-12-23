@@ -84,11 +84,11 @@ namespace Nohros.Metrics
         }
 
         Buckets = new long[buckets.Length];
-        long last = buckets[0];
-        for (int i = 1; i < buckets.Length; i++) {
+        long last = -1;
+        for (int i = 0; i < buckets.Length; i++) {
           if (buckets[i] <= last) {
             throw new ArgumentException(
-              "Buckets must be in ascending order and cannot have duplicates");
+              "Buckets must be in ascending order, should be positive and cannot have duplicates");
           }
           last = Buckets[i] = buckets[i];
         }

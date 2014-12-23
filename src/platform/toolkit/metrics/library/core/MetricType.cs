@@ -36,11 +36,11 @@ namespace Nohros.Metrics
     public static Tag AsTag(this MetricType type, string name) {
       switch (type) {
         case MetricType.Counter:
-          return new Tag(name, "count");
+          return new Tag(name, "counter");
         case MetricType.Gauge:
           return new Tag(name, "gauge");
-        case MetricType.Timer:
-          return new Tag(name, "timer");
+        case MetricType.EWMA:
+          return new Tag(name, "ewma");
         default:
           throw new ArgumentOutOfRangeException(
             Resources.ArgIsInvalid.Fmt((int) type, typeof (MetricType).Name));
@@ -71,11 +71,6 @@ namespace Nohros.Metrics
     /// per time unit.
     /// </remarks>
     Counter = 2,
-
-    /// <summary>
-    /// A rate if for numeric value that represents a rate per time unit.
-    /// </summary>
-    Timer = 3,
 
     /// <summary>
     /// An exponentially-weighted moving average of count per time
