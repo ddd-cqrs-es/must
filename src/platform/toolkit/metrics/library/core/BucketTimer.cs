@@ -203,7 +203,7 @@ namespace Nohros.Metrics
         new MeasureTransformer(total_time_, ConvertToUnit),
         new MeasureTransformer(min_, ConvertToUnit),
         new MeasureTransformer(max_, ConvertToUnit),
-        new MeasureTransformer(overflow_count_, ConvertToUnit),
+        overflow_count_,
         count_
       };
       metrics.AddRange(bucket_count_);
