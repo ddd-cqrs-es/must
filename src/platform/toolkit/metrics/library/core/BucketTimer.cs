@@ -85,7 +85,7 @@ namespace Nohros.Metrics
 
         Buckets = new long[buckets.Length];
         long last = buckets[0];
-        for (int i = 0; i < buckets.Length; i++) {
+        for (int i = 1; i < buckets.Length; i++) {
           if (buckets[i] <= last) {
             throw new ArgumentException(
               "Buckets must be in ascending order and cannot have duplicates");
@@ -218,12 +218,17 @@ namespace Nohros.Metrics
     /// <param name="name">
     /// The name of the timer
     /// </param>
+    /// <param name="buckets">
+    /// The buckets to be used by the timer.
+    /// </param>
     /// <returns>
     /// A <see cref="BucketTimer"/> whose name is <paramref name="name"/> and
     /// uses the default resevoir, time unit and snapshot config.
     /// </returns>
-    public static BucketTimer Create(string name) {
-      return new Builder(new MetricConfig(name)).Build();
+    public static BucketTimer Create(string name, long[] buckets) {
+      return new Builder(new MetricConfig(name))
+        .WithBuckets(buckets)
+        .Build();
     }
 
     /// <summary>
@@ -235,31 +240,17 @@ namespace Nohros.Metrics
     /// </param>
     /// <param name="unit">
     /// </param>
+    /// <param name="buckets">
+    /// The buckets to be used by the timer.
+    /// </param>
     /// <returns>
     /// A <see cref="BucketTimer"/> whose name is <paramref name="name"/> and
     /// uses the specified time unit and default resevoir and snapshot config.
     /// </returns>
-    public static BucketTimer Create(string name, TimeUnit unit) {
+    public static BucketTimer Create(string name, long[] buckets, TimeUnit unit) {
       return new
         Builder(new MetricConfig(name))
         .WithTimeUnit(unit)
-        .Build();
-    }
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="BucketTimer"/> class by using
-    /// the given metric's name and buckets.
-    /// </summary>
-    /// <param name="name">
-    /// The name of the metric.
-    /// </param>
-    /// <param name="buckets">
-    /// The buckets to be used by the timer.
-    /// </param>
-    /// <returns></returns>
-    public static BucketTimer Create(string name, long[] buckets) {
-      return new
-        Builder(new MetricConfig(name))
         .WithBuckets(buckets)
         .Build();
     }
