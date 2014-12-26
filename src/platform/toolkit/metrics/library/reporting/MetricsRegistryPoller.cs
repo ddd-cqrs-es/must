@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nohros.Extensions;
+using Nohros.Logging;
+using Nohros.Resources;
 
 namespace Nohros.Metrics.Reporting
 {
@@ -10,11 +13,15 @@ namespace Nohros.Metrics.Reporting
   /// </summary>
   public class MetricsRegistryPoller : IMetricsPoller
   {
+    const string kClassName = "Nohros.Metrics.Reporting.MetricsRegistryPoller";
+
     readonly List<IMeasureObserver> observers_;
     readonly IMetricsRegistry registry_;
+    readonly MetricsLogger logger_;
 
     public MetricsRegistryPoller(IMeasureObserver observer,
       IMetricsRegistry registry) : this(new[] {observer}, registry) {
+      logger_ = MetricsLogger.ForCurrentProcess;
     }
 
     /// <summary>
@@ -73,7 +80,15 @@ namespace Nohros.Metrics.Reporting
     void Observe(Measure measure, DateTime timestamp) {
       if (measure.IsObservable) {
         foreach (var observer in observers_) {
-          observer.Observe(measure, timestamp);
+          // A try catch block is used here to ensure that a failure in one
+          // observer does not cause any damage.
+          try {
+            observer.Observe(measure, timestamp);
+          } catch (Exception e) {
+            logger_.Error(
+              StringResources.Log_MethodThrowsException.Fmt("Observe",
+                kClassName), e);
+          }
         }
       }
     }
