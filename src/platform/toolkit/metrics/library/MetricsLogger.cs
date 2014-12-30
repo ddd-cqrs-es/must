@@ -5,10 +5,8 @@ namespace Nohros.Metrics
 {
   public class MetricsLogger : ForwardingLogger
   {
-    static readonly MetricsLogger current_process_logger_;
-
     static MetricsLogger() {
-      current_process_logger_ = new MetricsLogger(new NOPLogger());
+      ForCurrentProcess = new MetricsLogger(new NOPLogger());
     }
 
     public MetricsLogger(ILogger logger) : base(logger) {
