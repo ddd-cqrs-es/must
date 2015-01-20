@@ -11,7 +11,6 @@ namespace Nohros
   [Serializable]
   public class UniqueConstraintViolationException : RepositoryException
   {
-    #region .ctor
     /// <summary>
     /// Creates a new instance of the
     /// <see cref="UniqueConstraintViolationException"/> class.
@@ -74,6 +73,5 @@ namespace Nohros
       Exception inner_exception)
       : base(message, inner_exception) {
     }
-    #endregion
   }
 }
