@@ -89,9 +89,19 @@ namespace Nohros.Dynamics
     /// <param name="type">
     /// The type which dynamic type name should be retrieved.
     /// </param>
+    /// <param name="suffix">
+    /// The suffix to be appended to the type name.
+    /// </param>
     /// <returns></returns>
-    public static string GetDynamicTypeName(string prefix, Type type) {
-      return prefix + "." + type.Name + "_";
+    public static string GetDynamicTypeName(string prefix, Type type,
+      string suffix = "") {
+      string type_name = type.Name;
+      if (type.IsInterface) {
+        if (type_name[0] == 'I' || type_name[0] == 'i') {
+          type_name = type_name.Substring(1, type_name.Length - 1);
+        }
+      }
+      return prefix + "." + type_name + suffix;
     }
 
     public static string GetDataReaderMethodName(Type type) {
