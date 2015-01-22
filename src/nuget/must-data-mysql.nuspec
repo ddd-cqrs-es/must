@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>must.data.mysql</id>
-        <version>0.1.2.0</version>
+        <version>0.2.0.0</version>
         <title>Must Data for MySql</title>
         <authors>Nohros Inc</authors>
         <owners>Nohros Inc</owners>
@@ -15,7 +15,7 @@
         <tags>csharp framework nohros log4net logging</tags>
         <dependencies>
             <dependency id="MySql.Data" version="6.7.4" />
-            <dependency id="must.common" version="1.9.7" />
+            <dependency id="must.common" version="1.15.4" />
         </dependencies>
     </metadata>
     <files>

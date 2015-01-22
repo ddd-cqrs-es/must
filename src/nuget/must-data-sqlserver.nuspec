@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>must.data.sqlserver</id>
-        <version>0.5.6.0</version>
+        <version>0.5.7.0</version>
         <title>Must Data for Sql Server</title>
         <authors>Nohros Inc</authors>
         <owners>Nohros Inc</owners>
@@ -14,7 +14,7 @@
         <language>en-US</language>
         <tags>csharp framework nohros log4net logging</tags>
         <dependencies>
-            <dependency id="must.common" version="1.15.3" />
+            <dependency id="must.common" version="1.15.4" />
         </dependencies>
     </metadata>
     <files>
