@@ -44,6 +44,46 @@ namespace Nohros.Data.SqlServer
       cache_ = new ConcurrentDictionary<string, object>();
     }
 
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper);
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query,
+      CommandType command_type) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper, command_type);
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query,
+      Action<CommandBuilder> set_parameters) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper, set_parameters);
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query,
+      Action<CommandBuilder> set_parameters,
+      CommandType command_type) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper, set_parameters, command_type);
+    }
+
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
     /// returns a <see cref="IDataReaderMapper{T}"/> that can be used to

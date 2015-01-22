@@ -10,6 +10,117 @@ namespace Nohros.Data
   {
     /// <summary>
     /// Executes the command described by <see cref="query"/> on the server and
+    /// uses an auto mapper for the type <typeparamref name="T"/> to map the
+    /// result set to the type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the object that should be returned.
+    /// </typeparam>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <returns>
+    /// The object produced by the execution of the auto mapper for the type
+    /// <typeparamref name="T"/>
+    /// </returns>
+    /// <remarks>
+    /// The mapper returned from the <see cref="Func{TResult}"/> is cached
+    /// internally and associated with the given <paramref name="query"/>. The
+    /// cache is never flushed. If you are generating SQL strings on the fly
+    /// without using parameters it is possible you hit memory issues.
+    /// </remarks>
+    IQueryMapper<T> ExecuteQuery<T>(string query);
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// uses an auto mapper for the type <typeparamref name="T"/> to map the
+    /// result set to the type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the object that should be returned.
+    /// </typeparam>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <returns>
+    /// The object produced by the execution of the auto mapper for the type
+    /// <typeparamref name="T"/>
+    /// </returns>
+    /// <remarks>
+    /// The mapper returned from the <see cref="Func{TResult}"/> is cached
+    /// internally and associated with the given <paramref name="query"/>. The
+    /// cache is never flushed. If you are generating SQL strings on the fly
+    /// without using parameters it is possible you hit memory issues.
+    /// </remarks>
+    IQueryMapper<T> ExecuteQuery<T>(string query, CommandType command_type);
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// uses an auto mapper for the type <typeparamref name="T"/> to map the
+    /// result set to the type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the object that should be returned.
+    /// </typeparam>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <returns>
+    /// The object produced by the execution of the auto mapper for the type
+    /// <typeparamref name="T"/>
+    /// </returns>
+    /// <remarks>
+    /// The mapper returned from the <see cref="Func{TResult}"/> is cached
+    /// internally and associated with the given <paramref name="query"/>. The
+    /// cache is never flushed. If you are generating SQL strings on the fly
+    /// without using parameters it is possible you hit memory issues.
+    /// </remarks>
+    IQueryMapper<T> ExecuteQuery<T>(string query,
+      Action<CommandBuilder> set_parameters);
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
+    /// uses an auto mapper for the type <typeparamref name="T"/> to map the
+    /// result set to the type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the object that should be returned.
+    /// </typeparam>
+    /// <param name="query">
+    /// The query to be executed on the server.
+    /// </param>
+    /// <param name="command_type">
+    /// The type of the command that is described by the
+    /// <paramref name="query"/> parameter.
+    /// </param>
+    /// <param name="set_parameters">
+    /// A <see cref="Action{T}"/> that allows the caller to set the values
+    /// of the parameters defined on the given query.
+    /// </param>
+    /// <returns>
+    /// The object produced by the execution of the auto mapper for the type
+    /// <typeparamref name="T"/>
+    /// </returns>
+    /// <remarks>
+    /// The mapper returned from the <see cref="Func{TResult}"/> is cached
+    /// internally and associated with the given <paramref name="query"/>. The
+    /// cache is never flushed. If you are generating SQL strings on the fly
+    /// without using parameters it is possible you hit memory issues.
+    /// </remarks>
+    IQueryMapper<T> ExecuteQuery<T>(string query,
+      Action<CommandBuilder> set_parameters,
+      CommandType command_type);
+
+    /// <summary>
+    /// Executes the command described by <see cref="query"/> on the server and
     /// returns a <see cref="IDataReaderMapper{T}"/> that can be used to
     /// map the result set to a object of the type <typeparamref name="T"/>.
     /// </summary>

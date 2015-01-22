@@ -63,7 +63,9 @@ namespace Nohros.Data.SqlServer
     /// The object produced by the execution of the method
     /// <paramref name="mapper"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper")]
+    [Obsolete(
+      "This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper"
+      )]
     public T ExecuteQuery<T>(string query, Func<IDataReader, T> mapper) {
       return ExecuteQuery(query, mapper, builder => { },
         default_command_type_);
@@ -93,7 +95,9 @@ namespace Nohros.Data.SqlServer
     /// The object produced by the execution of the method
     /// <paramref name="mapper"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper")]
+    [Obsolete(
+      "This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper"
+      )]
     public T ExecuteQuery<T>(string query,
       Func<IDataReader, T> mapper, CommandType command_type) {
       return ExecuteQuery(query, mapper, builder => { }, command_type);
@@ -123,7 +127,9 @@ namespace Nohros.Data.SqlServer
     /// The object produced by the execution of the method
     /// <paramref name="mapper"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper")]
+    [Obsolete(
+      "This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper"
+      )]
     public T ExecuteQuery<T>(string query, Func<IDataReader, T> mapper,
       Action<CommandBuilder> set_parameters) {
       return ExecuteQuery(query, mapper, set_parameters, default_command_type_);
@@ -157,7 +163,9 @@ namespace Nohros.Data.SqlServer
     /// The object produced by the execution of the method
     /// <paramref name="mapper"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper")]
+    [Obsolete(
+      "This method is obsolete. Check the ExecuteQuery that returns a IQueryMapper"
+      )]
     public T ExecuteQuery<T>(string query, Func<IDataReader, T> mapper,
       Action<CommandBuilder> set_parameters, CommandType command_type) {
       using (SqlConnection conn = sql_connection_provider_.CreateConnection())
@@ -180,6 +188,46 @@ namespace Nohros.Data.SqlServer
           throw e.AsProviderException();
         }
       }
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper);
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query,
+      CommandType command_type) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper, command_type);
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query,
+      Action<CommandBuilder> set_parameters) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper, set_parameters);
+    }
+
+    /// <inheritdoc/>
+    public IQueryMapper<T> ExecuteQuery<T>(string query,
+      Action<CommandBuilder> set_parameters,
+      CommandType command_type) {
+      IDataReaderMapper<T> mapper =
+        new DataReaderMapperBuilder<T>()
+          .AutoMap()
+          .Build();
+      return ExecuteQuery(query, () => mapper, set_parameters, command_type);
     }
 
     /// <summary>

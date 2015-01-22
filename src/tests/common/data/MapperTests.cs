@@ -183,13 +183,13 @@ namespace Nohros.Common
             conn)) {
         conn.Open();
         using (var reader = cmd.ExecuteReader()) {
-          var mapper = new DataReaderMapperBuilder<IPostPoco>()
+          var mapper = new DataReaderMapperBuilder<PostPoco2>()
             .Map<int, TimeSpan>(poco => poco.Counter1, "counter1",
               i => FromSeconds(i))
             .Map(x => x.Counter2, "counter2")
-            .SetFactory(() => new PostPoco2())
+            //.SetFactory(() => new PostPoco2())
             .Build();
-          Assert.Pass("Value:" + mapper.Map(reader).Counter1);
+          //Assert.Pass("Value:" + mapper.Map(reader).Counter1);
           //mapper.Map(reader);
         }
       }

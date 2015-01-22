@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Arg_ArrayPlusOffTooSmall" xml:space="preserve">
     <value>Destination array is not long enough to copy all the items in the collection. Check array index and length.</value>
@@ -362,5 +362,9 @@
   <data name="Configuration_providers_replicas_with_ref_options" xml:space="preserve">
     <value>Replica nodes could not have a option that references another option.
 Remove any option that has the following pattern &lt;option ref=""/&gt;</value>
+  </data>
+  <data name="Mappers_CannotMapInterfaces" xml:space="preserve">
+    <value>We cannot map the [{0}] interface directly.
+You should define a factory to create an instance of the interface using the SetFactory method.</value>
   </data>
 </root>
