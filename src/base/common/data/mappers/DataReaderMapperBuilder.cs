@@ -12,6 +12,7 @@ using ConstantMap =
   System.Collections.Generic.KeyValuePair
     <Nohros.Data.ITypeMap, System.Reflection.PropertyInfo>;
 using System.Linq.Expressions;
+using R = Nohros.Resources.Resources;
 
 namespace Nohros.Data
 {
@@ -569,12 +570,21 @@ namespace Nohros.Data
     /// </remarks>
     Type GetDynamicType(string prefix) {
       string dynamic_type_name =
-        Dynamics_.GetDynamicTypeName(prefix, type_t_);
-      return
         Dynamics_
-          .ModuleBuilder
-          .GetType(dynamic_type_name) ??
-          MakeDynamicType(dynamic_type_name);
+          .GetDynamicTypeName(prefix, type_t_, "_mapper");
+      Type type = Dynamics_.ModuleBuilder.GetType(dynamic_type_name);
+      if (type == null) {
+        // If the specified type is an interface and the factory was not
+        // specified we are not able to perform the mapping.
+        //
+        // TODO(neylor.silva) Create
+        if (type_t_.IsInterface && factory_ == null) {
+          throw new ArgumentException(
+            R.Mappers_CannotMapInterfaces.Fmt(type_t_.FullName));
+        }
+        type = MakeDynamicType(dynamic_type_name);
+      }
+      return type;
     }
 
     /// <summary>
@@ -634,7 +644,7 @@ namespace Nohros.Data
       EmitConstructor(builder, result);
       EmitGetOrdinals(builder, result);
       //EmitConversors(builder, result);
-      EmitNewT(builder, result);
+      EmitNewT(builder);
       EmitMapMethod(builder, result);
 
       OnPreCreateType(builder);
@@ -700,7 +710,7 @@ namespace Nohros.Data
       }
     }*/
 
-    void EmitNewT(TypeBuilder type, MappingResult result) {
+    void EmitNewT(TypeBuilder type) {
       MethodBuilder builder = type
         .DefineMethod("NewT",
           MethodAttributes.Assembly | MethodAttributes.HideBySig |
@@ -709,7 +719,7 @@ namespace Nohros.Data
       ILGenerator il = builder.GetILGenerator();
 
       if (factory_ == null) {
-        // Calls the default constructor of the type T
+        // calls the default constructor of the type T
         ConstructorInfo t_constructor = type_t_
           .GetConstructor(
             BindingFlags.Public |
