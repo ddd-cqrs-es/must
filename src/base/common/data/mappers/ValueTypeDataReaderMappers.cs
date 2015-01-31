@@ -79,4 +79,11 @@ namespace Nohros.Data
       return reader.GetInt64(0);
     }
   }
+
+  internal class StringDataReaderMapper : ValueTypeDataReaderMapper<string>
+  {
+    internal override string MapInternal(IDataReader reader) {
+      return reader.GetString(0);
+    }
+  }
 }

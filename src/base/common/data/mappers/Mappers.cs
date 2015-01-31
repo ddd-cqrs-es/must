@@ -95,5 +95,13 @@ namespace Nohros.Data
     public static IDataReaderMapper<long> Long() {
       return new LongDataReaderMapper();
     }
+
+    /// <summary>
+    /// Creates an instance of a class that implements the
+    /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="string"/>.
+    /// </summary>
+    public static IDataReaderMapper<string> String() {
+      return new StringDataReaderMapper();
+    }
   }
 }
