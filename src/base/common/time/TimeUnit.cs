@@ -664,6 +664,28 @@ namespace Nohros
         TimeSpan end) {
         return (time >= begin) && time <= end;
       }
+
+      /// <summary>
+      /// Gets a value indicating if <paramref name="time"/> is between the
+      /// <paramref name="begin"/> and <paramref name="end"/>.
+      /// </summary>
+      /// <param name="time">
+      /// The time to check.
+      /// </param>
+      /// <param name="begin">
+      /// The start of the range.
+      /// </param>
+      /// <param name="end">
+      /// The end of the range.
+      /// </param>
+      /// <returns>
+      /// <c>true</c> if <paramref name="time"/> is between
+      /// <paramref name="begin"/> and <paramref name="end"/>.
+      /// </returns>
+      public static bool IsBetween(this DateTime time, DateTime begin,
+        DateTime end) {
+        return (time >= begin) && time <= end;
+      }
     }
   }
 }
