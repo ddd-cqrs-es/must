@@ -212,8 +212,8 @@ namespace Nohros.Metrics
     }
 
     /// <summary>
-    /// Creates a new timer by using the specified name and the default
-    /// values for resevoir, time unit and snapshot config.
+    /// Creates a new bucket timer by using the specified name and list of
+    /// buckets.
     /// </summary>
     /// <param name="name">
     /// The name of the timer
@@ -223,7 +223,7 @@ namespace Nohros.Metrics
     /// </param>
     /// <returns>
     /// A <see cref="BucketTimer"/> whose name is <paramref name="name"/> and
-    /// uses the default resevoir, time unit and snapshot config.
+    /// measure time using the given <paramref name="buckets"/>.
     /// </returns>
     public static BucketTimer Create(string name, long[] buckets) {
       return new Builder(new MetricConfig(name))
@@ -232,20 +232,21 @@ namespace Nohros.Metrics
     }
 
     /// <summary>
-    /// Creates a new timer by using the specified name and time unit and the
-    /// default values for resevoir and snapshot config.
+    /// Creates a new bucket timer by using the specified name, list of
+    /// buckets and time unit.
     /// </summary>
     /// <param name="name">
     /// The name of the timer
     /// </param>
-    /// <param name="unit">
-    /// </param>
     /// <param name="buckets">
     /// The buckets to be used by the timer.
     /// </param>
+    /// <param name="unit">
+    /// The unit of time to be reported.
+    /// </param>
     /// <returns>
     /// A <see cref="BucketTimer"/> whose name is <paramref name="name"/> and
-    /// uses the specified time unit and default resevoir and snapshot config.
+    /// measure time using the given <paramref name="buckets"/>.
     /// </returns>
     public static BucketTimer Create(string name, long[] buckets, TimeUnit unit) {
       return new
