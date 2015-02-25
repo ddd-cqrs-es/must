@@ -51,6 +51,15 @@ namespace Nohros.Metrics
       count_ = initial;
     }
 
+    /// <summary>
+    /// Creates a new counter by using the specified name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static Counter Create(string name) {
+      return new Counter(new MetricConfig(name));
+    }
+
     /// <inheritdoc/>
     public void Increment() {
       Increment(1);
