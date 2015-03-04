@@ -11,7 +11,7 @@ namespace Nohros.Metrics
   /// Updates should be non-negative. The reset value is
   /// <see cref="long.MaxValue"/>.
   /// </remarks>
-  public class MinGauge : AbstractMetric, IResettable
+  public class MinGauge : AbstractMetric
   {
     long value_;
 

@@ -22,8 +22,8 @@ namespace Nohros.Metrics
     readonly TimeUnit unit_;
     readonly Counter count_;
     readonly Counter total_time_;
-    readonly ResettableMaxGauge max_;
-    readonly ResettableMinGauge min_;
+    readonly StepMaxGauge max_;
+    readonly StepMinGauge min_;
     readonly ReadOnlyCollection<IMetric> metrics_;
 
     /// <summary>
@@ -46,8 +46,8 @@ namespace Nohros.Metrics
       MetricConfig cfg = config.WithAdditionalTag("unit", unit.Name());
 
       count_ = new Counter(cfg.WithAdditionalTag(kStatistic, kCount), context);
-      max_ = new ResettableMaxGauge(cfg.WithAdditionalTag(kStatistic, kMax));
-      min_ = new ResettableMinGauge(cfg.WithAdditionalTag(kStatistic, kMin));
+      max_ = new StepMaxGauge(cfg.WithAdditionalTag(kStatistic, kMax));
+      min_ = new StepMinGauge(cfg.WithAdditionalTag(kStatistic, kMin));
       total_time_ =
         new Counter(cfg.WithAdditionalTag(kStatistic, kTotal), context);
 

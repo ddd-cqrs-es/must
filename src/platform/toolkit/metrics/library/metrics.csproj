@@ -44,8 +44,8 @@
     <Compile Include="annotations\TagsAttribute.cs" />
     <Compile Include="core\BasicCompositeMetric.cs" />
     <Compile Include="core\BucketTimer.cs" />
-    <Compile Include="core\ResettableMaxGauge.cs" />
-    <Compile Include="core\ResettableMinGauge.cs" />
+    <Compile Include="core\StepMaxGauge.cs" />
+    <Compile Include="core\StepMinGauge.cs" />
     <Compile Include="core\ResevoirType.cs" />
     <Compile Include="annotations\TagAttribute.cs" />
     <Compile Include="AppMetrics.cs" />
@@ -53,7 +53,7 @@
     <Compile Include="core\Counter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="core\IResettable.cs" />
+    <Compile Include="core\IStepMetric.cs" />
     <Compile Include="core\MeasureTransformer.cs" />
     <Compile Include="core\Histogram.cs" />
     <Compile Include="core\ICompositeMetric.cs" />

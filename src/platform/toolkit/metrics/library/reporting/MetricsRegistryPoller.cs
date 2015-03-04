@@ -70,7 +70,7 @@ namespace Nohros.Metrics.Reporting
           Poll((ICompositeMetric) metric, predicate, timestamp);
         } else if (predicate(metric.Config)) {
           metric.GetMeasure(Observe, timestamp);
-          var resetabble = metric as IResettable;
+          var resetabble = metric as IStepMetric;
           if (resetabble != null)
             resetabble.Reset();
         }
