@@ -41,6 +41,8 @@ namespace Nohros.Metrics
           return new Tag(name, "gauge");
         case MetricType.EWMA:
           return new Tag(name, "ewma");
+        case MetricType.Normalized:
+          return new Tag(name, "normalized");
         default:
           throw new ArgumentOutOfRangeException(
             Resources.ArgIsInvalid.Fmt((int) type, typeof (MetricType).Name));
@@ -71,6 +73,12 @@ namespace Nohros.Metrics
     /// per time unit.
     /// </remarks>
     Counter = 2,
+
+    /// <summary>
+    /// A normalized rate/unit. For counters that report values based on
+    /// step boundaries.
+    /// </summary>
+    Normalized = 3,
 
     /// <summary>
     /// An exponentially-weighted moving average of count per time

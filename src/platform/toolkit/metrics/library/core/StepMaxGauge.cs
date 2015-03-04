@@ -43,6 +43,10 @@ namespace Nohros.Metrics
       max_gauge_.GetMeasure(callback, state);
     }
 
+    public void OnStep() {
+      Reset();
+    }
+
     public void Reset() {
       max_gauge_.Reset();
     }

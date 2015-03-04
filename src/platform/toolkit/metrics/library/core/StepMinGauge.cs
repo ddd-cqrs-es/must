@@ -15,7 +15,7 @@ namespace Nohros.Metrics
     readonly MinGauge min_gauge_;
 
     /// <summary>
-    /// Initializes a nes instance of the <see cref="StepMinGauge"/>
+    /// Initializes a new instance of the <see cref="StepMinGauge"/>
     /// class by using the given <see cref="MetricConfig"/>.
     /// </summary>
     /// <param name="config">
@@ -44,6 +44,10 @@ namespace Nohros.Metrics
     /// <inheritdoc/>
     public void GetMeasure<T>(Action<Measure, T> callback, T state) {
       min_gauge_.GetMeasure(callback, state);
+    }
+
+    public void OnStep() {
+      Reset();
     }
 
     /// <inheritdoc/>
