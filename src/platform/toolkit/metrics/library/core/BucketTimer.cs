@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Nohros.Extensions;
 using Nohros.Extensions.Time;
 using System.Linq;
+using Nohros.Metrics.core;
 
 namespace Nohros.Metrics
 {
@@ -106,7 +107,7 @@ namespace Nohros.Metrics
       internal MetricContext Context { get; private set; }
     }
 
-    class BucketCounter : Counter
+    class BucketCounter : StepCounter
     {
       public BucketCounter(MetricConfig config) : base(config) {
       }

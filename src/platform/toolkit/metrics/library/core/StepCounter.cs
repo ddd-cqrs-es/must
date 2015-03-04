@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace Nohros.Metrics.core
+﻿
+namespace Nohros.Metrics
 {
   /// <summary>
   /// A <see cref="ICounter"/> implementation that is mapped to a particular
@@ -39,6 +38,22 @@ namespace Nohros.Metrics.core
     /// </param>
     public StepCounter(MetricConfig config, long initial)
       : this(config, initial, MetricContext.ForCurrentProcess) {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StepCounter"/> class
+    /// by using the given <see cref="MetricConfig"/> and
+    /// <see cref="MetricContext"/>.
+    /// </summary>
+    /// <param name="config">
+    /// A <see cref="MetricConfig"/> object containing the configuration
+    /// that should be used by the <see cref="StepCounter"/> object.
+    /// </param>
+    /// <param name="context">
+    /// The <see cref="MetricContext"/> to be used by the counter.
+    /// </param>
+    public StepCounter(MetricConfig config, MetricContext context)
+      : this(config, 0, context) {
     }
 
     /// <summary>
