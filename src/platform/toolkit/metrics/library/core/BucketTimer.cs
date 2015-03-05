@@ -6,7 +6,6 @@ using System.Diagnostics;
 using Nohros.Extensions;
 using Nohros.Extensions.Time;
 using System.Linq;
-using Nohros.Metrics.core;
 
 namespace Nohros.Metrics
 {

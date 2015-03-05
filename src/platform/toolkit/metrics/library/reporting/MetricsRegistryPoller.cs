@@ -66,13 +66,14 @@ namespace Nohros.Metrics.Reporting
     void Poll(IEnumerable<IMetric> metrics, Func<MetricConfig, bool> predicate,
       DateTime timestamp) {
       foreach (var metric in metrics) {
-        if (metric is ICompositeMetric) {
-          Poll((ICompositeMetric) metric, predicate, timestamp);
+        var composite = metric as ICompositeMetric;
+        if (composite != null) {
+          Poll(composite, predicate, timestamp);
         } else if (predicate(metric.Config)) {
           metric.GetMeasure(Observe, timestamp);
-          var resetabble = metric as IStepMetric;
-          if (resetabble != null)
-            resetabble.Reset();
+          var step = metric as IStepMetric;
+          if (step != null)
+            step.OnStep();
         }
       }
     }
