@@ -9,14 +9,14 @@ using Nohros.Logging;
 using Nohros.Resources;
 using System.Linq;
 
-namespace Nohros.Data.SqlServer
+namespace Nohros.Data.MySql
 {
   /// <summary>
   /// Execute SQL commands againts a SQL Server database.
   /// </summary>
   public class MySqlQueryExecutor : IQueryExecutor
   {
-    const string kClassName = "Nohros.Data.SqlServer.MySqlQueryExecutor";
+    const string kClassName = "Nohros.Data.MySql.MySqlQueryExecutor";
 
     readonly MySqlConnectionProvider mysql_connection_provider_;
     readonly CommandType default_command_type_;
