@@ -14,7 +14,8 @@ namespace Nohros.Configuration
 
     protected override object GetElementKey(ConfigurationElement element) {
       var config = (DataServerConfig) element;
-      return "{0}::{1}".Fmt(config.ServerId, config.ConnectionStringName);
+      return "{0}::{1}::{2}"
+        .Fmt(config.Name, config.ConnectionStringName, config.ServerId);
     }
   }
 }
