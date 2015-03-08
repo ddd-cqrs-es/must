@@ -119,7 +119,7 @@ namespace Nohros.Metrics
 
     public void OnStep() {
       context_.Send(() => {
-        prev_count_ = 0;
+        prev_count_ = curr_count_;
         prev_tick_ = curr_tick_;
       });
     }

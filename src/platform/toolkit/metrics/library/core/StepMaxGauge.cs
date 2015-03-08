@@ -26,11 +26,6 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal Measure Compute() {
-      return max_gauge_.Compute();
-    }
-
-    /// <inheritdoc/>
     public MetricConfig Config {
       get { return max_gauge_.Config; }
     }

@@ -11,7 +11,7 @@ namespace Nohros.Metrics
   /// <see cref="IStepMetric"/> class each time its
   /// <see cref="IMetricsPoller.Poll()"/> method is executed.
   /// </remarks>
-  public interface IStepMetric
+  public interface IStepMetric : IMetric
   {
     /// <summary>
     /// The method that shoud be executed at every step interval.

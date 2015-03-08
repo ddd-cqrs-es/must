@@ -20,9 +20,19 @@ namespace Nohros.Metrics
     /// </summary>
     public class Builder
     {
+      /// <summary>
+      /// Initializes a new instance of the <see cref="Builder"/>
+      /// class that creates a <see cref="BucketTimer"/> instance
+      /// with the configured values.
+      /// </summary>
+      /// <param name="config">
+      /// a <see cref="MetricConfig"/> object containing configuration
+      /// information about the metric to be created.
+      /// </param>
       public Builder(MetricConfig config) {
         Config = config;
-        TimeUnit = TimeUnit.Seconds;
+        TimeUnit = TimeUnit.Milliseconds;
+        MeasureUnit = TimeUnit.Seconds;
         Context = MetricContext.ForCurrentProcess;
         Buckets = new long[0];
       }
@@ -31,10 +41,22 @@ namespace Nohros.Metrics
       /// Sets the time unit for the buckets.
       /// </summary>
       /// <param name="unit">
-      /// The time unit to be reported.
+      /// The time unit of the buckets.
       /// </param>
       public Builder WithTimeUnit(TimeUnit unit) {
         TimeUnit = unit;
+        return this;
+      }
+
+      /// <summary>
+      /// Sets the time unit used to report the measured values.
+      /// </summary>
+      /// <param name="unit">
+      /// The time unit to be reported.
+      /// </param>
+      /// <returns></returns>
+      public Builder WithMeasureUnit(TimeUnit unit) {
+        MeasureUnit = unit;
         return this;
       }
 
@@ -101,16 +123,18 @@ namespace Nohros.Metrics
 
       internal MetricConfig Config { get; private set; }
       internal TimeUnit TimeUnit { get; private set; }
+      internal TimeUnit MeasureUnit { get; private set; }
       internal long[] Buckets { get; private set; }
 
       internal MetricContext Context { get; private set; }
     }
 
+    /// <summary>
+    /// Wraps a <see cref="StepCounter"/> and makes it observable
+    /// only when its measured value is greater than zero.
+    /// </summary>
     class BucketCounter : StepCounter
     {
-      public BucketCounter(MetricConfig config) : base(config) {
-      }
-
       public BucketCounter(MetricConfig config, MetricContext context)
         : base(config, context) {
       }
@@ -144,6 +168,7 @@ namespace Nohros.Metrics
     const string kMax = "max";
 
     readonly TimeUnit unit_;
+    readonly TimeUnit measure_unit_;
     readonly BucketCounter count_;
     readonly BucketCounter total_time_;
     readonly BucketCounter overflow_count_;
@@ -161,13 +186,14 @@ namespace Nohros.Metrics
     /// </param>
     public BucketTimer(Builder builder) : base(builder.Config, builder.Context) {
       unit_ = builder.TimeUnit;
+      measure_unit_ = builder.MeasureUnit;
 
       MetricContext context = builder.Context;
 
       MetricConfig config =
         builder
           .Config
-          .WithAdditionalTag("unit", unit_.Name());
+          .WithAdditionalTag("unit", measure_unit_.Name());
 
       count_ = new BucketCounter(config.WithAdditionalTag(kStatistic, kCount),
         context);
@@ -179,7 +205,8 @@ namespace Nohros.Metrics
         new BucketCounter(
           config
             .WithAdditionalTag(kStatistic, kCount)
-            .WithAdditionalTag(kBucket, "bucket=overflow"));
+            .WithAdditionalTag(kBucket, "bucket=overflow"),
+          context);
 
       buckets_ = builder.Buckets;
 
@@ -196,17 +223,26 @@ namespace Nohros.Metrics
           config
             .WithAdditionalTag(kStatistic, kCount)
             .WithAdditionalTag(kBucket,
-              "bucket={0}{1}".Fmt(buckets_[i].ToString(padding), label)));
+              "bucket={0}{1}".Fmt(buckets_[i].ToString(padding), label)),
+          context);
       }
 
+      Func<double, double> convert =
+        measure => ConvertToUnit(measure, measure_unit_);
+      Func<double, double> rate_convert =
+        measure => measure/ConvertToUnit(1.0, measure_unit_);
+
       var metrics = new List<IMetric> {
-        new MeasureTransformer(total_time_, ConvertToUnit),
-        new MeasureTransformer(min_, ConvertToUnit),
-        new MeasureTransformer(max_, ConvertToUnit),
-        overflow_count_,
-        count_
+        total_time_,
+        new StepMeasureTransformer(min_, convert),
+        new StepMeasureTransformer(max_, convert),
+        new StepMeasureTransformer(overflow_count_, rate_convert),
+        new StepMeasureTransformer(count_, rate_convert)
       };
-      metrics.AddRange(bucket_count_);
+
+      metrics.AddRange(
+        bucket_count_
+          .Select(x => new StepMeasureTransformer(x, rate_convert)));
 
       metrics_ = new ReadOnlyCollection<IMetric>(metrics);
     }
@@ -264,22 +300,20 @@ namespace Nohros.Metrics
     /// </param>
     public void Update(TimeSpan duration) {
       if (duration > TimeSpan.Zero) {
-        context_.Send(() => {
-          long ticks = duration.Ticks;
-          total_time_.Increment(ticks);
-          min_.Update(ticks);
-          max_.Update(ticks);
-          count_.Increment();
+        long ticks = duration.Ticks;
+        total_time_.Increment(ticks);
+        min_.Update(ticks);
+        max_.Update(ticks);
+        count_.Increment();
 
-          var measure = (long) ConvertToUnit(ticks);
-          for (int i = 0; i < buckets_.Length; i++) {
-            if (measure <= buckets_[i]) {
-              bucket_count_[i].Increment();
-              return;
-            }
+        var measure = (long) ConvertToUnit(ticks, unit_);
+        for (int i = 0; i < buckets_.Length; i++) {
+          if (measure <= buckets_[i]) {
+            bucket_count_[i].Increment();
+            return;
           }
-          overflow_count_.Increment();
-        });
+        }
+        overflow_count_.Increment();
       }
     }
 
@@ -323,8 +357,8 @@ namespace Nohros.Metrics
       return metrics_.GetEnumerator();
     }
 
-    double ConvertToUnit(double d) {
-      return TimeUnit.Ticks.Convert(d, unit_);
+    double ConvertToUnit(double d, TimeUnit unit) {
+      return TimeUnit.Ticks.Convert(d, unit);
     }
 
     /// <inheritdoc/>
