@@ -27,5 +27,27 @@ namespace Nohros.Metrics.Tests
       measure = Testing.Sync<Measure>(gauge, gauge.GetMeasure, gauge.context_);
       Assert.That(measure.Value, Is.EqualTo(1.0));
     }
+
+    [Test]
+    public void should_report_zero_when_value_is_not_set() {
+      var min = new MinGauge(new MetricConfig("min2"));
+
+      Measure measure = Testing.Sync<Measure>(min, min.GetMeasure, min.context_);
+      Assert.That(measure.Value, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void should_reset_the_gauge() {
+      var min = new MinGauge(new MetricConfig("min2"));
+      min.Update(42L);
+
+      Measure measure = Testing.Sync<Measure>(min, min.GetMeasure, min.context_);
+      Assert.That(measure.Value, Is.EqualTo(42L));
+
+      min.Reset();
+      min.Update(50L);
+      measure = Testing.Sync<Measure>(min, min.GetMeasure, min.context_);
+      Assert.That(measure.Value, Is.EqualTo(50D));
+    }
   }
 }

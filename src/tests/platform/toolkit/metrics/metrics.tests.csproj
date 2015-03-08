@@ -54,6 +54,9 @@
     <Compile Include="core\MeanRateTests.cs" />
     <Compile Include="core\MetricsConfigTest.cs" />
     <Compile Include="core\MinGaugeTests.cs" />
+    <Compile Include="core\StepCounterTests.cs" />
+    <Compile Include="core\StepMaxGaugeTests.cs" />
+    <Compile Include="core\StepMinGaugeTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="core\SnapshotTests.cs" />
     <Compile Include="core\StepClock.cs" />
