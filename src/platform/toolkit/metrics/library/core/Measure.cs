@@ -50,7 +50,7 @@ namespace Nohros.Metrics
     /// not observable at a given point in time. For example, the
     /// <see cref="BucketTimer"/> contains metrics that reports how many times
     /// a given call took a specific time. For that composite reporting the
-    /// value for the buckets that was never updated is a waste of time and
+    /// value of the buckets that was never updated is a waste of time and
     /// space. The 'never updated buckets' will set the
     /// <see cref="IsObservable"/> property of the metrics that it report to
     /// <c>false</c> and the observables could just ignore it.
