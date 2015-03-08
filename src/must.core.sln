@@ -73,11 +73,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "base\common\commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "informix", "impl\providers\informix\informix.csproj", "{F73C8A5B-50A7-4DE0-8746-EC1106B82337}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C8679AC8-55B6-4032-B2A5-7FE77843E39B}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
