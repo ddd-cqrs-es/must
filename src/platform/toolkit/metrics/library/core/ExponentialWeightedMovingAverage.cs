@@ -183,25 +183,9 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    public override void GetMeasure(Action<Measure> callback) {
-      long ticks = context_.Tick;
-      context_.Send(() => callback(Compute(ticks)));
-    }
-
-    /// <inheritdoc/>
-    public override void GetMeasure<T>(Action<Measure, T> callback, T state) {
-      long tick = context_.Tick;
-      context_.Send(() => callback(Compute(tick), state));
-    }
-
-    /// <inheritdoc/>
-    protected internal override Measure Compute() {
-      throw new NotSupportedException();
-    }
-
-    internal Measure Compute(long ticks) {
-      TickIfNecessary(ticks);
-      return CreateMeasure(rate_*ticks_per_unit_);
+    protected internal override Measure Compute(long tick) {
+      TickIfNecessary(tick);
+      return CreateMeasure(rate_ * ticks_per_unit_);
     }
 
     /// <summary>

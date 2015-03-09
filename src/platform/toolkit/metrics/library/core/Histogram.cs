@@ -204,7 +204,7 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute() {
+    protected internal override Measure Compute(long tick) {
       return CreateMeasure(gauges_.Count);
     }
   }

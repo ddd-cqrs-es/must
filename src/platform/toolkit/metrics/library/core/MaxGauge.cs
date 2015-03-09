@@ -49,7 +49,7 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute() {
+    protected internal override Measure Compute(long tick) {
       long v = Interlocked.Read(ref value_);
       return CreateMeasure(v);
     }

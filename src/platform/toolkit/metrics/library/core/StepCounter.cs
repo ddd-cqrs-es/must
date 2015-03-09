@@ -125,8 +125,8 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal override Measure Compute() {
-      curr_tick_ = context_.Tick;
+    protected internal override Measure Compute(long tick) {
+      curr_tick_ = tick;
       double delta = curr_tick_ - prev_tick_;
       return CreateMeasure((curr_count_ - prev_count_)/delta);
     }
