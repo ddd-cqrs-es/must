@@ -100,73 +100,6 @@ namespace Nohros
       }
 
       /// <summary>
-      /// Convert the specified time duration in the given unit to the
-      /// nanoseconds units.
-      /// </summary>
-      /// <returns></returns>
-      public static long ToTicks(this double duration, TimeUnit unit) {
-        switch (unit) {
-          case TimeUnit.Nanoseconds:
-            return (long) duration/(C1/C0);
-
-          case TimeUnit.Ticks:
-            return (long) duration;
-
-          case TimeUnit.Microseconds:
-            return (long) x(duration, C2/C1, MAX/(C2/C1));
-
-          case TimeUnit.Milliseconds:
-            return (long) x(duration, C3/C1, MAX/(C3/C1));
-
-          case TimeUnit.Seconds:
-            return (long) x(duration, C4/C1, MAX/(C4/C1));
-
-          case TimeUnit.Minutes:
-            return (long) x(duration, C5/C1, MAX/(C5/C4));
-
-          case TimeUnit.Hours:
-            return (long) x(duration, C6/C1, MAX/(C6/C4));
-
-          case TimeUnit.Days:
-            return (long) x(duration, C7/C1, MAX/(C7/C4));
-        }
-        throw new ArgumentOutOfRangeException("unit");
-      }
-
-      /// <summary>
-      /// Convert the specified time duration in the given unit to the
-      /// nanoseconds units.
-      /// </summary>
-      public static long ToNanos(this double duration, TimeUnit unit) {
-        switch (unit) {
-          case TimeUnit.Nanoseconds:
-            return (long) duration;
-
-          case TimeUnit.Ticks:
-            return (long) x(duration, C1/C0, MAX/(C1/C0));
-
-          case TimeUnit.Microseconds:
-            return (long) x(duration, C2/C0, MAX/(C2/C0));
-
-          case TimeUnit.Milliseconds:
-            return (long) x(duration, C3/C0, MAX/(C3/C0));
-
-          case TimeUnit.Seconds:
-            return (long) x(duration, C4/C0, MAX/(C4/C0));
-
-          case TimeUnit.Minutes:
-            return (long) x(duration, C5/C0, MAX/(C5/C0));
-
-          case TimeUnit.Hours:
-            return (long) x(duration, C6/C0, MAX/(C6/C0));
-
-          case TimeUnit.Days:
-            return (long) x(duration, C7/C0, MAX/(C7/C0));
-        }
-        throw new ArgumentOutOfRangeException("unit");
-      }
-
-      /// <summary>
       /// Converts the specified datetime to the unix time unit.
       /// </summary>
       /// <returns>
@@ -244,9 +177,80 @@ namespace Nohros
       /// seconds units.
       /// </summary>
       /// <returns></returns>
-      [Obsolete("THis method is obsolete. Use ToMilliseconds instead", true)]
+      [Obsolete("This method is obsolete. Use ToMilliseconds instead", true)]
       public static long ToMillis(long duration, TimeUnit unit) {
         return (long) ToMilliseconds(duration, unit);
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static long ToTicks(this double duration, TimeUnit unit)
+      {
+        switch (unit)
+        {
+          case TimeUnit.Nanoseconds:
+            return (long)duration / (C1 / C0);
+
+          case TimeUnit.Ticks:
+            return (long)duration;
+
+          case TimeUnit.Microseconds:
+            return (long)x(duration, C2 / C1, MAX / (C2 / C1));
+
+          case TimeUnit.Milliseconds:
+            return (long)x(duration, C3 / C1, MAX / (C3 / C1));
+
+          case TimeUnit.Seconds:
+            return (long)x(duration, C4 / C1, MAX / (C4 / C1));
+
+          case TimeUnit.Minutes:
+            return (long)x(duration, C5 / C1, MAX / (C5 / C4));
+
+          case TimeUnit.Hours:
+            return (long)x(duration, C6 / C1, MAX / (C6 / C4));
+
+          case TimeUnit.Days:
+            return (long)x(duration, C7 / C1, MAX / (C7 / C4));
+        }
+        throw new ArgumentOutOfRangeException("unit");
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      public static long ToNanos(this double duration, TimeUnit unit)
+      {
+        switch (unit)
+        {
+          case TimeUnit.Nanoseconds:
+            return (long)duration;
+
+          case TimeUnit.Ticks:
+            return (long)x(duration, C1 / C0, MAX / (C1 / C0));
+
+          case TimeUnit.Microseconds:
+            return (long)x(duration, C2 / C0, MAX / (C2 / C0));
+
+          case TimeUnit.Milliseconds:
+            return (long)x(duration, C3 / C0, MAX / (C3 / C0));
+
+          case TimeUnit.Seconds:
+            return (long)x(duration, C4 / C0, MAX / (C4 / C0));
+
+          case TimeUnit.Minutes:
+            return (long)x(duration, C5 / C0, MAX / (C5 / C0));
+
+          case TimeUnit.Hours:
+            return (long)x(duration, C6 / C0, MAX / (C6 / C0));
+
+          case TimeUnit.Days:
+            return (long)x(duration, C7 / C0, MAX / (C7 / C0));
+        }
+        throw new ArgumentOutOfRangeException("unit");
       }
 
       /// <summary>
@@ -321,6 +325,39 @@ namespace Nohros
       /// Convert the specified time duration in the given unit to the
       /// nanoseconds units.
       /// </summary>
+      public static double ToMinutes(this double duration, TimeUnit unit) {
+        switch (unit) {
+          case TimeUnit.Nanoseconds:
+            return duration/(C5/C0);
+
+          case TimeUnit.Ticks:
+            return duration/(C5/C1);
+
+          case TimeUnit.Microseconds:
+            return duration/(C5/C2);
+
+          case TimeUnit.Milliseconds:
+            return duration/(C5/C3);
+
+          case TimeUnit.Seconds:
+            return duration/(C5/C4);
+            
+          case TimeUnit.Minutes:
+            return  duration;
+
+          case TimeUnit.Hours:
+            return x(duration, C6/C5, MAX/(C6/C5));
+
+          case TimeUnit.Days:
+            return x(duration, C7/C5, MAX/(C7/C5));
+        }
+        throw new ArgumentOutOfRangeException("unit");
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
       /// <returns></returns>
       public static long ToTicks(this long duration, TimeUnit unit) {
         return ToTicks((double) duration, unit);
@@ -350,6 +387,15 @@ namespace Nohros
       /// <returns></returns>
       public static double ToSeconds(this long duration, TimeUnit unit) {
         return (long) ToSeconds((double) duration, unit);
+      }
+
+      /// <summary>
+      /// Convert the specified time duration in the given unit to the
+      /// nanoseconds units.
+      /// </summary>
+      /// <returns></returns>
+      public static double ToMinutes(this long duration, TimeUnit unit) {
+        return (long)ToMinutes((double)duration, unit);
       }
 
       /// <summary>
@@ -630,8 +676,7 @@ namespace Nohros
           case TimeUnit.Milliseconds:
             return duration.ToMilliseconds(@from);
           case TimeUnit.Minutes:
-            //return duration.ToMinutes();
-            throw new NotImplementedException();
+            return duration.ToMinutes(@from);
           case TimeUnit.Nanoseconds:
             return duration.ToNanos(@from);
           case TimeUnit.Seconds:

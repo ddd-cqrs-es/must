@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>must.metrics</id>
-        <version>0.7.2.0</version>
+        <version>0.7.3.0</version>
         <title>Must Framework - Metrics</title>
         <authors>Nohros Inc</authors>
         <owners>Nohros Inc</owners>
@@ -24,5 +24,6 @@
     </metadata>
     <files>
       <file src="..\bin\release\metrics\nohros.metrics.dll" target="lib\net40\nohros.metrics.dll" />
+	  <file src="..\bin\release\metrics\nohros.metrics.pdb" target="lib\net40\nohros.metrics.pdb" />
     </files>
 </package>

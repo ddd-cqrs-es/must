@@ -44,7 +44,6 @@ namespace Nohros.Metrics
 
     /// <inheritdoc/>
     public virtual void GetMeasure(Action<Measure> callback) {
-      DateTime now = DateTime.Now;
       context_.Send(() => callback(Compute()));
     }
 
