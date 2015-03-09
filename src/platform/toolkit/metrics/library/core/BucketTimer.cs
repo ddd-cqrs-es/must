@@ -229,20 +229,16 @@ namespace Nohros.Metrics
 
       Func<double, double> convert =
         measure => ConvertToUnit(measure, measure_unit_);
-      Func<double, double> rate_convert =
-        measure => measure/ConvertToUnit(1.0, measure_unit_);
 
       var metrics = new List<IMetric> {
         total_time_,
         new StepMeasureTransformer(min_, convert),
         new StepMeasureTransformer(max_, convert),
-        new StepMeasureTransformer(overflow_count_, rate_convert),
-        new StepMeasureTransformer(count_, rate_convert)
+        overflow_count_,
+        count_
       };
 
-      metrics.AddRange(
-        bucket_count_
-          .Select(x => new StepMeasureTransformer(x, rate_convert)));
+      metrics.AddRange(bucket_count_);
 
       metrics_ = new ReadOnlyCollection<IMetric>(metrics);
     }

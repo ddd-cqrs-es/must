@@ -27,8 +27,8 @@ namespace Nohros.Metrics
     }
 
     /// <inheritdoc/>
-    protected internal Measure Compute() {
-      return min_gauge_.Compute();
+    protected internal Measure Compute(long tick) {
+      return min_gauge_.Compute(tick);
     }
 
     /// <inheritdoc/>
