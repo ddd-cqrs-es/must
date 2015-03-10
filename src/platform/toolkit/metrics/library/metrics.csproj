@@ -113,7 +113,6 @@
     <Compile Include="reporting\IMetricsPoller.cs" />
     <Compile Include="reporting\MetricsRegistryPoller.cs" />
     <Compile Include="reporting\PollScheduler.cs" />
-    <Compile Include="reporting\SqlMetricsObserver.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

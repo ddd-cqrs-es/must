@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Nohros.Caching.Providers;
+using Nohros.Metrics.Reporting;
 
-namespace Nohros.Metrics.Reporting
+namespace Nohros.Metrics.Sql
 {
   public class SqlMetricsObserver : IMeasureObserver
   {
@@ -74,12 +76,16 @@ namespace Nohros.Metrics.Reporting
         }
       }
 
-      // A matching tags was not found, lets create a new one.
-      long serie_id = metrics_dao_.RegisterSerie(name, hash, tags.Count);
-      foreach (Tag tag in tags) {
-        metrics_dao_.RegisterTag(tag.Name, tag.Value, serie_id);
+      // A matching tags was not found, lets create a new one. A transaction scope
+      // is used to endure that all tags related with a given serie is registered.
+      using (var scope = new TransactionScope(TransactionScopeOption.Required)) {
+        long serie_id = metrics_dao_.RegisterSerie(name, hash, tags.Count);
+        foreach (Tag tag in tags) {
+          metrics_dao_.RegisterTag(tag.Name, tag.Value, serie_id);
+        }
+        scope.Complete();
+        return serie_id;
       }
-      return serie_id;
     }
 
     bool IsSameTags(long serie_id, IEnumerable<Tag> tags) {
