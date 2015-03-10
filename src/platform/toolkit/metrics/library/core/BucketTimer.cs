@@ -139,6 +139,10 @@ namespace Nohros.Metrics
         : base(config, context) {
       }
 
+      public BucketCounter(MetricConfig config, TimeUnit unit, MetricContext context)
+        : base(config, unit, context) {
+      }
+
       public override void GetMeasure(Action<Measure> callback) {
         base.GetMeasure(m => {
           Measure measure =
@@ -199,8 +203,17 @@ namespace Nohros.Metrics
         context);
       max_ = new StepMaxGauge(config.WithAdditionalTag(kStatistic, kMax));
       min_ = new StepMinGauge(config.WithAdditionalTag(kStatistic, kMin));
-      total_time_ =
-        new BucketCounter(config.WithAdditionalTag(kStatistic, kTotal), context);
+
+      // We should not convert the value of the total time, since
+      // it is already a time the rate reported will be the
+      // percentage of time that was spent within the defined reporting
+      // interval.
+      MetricConfig time_config =
+        config
+          .WithAdditionalTag(kStatistic, kTotal)
+          .WithAdditionalTag("unit", "nounit");
+      total_time_ = new BucketCounter(time_config, TimeUnit.Ticks, context);
+
       overflow_count_ =
         new BucketCounter(
           config
