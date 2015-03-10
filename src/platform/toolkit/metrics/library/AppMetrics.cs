@@ -171,7 +171,7 @@ namespace Nohros.Metrics
         new Tags.Builder()
           .WithTags(GetTags(klass, true)) // static class tags
           .WithTags(GetTagsList(obj)) // dynamic class tags
-          .WithTag("class", klass.Name)
+          .WithTag("class", GetClassName(klass))
           .WithTag("namespace", klass.Namespace)
           .Build();
 
@@ -256,6 +256,18 @@ namespace Nohros.Metrics
         return (IEnumerable<Tag>) method.Invoke(obj, new object[0]);
       }
       return Enumerable.Empty<Tag>();
+    }
+
+    static string GetClassName(Type type) {
+      if (!type.IsGenericType) {
+        return type.Name;
+      }
+
+      return "{" +
+        type
+          .GetGenericArguments()
+          .Select(t => t.Name)
+          .Aggregate((t1, t2) => t1 + "," + t2) + "}";
     }
 
     static bool IsMetricType(FieldInfo field) {
