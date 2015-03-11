@@ -99,8 +99,15 @@ namespace Nohros.Metrics
       /// The tag to be added.
       /// </param>
       public Builder WithTags(IEnumerable<Tag> tags) {
-        if (tags != null) {
-          tags_.AddRange(tags);
+        if (tags == null) {
+          throw new ArgumentNullException("tags");
+        }
+
+        // We  not using the tags.AddRange method to
+        // ensure that none of the tags from the given
+        // collection is null.
+        foreach (var tag in tags) {
+          WithTag(tag);
         }
         return this;
       }
