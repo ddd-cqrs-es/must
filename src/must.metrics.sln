@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{A47D
 		nuget\ToBeDeleted.txt = nuget\ToBeDeleted.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics.benckmarks", "platform\toolkit\metrics\benckmarks\metrics.benckmarks.csproj", "{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,16 @@ Global
 		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.Release|x86.ActiveCfg = Release|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
