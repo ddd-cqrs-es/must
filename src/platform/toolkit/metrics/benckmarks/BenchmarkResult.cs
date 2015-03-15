@@ -26,6 +26,8 @@ namespace Nohros.Metrics.Benchmarks
     public MethodInfo Method { get; private set; }
     public TimeSpan Duration { get; private set; }
 
+    public int Iterations { get; private set; }
+
     public long CallsPerSecond {
       get { return iterations_*TimeUnit.Seconds.ToTicks(1)/Duration.Ticks; }
     }

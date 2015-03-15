@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{A47D
 		nuget\ToBeDeleted.txt = nuget\ToBeDeleted.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics.benckmarks", "platform\toolkit\metrics\benckmarks\metrics.benckmarks.csproj", "{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metrics.benchmarks", "platform\toolkit\metrics\benckmarks\metrics.benchmarks.csproj", "{27BA651C-7219-4AE5-8C3D-61B046D9DA5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -91,5 +91,10 @@ namespace Nohros.Metrics.Benchmarks
     /// without timing, just to validate.
     /// </summary>
     public bool DryRunOnly { get; private set; }
+
+    /// <summary>
+    /// Gets the test label.
+    /// </summary>
+    public string Label { get; private set; }
   }
 }
