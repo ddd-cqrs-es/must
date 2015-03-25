@@ -53,9 +53,6 @@ namespace Nohros.Concurrent
     /// <param name="interval">
     /// The interval to schedule a task.
     /// </param>
-    /// <param name="delay">
-    /// The time to wait before run the task for the first time.
-    /// </param>
     /// <returns>
     /// A <see cref="NonReentrantSchedule"/> object that runs a task at every
     /// <see cref="interval"/>.
@@ -64,8 +61,7 @@ namespace Nohros.Concurrent
     /// The returned <see cref="NonReentrantSchedule"/> will use a dedicated
     /// thread to run the task.
     /// </remarks>
-    public static NonReentrantSchedule Every(TimeSpan interval,
-      TimeSpan delay) {
+    public static NonReentrantSchedule Every(TimeSpan interval) {
       return new NonReentrantSchedule(interval);
     }
 
@@ -220,9 +216,9 @@ namespace Nohros.Concurrent
 
       try {
         // Run the task until the scheduler is stopped.
-        while (!signaler_.WaitOne(interval_)) {
+        do {
           task_(state);
-        }
+        } while (!signaler_.WaitOne(interval_));
       } catch (Exception e) {
         OnExceptionThrown(e);
       }

@@ -14078,16 +14078,13 @@
             class by using the given interval.
             </summary>
         </member>
-        <member name="M:Nohros.Concurrent.NonReentrantSchedule.Every(System.TimeSpan,System.TimeSpan)">
+        <member name="M:Nohros.Concurrent.NonReentrantSchedule.Every(System.TimeSpan)">
             <summary>
             Returns a <see cref="T:Nohros.Concurrent.NonReentrantSchedule"/> class than run a task
             at every <see cref="!:interval"/>.
             </summary>
             <param name="interval">
             The interval to schedule a task.
-            </param>
-            <param name="delay">
-            The time to wait before run the task for the first time.
             </param>
             <returns>
             A <see cref="T:Nohros.Concurrent.NonReentrantSchedule"/> object that runs a task at every
