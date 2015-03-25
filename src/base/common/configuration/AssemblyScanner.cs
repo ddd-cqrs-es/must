@@ -159,7 +159,7 @@ namespace Nohros.Configuration
       results.Assemblies.Add(assembly);
     }
 
-    internal static bool IsRuntimeAssembly(string assembly_path) {
+    static bool IsRuntimeAssembly(string assembly_path) {
       var assembly_name = AssemblyName.GetAssemblyName(assembly_path);
       return IsRuntimeAssembly(assembly_name);
     }

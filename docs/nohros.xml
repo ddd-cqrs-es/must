@@ -19997,6 +19997,18 @@
             Determines if the scanner should throw exceptions or not
             </summary>
         </member>
+        <member name="M:Nohros.Configuration.AssemblyScannerResultsExtensions.ForAllTypes``1(System.Collections.Generic.IEnumerable{System.Type},System.Action{System.Type})">
+            <summary>
+            Applies the given action to all the scanned types that can be assigned
+            to <typeparamref name="T" />.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScannerResultsExtensions.ForAllTypes``1(Nohros.Configuration.AssemblyScannerResults,System.Action{System.Type})">
+            <summary>
+            Applies the given action to all the scanned types that can be assigned
+            to <typeparamref name="T" />.
+            </summary>
+        </member>
         <member name="T:Nohros.Configuration.AssemblyScannerResults">
             <summary>
             Holds <see cref="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies"/> results.
