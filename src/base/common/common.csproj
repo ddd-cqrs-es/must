@@ -114,6 +114,8 @@
     <Compile Include="concurrent\Mailbox.cs" />
     <Compile Include="concurrent\ThreadPoolExecutor.cs" />
     <Compile Include="configuration\AbstractConfigurationNode.cs" />
+    <Compile Include="configuration\AssemblyScanner.cs" />
+    <Compile Include="configuration\AssemblyScannerResults.cs" />
     <Compile Include="configuration\builders\CallableConfigurationBuilder.cs" />
     <Compile Include="configuration\builders\ThrowableConfigurationBuilder.cs" />
     <Compile Include="configuration\common\IRepositoriesNode.cs" />
@@ -148,8 +150,10 @@
     <Compile Include="configuration\DataServerConfigCollection.cs" />
     <Compile Include="configuration\DataServersConfig.cs" />
     <Compile Include="configuration\IConfigurationLoader.cs" />
+    <Compile Include="configuration\Image.cs" />
     <Compile Include="configuration\IMustConfiguration.cs" />
     <Compile Include="configuration\AbstractConfigurationBuilder.cs" />
+    <Compile Include="configuration\SkippedFile.cs" />
     <Compile Include="configuration\Strings.cs" />
     <Compile Include="data\CommandBuilder.cs" />
     <Compile Include="CommandLine.cs" />
@@ -426,7 +430,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
