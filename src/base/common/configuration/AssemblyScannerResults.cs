@@ -5,34 +5,6 @@ using System.Reflection;
 
 namespace Nohros.Configuration
 {
-  public static class AssemblyScannerResultsExtensions
-  {
-    /// <summary>
-    /// Applies the given action to all the scanned types that can be assigned
-    /// to <typeparamref name="T" />.
-    /// </summary>
-    public static void ForAllTypes<T>(this IEnumerable<Type> types,
-      Action<Type> action) where T : class {
-      IEnumerable<Type> filtered_types =
-        types
-          .Where(
-            t =>
-              typeof (T).IsAssignableFrom(t) && !(t.IsAbstract || t.IsInterface));
-      foreach (var type in filtered_types) {
-        action(type);
-      }
-    }
-
-    /// <summary>
-    /// Applies the given action to all the scanned types that can be assigned
-    /// to <typeparamref name="T" />.
-    /// </summary>
-    public static void ForAllTypes<T>(this AssemblyScannerResults results,
-      Action<Type> action) where T : class {
-      results.Types.ForAllTypes<T>(action);
-    }
-  }
-
   /// <summary>
   /// Holds <see cref="AssemblyScanner.GetScannableAssemblies"/> results.
   /// Contains list of errors and list of scannable assemblies.

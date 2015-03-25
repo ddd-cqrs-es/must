@@ -49,9 +49,9 @@ namespace Nohros
     /// A exception is never raised by this method. If a exception is raised
     /// by the object constructor it will be catched and <c>null</c> will be
     /// returned. If you need to know about the exception, use the method
-    /// <see cref="CreateInstance"/> instead.
+    /// <see cref="CreateInstance(IRuntimeType, object[])"/> instead.
     /// </remarks>
-    /// <seealso cref="CreateInstance(Nohros.IRuntimeType,object[])"/>
+    /// <seealso cref="CreateInstance(IRuntimeType, object[])"/>
     /// <seealso cref="IRuntimeType"/>
     public static T CreateInstanceNoException(IRuntimeType runtime_type,
       params object[] args) {
