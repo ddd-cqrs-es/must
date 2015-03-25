@@ -14,31 +14,96 @@ namespace Nohros.Configuration
   /// </summary>
   public class AssemblyScanner
   {
+    public class Builder
+    {
+      internal List<string> assemblies_to_skip;
+      internal bool include_app_domain_assemblies;
+      internal bool include_exes_in_scan;
+      internal bool scan_nested_directories;
+      internal bool throw_exceptions;
+      internal List<Type> types_to_skip;
+      internal string base_directory_to_scan;
+
+      public Builder() : this(AppDomain.CurrentDomain.BaseDirectory) {
+      }
+
+      public Builder(string base_directory_to_scan) {
+        throw_exceptions = true;
+        scan_nested_directories = true;
+        include_exes_in_scan = true;
+        include_app_domain_assemblies = false;
+        types_to_skip = new List<Type>();
+        assemblies_to_skip = new List<string>();
+        this.base_directory_to_scan = base_directory_to_scan;
+      }
+
+      public Builder DoNotThrowExceptions() {
+        throw_exceptions = false;
+        return this;
+      }
+
+      public Builder DoNotScanNestedDirectories() {
+        scan_nested_directories = false;
+        return this;
+      }
+
+      public Builder DoNotIncludeExesInScan() {
+        include_exes_in_scan = false;
+        return this;
+      }
+
+      public Builder IncludeAppDomainAssemblies() {
+        include_app_domain_assemblies = true;
+        return this;
+      }
+
+      public Builder SkipTypes(IEnumerable<Type> types) {
+        types_to_skip = new List<Type>(types);
+        return this;
+      }
+
+      public Builder SkipAssemblies(IEnumerable<string> assemblies) {
+        assemblies_to_skip = new List<string>(assemblies);
+        return this;
+      }
+
+      public AssemblyScanner Build() {
+        return new AssemblyScanner(this);
+      }
+    }
+
     static string[] kDefaultAssemblyExclusions = {};
 
+    internal readonly List<string> assemblies_to_skip_;
     readonly string base_directory_to_scan_;
-    readonly internal List<string> assemblies_to_skip_;
 
     /// <summary>
     /// Creates a new scanner that will scan the base directory of the current
     /// appdomain
     /// </summary>
-    public AssemblyScanner()
-      : this(AppDomain.CurrentDomain.BaseDirectory) {
+    public AssemblyScanner() : this(AppDomain.CurrentDomain.BaseDirectory) {
     }
 
     /// <summary>
     /// Creates a scanner for the given directory
     /// </summary>
     /// <param name="base_directory_to_scan"></param>
-    public AssemblyScanner(string base_directory_to_scan) {
-      base_directory_to_scan_ = base_directory_to_scan;
-      ThrowExceptions = true;
-      ScanNestedDirectories = true;
-      IncludeExesInScan = true;
-      IncludeAppDomainAssemblies = false;
-      TypesToSkip = new List<Type>();
-      assemblies_to_skip_ = new List<string>();
+    public AssemblyScanner(string base_directory_to_scan)
+      : this(new Builder(base_directory_to_scan)) {
+    }
+
+    /// <summary>
+    /// Creates a new scanner that will scan the base directory of the current
+    /// appdomain
+    /// </summary>
+    public AssemblyScanner(Builder builder) {
+      base_directory_to_scan_ = builder.base_directory_to_scan;
+      ThrowExceptions = builder.throw_exceptions;
+      ScanNestedDirectories = builder.scan_nested_directories;
+      IncludeExesInScan = builder.include_exes_in_scan;
+      IncludeAppDomainAssemblies = builder.include_app_domain_assemblies;
+      TypesToSkip = builder.types_to_skip;
+      assemblies_to_skip_ = builder.assemblies_to_skip;
     }
 
     /// <summary>

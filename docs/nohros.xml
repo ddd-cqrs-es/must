@@ -9706,6 +9706,12 @@
             </summary>
             <param name="base_directory_to_scan"></param>
         </member>
+        <member name="M:Nohros.Configuration.AssemblyScanner.#ctor(Nohros.Configuration.AssemblyScanner.Builder)">
+            <summary>
+            Creates a new scanner that will scan the base directory of the current
+            appdomain
+            </summary>
+        </member>
         <member name="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies">
             <summary>
             Traverses the specified base directory including all sub-directories,
@@ -16242,6 +16248,16 @@
         <member name="M:Nohros.Data.HiLoGenerator.Generate">
             <inheritdoc/>
         </member>
+        <member name="T:Nohros.Configuration.ConfigSection">
+            <summary>
+            A helper class for <see cref="T:System.Configuration.ConfigurationSection"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.ConfigSection.GetConfiguration``1">
+            <summary>
+            Gets a <see cref="T:System.Configuration.ConfigurationSection"/> based on the given type.
+            </summary>
+        </member>
         <member name="T:Nohros.Concurrent.SettableFuture`1">
             <summary>
             A <see cref="T:Nohros.Concurrent.IFuture`1"/> whose result may be set by a <see cref="M:Nohros.Concurrent.SettableFuture`1.Set(`0,System.Boolean)"/>
@@ -20060,16 +20076,6 @@
             <summary>
             Initializes a new instance of hte <see cref="T:Nohros.Configuration.ConfigurationLoader"/>
             class.
-            </summary>
-        </member>
-        <member name="T:Nohros.Configuration.ConfigSection">
-            <summary>
-            A helper class for <see cref="T:System.Configuration.ConfigurationSection"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Configuration.ConfigSection.GetConfiguration``1">
-            <summary>
-            Gets a <see cref="T:System.Configuration.ConfigurationSection"/> based on the given type.
             </summary>
         </member>
     </members>
