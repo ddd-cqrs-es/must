@@ -9673,6 +9673,52 @@
             The constant value to be mapped.
             </param>
         </member>
+        <member name="T:Nohros.Configuration.SkippedFile">
+            <summary>
+            Contains information about a file that was skipped during scanning along
+            with a text describing the reason why the file was skipped.
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.SkippedFile.FilePath">
+            <summary>
+            The full path to the file that was skipped
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.SkippedFile.SkipReason">
+            <summary>
+            Description of the reason why this file was skipped
+            </summary>
+        </member>
+        <member name="T:Nohros.Configuration.AssemblyScanner">
+            <summary>
+            Helpers for assembly scanning operations.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScanner.#ctor">
+            <summary>
+            Creates a new scanner that will scan the base directory of the current
+            appdomain
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScanner.#ctor(System.String)">
+            <summary>
+            Creates a scanner for the given directory
+            </summary>
+            <param name="base_directory_to_scan"></param>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies">
+            <summary>
+            Traverses the specified base directory including all sub-directories,
+            generating a list of assemblies that can be scanned, a list of
+            skipped files, and a list of errors that occurred while scanning.
+            Scanned files may be skipped when they're not a .NET assembly.
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.AssemblyScanner.ThrowExceptions">
+            <summary>
+            Determines if the scanner should throw exceptions or not
+            </summary>
+        </member>
         <member name="T:Nohros.Caching.UnsetValueReference`1">
             <summary>
             Placeholder. Indicates that the value hasn't been set yet.
@@ -13170,6 +13216,55 @@
             <summary>
             Gets or sets a value that indicates if the connections to the data
             server should supress the ambient transaction context.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScannerResultsExtensions.ForAllTypes``1(System.Collections.Generic.IEnumerable{System.Type},System.Action{System.Type})">
+            <summary>
+            Applies the given action to all the scanned types that can be assigned
+            to <typeparamref name="T" />.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScannerResultsExtensions.ForAllTypes``1(Nohros.Configuration.AssemblyScannerResults,System.Action{System.Type})">
+            <summary>
+            Applies the given action to all the scanned types that can be assigned
+            to <typeparamref name="T" />.
+            </summary>
+        </member>
+        <member name="T:Nohros.Configuration.AssemblyScannerResults">
+            <summary>
+            Holds <see cref="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies"/> results.
+            Contains list of errors and list of scannable assemblies.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.AssemblyScannerResults.#ctor">
+            <summary>
+            Constructor to initialize AssemblyScannerResults
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.AssemblyScannerResults.Assemblies">
+            <summary>
+            List of successfully found and loaded assemblies
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.AssemblyScannerResults.SkippedFiles">
+            <summary>
+            List of files that were skipped while scanning because they were:
+            <para>
+            a) explicitly excluded by the user
+            </para>
+            <para>
+            b) not a .NET DLL
+            </para>
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.AssemblyScannerResults.ErrorsThrownDuringScanning">
+            <summary>
+            True if errors where encountered during assembly scanning
+            </summary>
+        </member>
+        <member name="P:Nohros.Configuration.AssemblyScannerResults.Types">
+            <summary>
+            List of types.
             </summary>
         </member>
         <member name="T:Nohros.Caching.StrongValueReference`1">
@@ -19967,99 +20062,14 @@
             class.
             </summary>
         </member>
-        <member name="T:Nohros.Configuration.AssemblyScanner">
+        <member name="T:Nohros.Configuration.ConfigSection">
             <summary>
-            Helpers for assembly scanning operations.
+            A helper class for <see cref="T:System.Configuration.ConfigurationSection"/>.
             </summary>
         </member>
-        <member name="M:Nohros.Configuration.AssemblyScanner.#ctor">
+        <member name="M:Nohros.Configuration.ConfigSection.GetConfiguration``1">
             <summary>
-            Creates a new scanner that will scan the base directory of the current
-            appdomain
-            </summary>
-        </member>
-        <member name="M:Nohros.Configuration.AssemblyScanner.#ctor(System.String)">
-            <summary>
-            Creates a scanner for the given directory
-            </summary>
-            <param name="base_directory_to_scan"></param>
-        </member>
-        <member name="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies">
-            <summary>
-            Traverses the specified base directory including all sub-directories,
-            generating a list of assemblies that can be scanned, a list of
-            skipped files, and a list of errors that occurred while scanning.
-            Scanned files may be skipped when they're not a .NET assembly.
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.AssemblyScanner.ThrowExceptions">
-            <summary>
-            Determines if the scanner should throw exceptions or not
-            </summary>
-        </member>
-        <member name="M:Nohros.Configuration.AssemblyScannerResultsExtensions.ForAllTypes``1(System.Collections.Generic.IEnumerable{System.Type},System.Action{System.Type})">
-            <summary>
-            Applies the given action to all the scanned types that can be assigned
-            to <typeparamref name="T" />.
-            </summary>
-        </member>
-        <member name="M:Nohros.Configuration.AssemblyScannerResultsExtensions.ForAllTypes``1(Nohros.Configuration.AssemblyScannerResults,System.Action{System.Type})">
-            <summary>
-            Applies the given action to all the scanned types that can be assigned
-            to <typeparamref name="T" />.
-            </summary>
-        </member>
-        <member name="T:Nohros.Configuration.AssemblyScannerResults">
-            <summary>
-            Holds <see cref="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies"/> results.
-            Contains list of errors and list of scannable assemblies.
-            </summary>
-        </member>
-        <member name="M:Nohros.Configuration.AssemblyScannerResults.#ctor">
-            <summary>
-            Constructor to initialize AssemblyScannerResults
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.AssemblyScannerResults.Assemblies">
-            <summary>
-            List of successfully found and loaded assemblies
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.AssemblyScannerResults.SkippedFiles">
-            <summary>
-            List of files that were skipped while scanning because they were:
-            <para>
-            a) explicitly excluded by the user
-            </para>
-            <para>
-            b) not a .NET DLL
-            </para>
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.AssemblyScannerResults.ErrorsThrownDuringScanning">
-            <summary>
-            True if errors where encountered during assembly scanning
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.AssemblyScannerResults.Types">
-            <summary>
-            List of types.
-            </summary>
-        </member>
-        <member name="T:Nohros.Configuration.SkippedFile">
-            <summary>
-            Contains information about a file that was skipped during scanning along
-            with a text describing the reason why the file was skipped.
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.SkippedFile.FilePath">
-            <summary>
-            The full path to the file that was skipped
-            </summary>
-        </member>
-        <member name="P:Nohros.Configuration.SkippedFile.SkipReason">
-            <summary>
-            Description of the reason why this file was skipped
+            Gets a <see cref="T:System.Configuration.ConfigurationSection"/> based on the given type.
             </summary>
         </member>
     </members>

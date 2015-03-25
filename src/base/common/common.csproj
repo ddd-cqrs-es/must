@@ -144,6 +144,7 @@
     <Compile Include="configuration\common\XmlElementsNodeParser.cs" />
     <Compile Include="configuration\builders\ConfigurationBuilder.cs" />
     <Compile Include="configuration\ConfigProperty.cs" />
+    <Compile Include="configuration\ConfigSection.cs" />
     <Compile Include="configuration\ConfigurationLoader.cs" />
     <Compile Include="configuration\builders\IConfigurationBuilder.cs" />
     <Compile Include="configuration\DataServerConfig.cs" />
@@ -430,7 +431,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
