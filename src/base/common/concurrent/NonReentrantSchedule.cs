@@ -32,6 +32,7 @@ namespace Nohros.Concurrent
     readonly TimeSpan interval_;
     readonly ManualResetEvent signaler_;
     bool already_started_;
+    TimeSpan delay_;
     Action<object> task_;
 
     /// <summary>
@@ -52,6 +53,9 @@ namespace Nohros.Concurrent
     /// <param name="interval">
     /// The interval to schedule a task.
     /// </param>
+    /// <param name="delay">
+    /// The time to wait before run the task for the first time.
+    /// </param>
     /// <returns>
     /// A <see cref="NonReentrantSchedule"/> object that runs a task at every
     /// <see cref="interval"/>.
@@ -60,7 +64,8 @@ namespace Nohros.Concurrent
     /// The returned <see cref="NonReentrantSchedule"/> will use a dedicated
     /// thread to run the task.
     /// </remarks>
-    public static NonReentrantSchedule Every(TimeSpan interval) {
+    public static NonReentrantSchedule Every(TimeSpan interval,
+      TimeSpan delay) {
       return new NonReentrantSchedule(interval);
     }
 
@@ -103,6 +108,25 @@ namespace Nohros.Concurrent
     /// <param name="task">
     /// The action that should run at the associated interval.
     /// </param>
+    /// <param name="delay">
+    /// The time to wait before run the first task.
+    /// </param>
+    /// <param name="use_thread_pool">
+    /// A value that inidcates if the task should be executed in a thread
+    /// from the <see cref="ThreadPool"/> or in a dedicated thread; should
+    /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
+    /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
+    /// </param>
+    public void Run(Action task, TimeSpan delay, bool use_thread_pool = false) {
+      Run(obj => task(), delay, null);
+    }
+
+    /// <summary>
+    /// Defines the action that should run at the associated interval.
+    /// </summary>
+    /// <param name="task">
+    /// The action that should run at the associated interval.
+    /// </param>
     /// <param name="state">
     /// An object containing data to be used bu the scheduled task.
     /// </param>
@@ -134,15 +158,38 @@ namespace Nohros.Concurrent
     /// </param>
     public void Run(Action<object> task, object state,
       bool use_thread_pool = false) {
+    }
+
+    /// <summary>
+    /// Defines the action that should run at the associated interval.
+    /// </summary>
+    /// <param name="task">
+    /// The action that should run at the associated interval.
+    /// </param>
+    /// <param name="state">
+    /// An object containing data to be used bu the scheduled task.
+    /// </param>
+    /// <param name="delay">
+    /// The time to wait before running the task for the first time.
+    /// </param>
+    /// <param name="use_thread_pool">
+    /// A value that inidcates if the task should be executed in a thread
+    /// from the <see cref="ThreadPool"/> or in a dedicated thread; should
+    /// be <c>true</c> to use threads from <see cref="ThreadPool"/> and
+    /// <c>false</c> to use a dedicated thead. Default to <c>false</c>
+    /// </param>
+    public void Run(Action<object> task, TimeSpan delay, object state,
+      bool use_thread_pool = false) {
       if (already_started_) {
         throw new InvalidOperationException("The task is already defined.");
       }
       already_started_ = true;
       task_ = task;
+      delay_ = delay;
 
       if (!use_thread_pool) {
         new BackgroundThreadFactory()
-          .CreateThread(ThreadMain)
+          .CreateThread(Run)
           .Start(state);
       } else {
         ThreadPool
@@ -163,14 +210,16 @@ namespace Nohros.Concurrent
       }
     }
 
-    void ThreadMain(object obj) {
-      while (!signaler_.WaitOne(interval_)) {
-        Run(obj);
-      }
-    }
-
     void Run(object state) {
+      // Delay the execution for teh first time.
+      if (delay_ > TimeSpan.Zero) {
+        if (signaler_.WaitOne(delay_)) {
+          return;
+        }
+      }
+
       try {
+        // Run the task until the scheduler is stopped.
         while (!signaler_.WaitOne(interval_)) {
           task_(state);
         }

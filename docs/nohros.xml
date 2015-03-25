@@ -14078,13 +14078,16 @@
             class by using the given interval.
             </summary>
         </member>
-        <member name="M:Nohros.Concurrent.NonReentrantSchedule.Every(System.TimeSpan)">
+        <member name="M:Nohros.Concurrent.NonReentrantSchedule.Every(System.TimeSpan,System.TimeSpan)">
             <summary>
             Returns a <see cref="T:Nohros.Concurrent.NonReentrantSchedule"/> class than run a task
             at every <see cref="!:interval"/>.
             </summary>
             <param name="interval">
             The interval to schedule a task.
+            </param>
+            <param name="delay">
+            The time to wait before run the task for the first time.
             </param>
             <returns>
             A <see cref="T:Nohros.Concurrent.NonReentrantSchedule"/> object that runs a task at every
@@ -14123,6 +14126,23 @@
             <c>false</c> to use a dedicated thead. Default to <c>false</c>
             </param>
         </member>
+        <member name="M:Nohros.Concurrent.NonReentrantSchedule.Run(System.Action,System.TimeSpan,System.Boolean)">
+            <summary>
+            Defines the action that should run at the associated interval.
+            </summary>
+            <param name="task">
+            The action that should run at the associated interval.
+            </param>
+            <param name="delay">
+            The time to wait before run the first task.
+            </param>
+            <param name="use_thread_pool">
+            A value that inidcates if the task should be executed in a thread
+            from the <see cref="T:System.Threading.ThreadPool"/> or in a dedicated thread; should
+            be <c>true</c> to use threads from <see cref="T:System.Threading.ThreadPool"/> and
+            <c>false</c> to use a dedicated thead. Default to <c>false</c>
+            </param>
+        </member>
         <member name="M:Nohros.Concurrent.NonReentrantSchedule.Runnable(System.Action{System.Object},System.Object,System.Boolean)">
             <summary>
             Defines the action that should run at the associated interval.
@@ -14149,6 +14169,26 @@
             </param>
             <param name="state">
             An object containing data to be used bu the scheduled task.
+            </param>
+            <param name="use_thread_pool">
+            A value that inidcates if the task should be executed in a thread
+            from the <see cref="T:System.Threading.ThreadPool"/> or in a dedicated thread; should
+            be <c>true</c> to use threads from <see cref="T:System.Threading.ThreadPool"/> and
+            <c>false</c> to use a dedicated thead. Default to <c>false</c>
+            </param>
+        </member>
+        <member name="M:Nohros.Concurrent.NonReentrantSchedule.Run(System.Action{System.Object},System.TimeSpan,System.Object,System.Boolean)">
+            <summary>
+            Defines the action that should run at the associated interval.
+            </summary>
+            <param name="task">
+            The action that should run at the associated interval.
+            </param>
+            <param name="state">
+            An object containing data to be used bu the scheduled task.
+            </param>
+            <param name="delay">
+            The time to wait before running the task for the first time.
             </param>
             <param name="use_thread_pool">
             A value that inidcates if the task should be executed in a thread
