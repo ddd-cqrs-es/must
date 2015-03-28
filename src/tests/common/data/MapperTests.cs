@@ -215,96 +215,7 @@ namespace Nohros.Common
       a(10);
     }
 
-    public class CobEventDto_mapper : DataReaderMapper<CobEventDto>, IDataReaderMapper<CobEventDto>
-    {
-      // Fields
-      private int[] ordinals_;
-
-      // Methods
-      internal override void GetOrdinals(IDataReader reader1)
-      {
-        if (this.ordinals_ == null)
-        {
-          try
-          {
-            this.ordinals_ = new int[] { reader1.GetOrdinal("cod_hist_cli"), reader1.GetOrdinal("cod_ocor"), reader1.GetOrdinal("data_cad"), reader1.GetOrdinal("usuario_cad"), reader1.GetOrdinal("cod_dev"), reader1.GetOrdinal("cod_cred"), reader1.GetOrdinal("dt_agen_hist"), reader1.GetOrdinal("agendado"), reader1.GetOrdinal("data_up") };
-          }
-          catch (InvalidOperationException)
-          {
-            this.ordinals_ = null;
-          }
-        }
-      }
-
-      internal override CobEventDto MapInternal(IDataReader reader1) {
-        CobEventDto dto = base.loader_();
-        dto.Id = reader1.GetInt32(this.ordinals_[0]);
-        dto.TypeId = reader1.GetInt32(this.ordinals_[1]);
-        dto.Date = reader1.GetDateTime(this.ordinals_[2]);
-        dto.AgentId = reader1.GetInt32(this.ordinals_[3]);
-        dto.DebtorId = reader1.GetInt32(this.ordinals_[4]);
-        dto.Segment = reader1.GetString(this.ordinals_[5]);
-        dto.ExpiryDate = reader1.GetDateTime(this.ordinals_[6]);
-        dto.IsScheduled = reader1.GetBoolean(this.ordinals_[7]);
-        dto.RecordDate = reader1.GetDateTime(this.ordinals_[8]);
-        return dto;
-      }
-
-      internal override MapperTests.CobEventDto NewT()
-      {
-        return new MapperTests.CobEventDto();
-      }
-    }
-    [Test]
-    public void should() {
-      const string kExecute = @"
-select distinct hc.cod_hist_cli
-  ,hc.cod_dev
-  ,cast(t.cod_cred as varchar) as cod_cred
-  ,hc.data_cad
-  ,isnull(hc.dt_agen_hist, hc.data_cad) as dt_agen_hist
-  ,hc.usuario_cad
-  ,hc.cod_ocor
-  ,hc.data_up
-  ,cast(case when hc.dt_agen_hist is null then 0 else 1 end as bit) as agendado
-from historicos_clientes hc
-  inner join historicos_clientes_titulos hct on hct.cod_hist_cli = hc.cod_hist_cli
-  inner join titulos t with(nolock) on t.cod_tit = hct.cod_tit
-where hc.cod_hist_cli between @min_cod_hist_cli and @max_cod_hist_cli
-order by cod_hist_cli asc";
-
-      var map = new DataReaderMapperBuilder<CobEventDto>()
-        .Map(x => x.AgentId, "usuario_cad")
-        .Map(x => x.Segment, "cod_cred")
-        .Map(x => x.Date, "data_cad")
-        .Map(x => x.DebtorId, "cod_dev")
-        .Map(x => x.ExpiryDate, "dt_agen_hist")
-        .Map(x => x.Id, "cod_hist_cli", typeof (int))
-        .Map(x => x.TypeId, "cod_ocor")
-        .Map(x => x.IsScheduled, "agendado")
-        .Map(x => x.RecordDate, "data_up")
-        .Build();
-      var sql_connection_provider = new SqlConnectionProvider(@"Data Source=192.168.203.9\itau;Initial Catalog=cobsystems;User ID=nohros;Password=Noors03;");
-      var sql_executor = new SqlQueryExecutor(sql_connection_provider,
-        CommandType.Text);
-      using (IQueryMapper<CobEventDto> mapper =
-        sql_executor
-          .ExecuteQuery(kExecute,
-            () => map,
-            builder =>
-              builder
-                .AddParameter("@min_cod_hist_cli", 631583866)
-                .AddParameter("@max_cod_hist_cli", 631588866)))
-      {
-        Dynamics_.AssemblyBuilder.Save("nohros.tests.dll");
-        mapper.Map(false);
-      }
-    }
-
-    [Test]
-    public void signature() {
-      throw new NotImplementedException();
-    }
+ 
 
     [Test]
     public void ShouldBuildDynamicType() {
@@ -334,11 +245,12 @@ order by cod_hist_cli asc";
       var mapper = new DataReaderMapperBuilder<NestedMapperTest>()
         .Map("usuario_nome", "name")
         .Build();
-      var inner = mapper.Map(reader).Nested;
-      Assert.That(inner, Is.AssignableTo<DataReaderMapper<MapperTest>>());
-      Assert.That(inner, Is.AssignableTo<MapperTest>());
-      Assert.That(mapper, Is.AssignableTo<DataReaderMapper<NestedMapperTest>>());
-      Assert.That(mapper, Is.AssignableTo<NestedMapperTest>());
+      Dynamics_.AssemblyBuilder.Save("nohros.tests.dll");
+      // var inner = mapper.Map(reader).Nested;
+      //Assert.That(inner, Is.AssignableTo<DataReaderMapper<MapperTest>>());
+      //Assert.That(inner, Is.AssignableTo<MapperTest>());
+      //Assert.That(mapper, Is.AssignableTo<DataReaderMapper<NestedMapperTest>>());
+      //Assert.That(mapper, Is.AssignableTo<NestedMapperTest>());
     }
 
     [Test]
@@ -422,49 +334,6 @@ order by cod_hist_cli asc";
     [Test]
     public TimeSpan name() {
       return TimeSpan.FromSeconds(10);
-    }
-
-    public interface IMapper
-    {
-      void Map();
-    }
-
-    [Test]
-    public void dynamic() {
-      AppDomain app = AppDomain.CurrentDomain;
-      AssemblyName name = new AssemblyName("assemblyB");
-      AssemblyBuilder assembly = app
-        .DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave);
-      ModuleBuilder module = assembly
-        .DefineDynamicModule(assembly.GetName().Name, "b.dll");
-
-      TypeBuilder type = module.DefineType("MyType",
-        TypeAttributes.Public |
-          TypeAttributes.Class |
-          TypeAttributes.AutoClass |
-          TypeAttributes.AutoLayout, null, new[] {typeof (IMapper)});
-
-      MethodBuilder method = type
-        .DefineMethod("Map",
-          MethodAttributes.Public |
-            MethodAttributes.HideBySig |
-            MethodAttributes.Virtual);
-
-      ILGenerator il = method.GetILGenerator();
-
-      Func<int, TimeSpan> func = i => TimeSpan.FromSeconds(i);
-
-      il.Emit(OpCodes.Ldc_I4_0);
-      //il.Emit(OpCodes.Call, typeof(TimeSpan).GetMethod("FromSeconds"));
-      il.EmitCall(OpCodes.Call, func.Method, null);
-      il.Emit(OpCodes.Ret);
-
-      Type t = type.CreateType();
-
-      assembly.Save("b.dll");
-
-      IMapper mapper = (IMapper) Activator.CreateInstance(t);
-      mapper.Map();
     }
   }
 }

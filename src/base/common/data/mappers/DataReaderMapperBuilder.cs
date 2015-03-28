@@ -405,7 +405,9 @@ namespace Nohros.Data
     /// <param name="source">
     /// The name of the source column to be mapped.
     /// </param>
-    /// <param name="type"></param>
+    /// <param name="type">
+    /// The type of the value that will be returned by the database.
+    /// </param>
     /// <returns></returns>
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
