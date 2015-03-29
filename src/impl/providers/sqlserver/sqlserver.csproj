@@ -82,8 +82,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\base\common\common.csproj">
-      <Project>{EA6B35FF-1A1B-46D8-A599-4F9A467C75D1}</Project>
-      <Name>common</Name>
+      <Project>{903B5354-C424-4ADD-BC2B-892E1AA4342A}</Project>
+      <Name>common %28%28base%29\common%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

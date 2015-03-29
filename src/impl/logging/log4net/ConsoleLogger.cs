@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-
 using log4net;
 using log4net.Core;
 using log4net.Appender;
@@ -26,9 +25,17 @@ namespace Nohros.Logging.log4net
   /// nohros configuration file.
   /// </para>
   /// </remarks>
-  public class ConsoleLogger: AbstractLogger
+  public class ConsoleLogger : AbstractLogger
   {
     readonly string layout_pattern_;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsoleLogger"/> by
+    /// using the default layout pattern.
+    /// </summary>
+    /// <see cref="AbstractLogger.kDefaultLogMessagePattern"/>
+    public ConsoleLogger() : this(kDefaultLogMessagePattern) {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsoleLogger"/> class by
@@ -52,19 +59,20 @@ namespace Nohros.Logging.log4net
         LogManager.GetRepository(Assembly.GetExecutingAssembly());
 
       Logger nohros_console_logger =
-        root_repository.GetLogger("NohrosConsoleLogger") as Logger;
+        root_repository
+          .GetLogger("NohrosConsoleLogger") as Logger;
 
       // create the layout and appender for on error messages.
-      PatternLayout layout = new PatternLayout();
-      layout.ConversionPattern = layout_pattern_;
+      var layout = new PatternLayout {ConversionPattern = layout_pattern_};
       layout.ActivateOptions();
 
       // create the appender
-      ConsoleAppender appender = new ConsoleAppender();
-      appender.Name = "NohrosCommonConsoleAppender";
-      appender.Layout = layout;
-      appender.Target = "Console.Out";
-      appender.Threshold = Level.All;
+      var appender = new ConsoleAppender {
+        Name = "NohrosCommonConsoleAppender",
+        Layout = layout,
+        Target = "Console.Out",
+        Threshold = Level.All
+      };
       appender.ActivateOptions();
 
       nohros_console_logger.Parent.AddAppender(appender);

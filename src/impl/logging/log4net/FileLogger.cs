@@ -1,8 +1,6 @@
 using System;
 using System.Reflection;
-
 using log4net;
-using log4net.Config;
 using log4net.Core;
 using log4net.Appender;
 using log4net.Layout;
@@ -28,12 +26,20 @@ namespace Nohros.Logging.log4net
   /// configuration file.
   /// </para>
   /// </remarks>
-  public class FileLogger: AbstractLogger
+  public class FileLogger : AbstractLogger
   {
-    readonly string log_file_path_;
     readonly string layout_pattern_;
+    readonly string log_file_path_;
 
-    #region .ctor
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileLogger"/> class by
+    /// using the default layout pattern and log's file name.
+    /// </summary>
+    /// <see cref="AbstractLogger.kDefaultLogMessagePattern"/>
+    /// <see cref="AbstractLogger.kDefaultLogFileName"/>
+    public FileLogger() : this(kDefaultLogMessagePattern, kDefaultLogFileName) {
+    }
+
     /// <summary>
     /// Initializes a new instance of the Logger class by using the specified
     /// string as the path to the log file.
@@ -53,14 +59,13 @@ namespace Nohros.Logging.log4net
           : "layout_pattern");
       }
 
-      if(log_file_path.Length == 0) {
+      if (log_file_path.Length == 0) {
         throw new ArgumentException("log_file_path");
       }
 
       log_file_path_ = log_file_path;
       layout_pattern_ = layout_pattern;
     }
-    #endregion
 
     /// <summary>
     /// Configures the <see cref="FileLogger"/> logger adding the appenders to
@@ -72,20 +77,22 @@ namespace Nohros.Logging.log4net
       ILoggerRepository root_repository =
         LogManager.GetRepository(Assembly.GetExecutingAssembly());
 
-      Logger nohros_file_logger =
+      var nohros_file_logger =
         root_repository.GetLogger("NohrosFileAppender") as Logger;
 
       // create the layout and appender for log messages
-      PatternLayout layout = new PatternLayout();
-      layout.ConversionPattern = layout_pattern_;
+      var layout = new PatternLayout {
+        ConversionPattern = layout_pattern_
+      };
       layout.ActivateOptions();
 
-      FileAppender appender = new FileAppender();
-      appender.Name = "NohrosCommonFileAppender";
-      appender.File = log_file_path_;
-      appender.AppendToFile = true;
-      appender.Layout = layout;
-      appender.Threshold = Level.All;
+      var appender = new FileAppender {
+        Name = "NohrosCommonFileAppender",
+        File = log_file_path_,
+        AppendToFile = true,
+        Layout = layout,
+        Threshold = Level.All
+      };
       appender.ActivateOptions();
 
       // add the appender to the root repository

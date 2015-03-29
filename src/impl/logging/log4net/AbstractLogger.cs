@@ -1,5 +1,4 @@
 using System;
-
 using log4net;
 using log4net.Repository;
 using log4net.Core;
@@ -10,7 +9,7 @@ namespace Nohros.Logging.log4net
   /// A basic implementation of the <see cref="ILogger"/> that uses the
   /// log4net library as the underlying logging library.
   /// </summary>
-  public abstract class AbstractLogger: ILogger
+  public abstract class AbstractLogger : ILogger
   {
     /// <summary>
     /// The default message log pattern.
@@ -21,28 +20,6 @@ namespace Nohros.Logging.log4net
     protected internal const string kDefaultLogFileName = "must.log";
 
     protected ILog logger;
-
-    #region IsEnabled
-
-    /// <inherit />
-    public bool IsDebugEnabled { get { return logger.IsDebugEnabled; } }
-
-    /// <inherit />
-    public bool IsErrorEnabled { get { return logger.IsErrorEnabled; } }
-
-    /// <inherit />
-    public bool IsFatalEnabled { get { return logger.IsFatalEnabled; } }
-
-    /// <inherit />
-    public bool IsInfoEnabled { get { return logger.IsInfoEnabled; } }
-
-    /// <inherit />
-    public bool IsWarnEnabled { get { return logger.IsWarnEnabled; } }
-
-    /// <inherit />
-    public bool IsTraceEnabled { get { return false; } }
-
-    #endregion
 
     /// <inherit />
     public void Debug(string message) {
@@ -92,6 +69,36 @@ namespace Nohros.Logging.log4net
     /// <inherit />
     public void Warn(string message, Exception exception) {
       logger.Warn(message, exception);
+    }
+
+    /// <inherit />
+    public bool IsDebugEnabled {
+      get { return logger.IsDebugEnabled; }
+    }
+
+    /// <inherit />
+    public bool IsErrorEnabled {
+      get { return logger.IsErrorEnabled; }
+    }
+
+    /// <inherit />
+    public bool IsFatalEnabled {
+      get { return logger.IsFatalEnabled; }
+    }
+
+    /// <inherit />
+    public bool IsInfoEnabled {
+      get { return logger.IsInfoEnabled; }
+    }
+
+    /// <inherit />
+    public bool IsWarnEnabled {
+      get { return logger.IsWarnEnabled; }
+    }
+
+    /// <inherit />
+    public bool IsTraceEnabled {
+      get { return false; }
     }
 
     /// <summary>
