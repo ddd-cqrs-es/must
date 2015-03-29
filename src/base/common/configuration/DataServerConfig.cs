@@ -46,5 +46,18 @@ namespace Nohros.Configuration
       get { return ConfigProperty.CastTo<bool>(this["SupressDTC"]); }
       set { this["SupressDTC"] = value; }
     }
+
+    /// <summary>
+    /// Gets a value indicating if the connection string is encrypted.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if the associated connection string is encrypted.
+    /// </value>
+    [ConfigurationProperty("Encrypted", IsRequired = false,
+      DefaultValue = false)]
+    public bool Encrypted {
+      get { return (bool)this["Encrypted"]; }
+      set { this["Encrypted"] = value; }
+    }
   }
 }
