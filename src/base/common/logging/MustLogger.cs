@@ -19,28 +19,20 @@ namespace Nohros.Logging
   /// </remarks>
   public class MustLogger : ForwardingLogger
   {
-    static readonly MustLogger current_process_logger_;
-
-    #region .ctor
     static MustLogger() {
-      current_process_logger_ = new MustLogger(new NOPLogger());
+      ForCurrentProcess = new MustLogger(new NOPLogger());
     }
-    #endregion
 
-    #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="MustLogger"/>
     /// class by using the specified <see cref="ILogger"/> object.
     /// </summary>
     public MustLogger(ILogger logger) : base(logger) {
     }
-    #endregion
 
     /// <summary>
     /// Gets the current configured application logger.
     /// </summary>
-    public static MustLogger ForCurrentProcess {
-      get { return current_process_logger_; }
-    }
+    public static MustLogger ForCurrentProcess { get; set; }
   }
 }

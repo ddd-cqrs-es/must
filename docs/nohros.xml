@@ -9449,6 +9449,71 @@
             instance.
             </summary>
         </member>
+        <member name="T:Nohros.Extensions.RuntimeTypeFactoryExtensions">
+            <summary>
+            Extension methods used to create instances of a <see cref="T:System.Type"/>
+            at runtime.
+            </summary>
+        </member>
+        <member name="M:Nohros.Extensions.RuntimeTypeFactoryExtensions.ForAllTypes``1(System.Collections.Generic.IEnumerable{System.Type},System.Action{System.Type})">
+            <summary>
+            Applies the given action to all the types that can be assigned
+            to <typeparamref name="T" />.
+            </summary>
+        </member>
+        <member name="M:Nohros.Extensions.RuntimeTypeFactoryExtensions.CreateInstances``1(System.Collections.Generic.IEnumerable{System.Type},System.Object[])">
+            <summary>
+            Creates new instances to all types that can be assigned
+            to <typeparamref name="T"/>.
+            the types.
+            </summary>
+            <param name="types">
+            A list of <see cref="T:System.Type"/> objects containing the type to be
+            filtered and instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, or if a matching constructor
+            is not found the constructor that takes no parameters(the default
+            constructor) is invoked.
+            </param>
+            <returns>
+            An collection of <typeparamref name="T"/> containing an instance for
+            each type of the <paramref name="types"/> list that can be assigned to
+            <typeparamref name="T"/>.
+            </returns>
+        </member>
+        <member name="M:Nohros.Extensions.RuntimeTypeFactoryExtensions.CreateInstances``1(System.Collections.Generic.IEnumerable{System.Type},System.Boolean,System.Boolean,System.Object[])">
+            <summary>
+            Creates new instances to all types that can be assigned
+            to <typeparamref name="T"/>.
+            the types.
+            </summary>
+            <param name="types">
+            A list of <see cref="T:System.Type"/> objects containing the type to be
+            filtered and instantiated.
+            </param>
+            <param name="fallback">
+            A value that indicates if we should fallback to the default constructor
+            when a constructor that accepts the given <paramref name="args"/> as
+            parameters is not found. Default to <c>true</c>.
+            </param>
+            <param name="throw">
+            A value that indicates if exceptions should be propagated to the
+            caller or silently ignored. Default to <c>true</c>.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, or if a matching constructor
+            is not found the constructor that takes no parameters(the default
+            constructor) is invoked.
+            </param>
+            <returns>
+            An collection of <typeparamref name="T"/> containing an instance for
+            each type of the <paramref name="types"/> list that can be assigned to
+            <typeparamref name="T"/>.
+            </returns>
+        </member>
         <member name="T:Nohros.Logging.ILoggerFactory">
             <summary>
             A factory used to create instances of the <see cref="T:Nohros.Logging.ILogger"/> class.
@@ -11142,7 +11207,9 @@
             <param name="source">
             The name of the source column to be mapped.
             </param>
-            <param name="type"></param>
+            <param name="type">
+            The type of the value that will be returned by the database.
+            </param>
             <returns></returns>
         </member>
         <member name="M:Nohros.Data.DataReaderMapperBuilder`1.Map``2(System.Linq.Expressions.Expression{System.Func{`0,``1}},System.String,System.Linq.Expressions.Expression{System.Func{``0,``1}})">
@@ -13224,6 +13291,14 @@
             server should supress the ambient transaction context.
             </summary>
         </member>
+        <member name="P:Nohros.Configuration.DataServerConfig.Encrypted">
+            <summary>
+            Gets a value indicating if the connection string is encrypted.
+            </summary>
+            <value>
+            <c>true</c> if the associated connection string is encrypted.
+            </value>
+        </member>
         <member name="T:Nohros.Configuration.AssemblyScannerResults">
             <summary>
             Holds <see cref="M:Nohros.Configuration.AssemblyScanner.GetScannableAssemblies"/> results.
@@ -13922,6 +13997,172 @@
             The exception that caused this
             <see cref="T:Nohros.NotNullConstraintViolationException"/>to be throw.
             </param>
+        </member>
+        <member name="T:Nohros.RuntimeTypeFactory`1">
+            <summary>
+            A collection of factory methods used to dynamically create instances of
+            other classes.
+            </summary>
+            <remarks>
+            This class is basically a simplification of the <see cref="T:System.Activator"/>
+            class.
+            </remarks>
+            <typeparam name="T">
+            The type to be created. It is usually a interface or a derived class of
+            the type defined by a <see cref="T:Nohros.IRuntimeType"/> object. The type that
+            is loaded is the type defined by the <see cref="T:Nohros.IRuntimeType"/> object,
+            which is casted to <typeparamref name="T"/> before it is loaded.
+            </typeparam>
+        </member>
+        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceNoException(Nohros.IRuntimeType,System.Object[])">
+            <summary>
+            Creates a new instance of the type defined by the
+            <paramref name="runtime_type"/> object.
+            </summary>
+            <param name="runtime_type">
+            A <see cref="T:Nohros.IRuntimeType"/> object containing  information about
+            the type to be instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, the constructor that takes
+            no parameters(the default constructor) is invoked.
+            </param>
+            <returns>
+            An instance of the type defined by the <paramref name="runtime_type"/>
+            object casted to <typeparamref name="T"/> or <c>null</c> if the class
+            could not be loaded or casted to <typeparamref name="T"/>
+            </returns>
+            <remarks>
+            A exception is never raised by this method. If a exception is raised
+            by the object constructor it will be catched and <c>null</c> will be
+            returned. If you need to know about the exception, use the method
+            <see cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/> instead.
+            </remarks>
+            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/>
+            <seealso cref="T:Nohros.IRuntimeType"/>
+        </member>
+        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceNoException(System.Type,System.Object[])">
+            <summary>
+            Creates a new instance of the type defined by the
+            <paramref name="type"/> object.
+            </summary>
+            <param name="type">
+            A <see cref="T:System.Type"/> object containing  information about
+            the type to be instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, the constructor that takes
+            no parameters(the default constructor) is invoked.
+            </param>
+            <returns>
+            An instance of the type defined by the <paramref name="type"/>
+            object casted to <typeparamref name="T"/> or <c>null</c> if the class
+            could not be loaded or casted to <typeparamref name="T"/>
+            </returns>
+            <remarks>
+            A exception is never raised by this method. If a exception is raised
+            by the object constructor it will be catched and <c>null</c> will be
+            returned. If you need to know about the exception, use the method
+            <see cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/> instead.
+            </remarks>
+            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/>
+            <seealso cref="T:Nohros.IRuntimeType"/>
+        </member>
+        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceFallback(Nohros.IRuntimeType,System.Object[])">
+            <summary>
+            Creates a new instance of the type defined by the
+            <paramref name="runtime_type"/> object and the specified
+            arguments, falling back to the default class constructor.
+            </summary>
+            <param name="runtime_type">
+            A <see cref="T:Nohros.IRuntimeType"/> object containing  information about
+            the type to be instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, the constructor that takes
+            no parameters(the default constructor) is invoked.
+            </param>
+            <returns>
+            An instance of the type defined by the <paramref name="runtime_type"/>
+            object casted to <typeparamref name="T"/>.
+            </returns>
+            <remarks>
+            If a constructor that match the specified array of arguments is not
+            found, this method try to create an instance of the type defined by
+            the <paramref name="runtime_type"/> object using the constructor that
+            takes no parameters(the default constructor).
+            </remarks>
+            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/>
+            <seealso cref="T:Nohros.IRuntimeType"/>
+        </member>
+        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceFallback(System.Type,System.Object[])">
+            <summary>
+            Creates a new instance of the type defined by the
+            <paramref name="type"/> object and the specified
+            arguments, falling back to the default class constructor.
+            </summary>
+            <param name="type">
+            A <see cref="T:System.Type"/> object containing  information about
+            the type to be instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, the constructor that takes
+            no parameters(the default constructor) is invoked.
+            </param>
+            <returns>
+            An instance of the type defined by the <paramref name="type"/>
+            object casted to <typeparamref name="T"/>.
+            </returns>
+            <remarks>
+            If a constructor that match the specified array of arguments is not
+            found, this method try to create an instance of the type defined by
+            the <paramref name="type"/> object using the constructor that
+            takes no parameters(the default constructor).
+            </remarks>
+            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(System.Type,System.Object[])"/>
+            <seealso cref="T:Nohros.IRuntimeType"/>
+        </member>
+        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])">
+            <summary>
+            Creates a new instance of the type defined by the
+            <paramref name="runtime_type"/> object and the specified arguments.
+            </summary>
+            <param name="runtime_type">
+            A <see cref="T:Nohros.IRuntimeType"/> object containing  information about
+            the type to be instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, the constructor that takes
+            no parameters(the default constructor) is invoked.
+            </param>
+            <returns>
+            An instance of the type defined by the <paramref name="runtime_type"/>
+            object casted to <typeparamref name="T"/>.
+            </returns>
+        </member>
+        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstance(System.Type,System.Object[])">
+            <summary>
+            Creates a new instance of the type defined by the
+            <paramref name="type"/> object and the specified arguments.
+            </summary>
+            <param name="type">
+            A <see cref="T:System.Type"/> object containing  information about
+            the type to be instantiated.
+            </param>
+            <param name="args">
+            An array of arguments that match the parameters of the constructor to
+            invoke. If args is an empty array or null, the constructor that takes
+            no parameters(the default constructor) is invoked.
+            </param>
+            <returns>
+            An instance of the type defined by the <paramref name="type"/>
+            object casted to <typeparamref name="T"/>.
+            </returns>
         </member>
         <member name="T:Nohros.Data.Json.JsonDouble">
             <summary>
@@ -19936,237 +20177,6 @@
             Initializes a new instance of hte <see cref="T:Nohros.Configuration.ConfigurationLoader"/>
             class.
             </summary>
-        </member>
-        <member name="T:Nohros.RuntimeTypeFactory`1">
-            <summary>
-            A collection of factory methods used to dynamically create instances of
-            other classes.
-            </summary>
-            <remarks>
-            This class is basically a simplification of the <see cref="T:System.Activator"/>
-            class.
-            </remarks>
-            <typeparam name="T">
-            The type to be created. It is usually a interface or a derived class of
-            the type defined by a <see cref="T:Nohros.IRuntimeType"/> object. The type that
-            is loaded is the type defined by the <see cref="T:Nohros.IRuntimeType"/> object,
-            which is casted to <typeparamref name="T"/> before it is loaded.
-            </typeparam>
-        </member>
-        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceNoException(Nohros.IRuntimeType,System.Object[])">
-            <summary>
-            Creates a new instance of the type defined by the
-            <paramref name="runtime_type"/> object.
-            </summary>
-            <param name="runtime_type">
-            A <see cref="T:Nohros.IRuntimeType"/> object containing  information about
-            the type to be instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, the constructor that takes
-            no parameters(the default constructor) is invoked.
-            </param>
-            <returns>
-            An instance of the type defined by the <paramref name="runtime_type"/>
-            object casted to <typeparamref name="T"/> or <c>null</c> if the class
-            could not be loaded or casted to <typeparamref name="T"/>
-            </returns>
-            <remarks>
-            A exception is never raised by this method. If a exception is raised
-            by the object constructor it will be catched and <c>null</c> will be
-            returned. If you need to know about the exception, use the method
-            <see cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/> instead.
-            </remarks>
-            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/>
-            <seealso cref="T:Nohros.IRuntimeType"/>
-        </member>
-        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceNoException(System.Type,System.Object[])">
-            <summary>
-            Creates a new instance of the type defined by the
-            <paramref name="type"/> object.
-            </summary>
-            <param name="type">
-            A <see cref="T:System.Type"/> object containing  information about
-            the type to be instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, the constructor that takes
-            no parameters(the default constructor) is invoked.
-            </param>
-            <returns>
-            An instance of the type defined by the <paramref name="type"/>
-            object casted to <typeparamref name="T"/> or <c>null</c> if the class
-            could not be loaded or casted to <typeparamref name="T"/>
-            </returns>
-            <remarks>
-            A exception is never raised by this method. If a exception is raised
-            by the object constructor it will be catched and <c>null</c> will be
-            returned. If you need to know about the exception, use the method
-            <see cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/> instead.
-            </remarks>
-            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/>
-            <seealso cref="T:Nohros.IRuntimeType"/>
-        </member>
-        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceFallback(Nohros.IRuntimeType,System.Object[])">
-            <summary>
-            Creates a new instance of the type defined by the
-            <paramref name="runtime_type"/> object and the specified
-            arguments, falling back to the default class constructor.
-            </summary>
-            <param name="runtime_type">
-            A <see cref="T:Nohros.IRuntimeType"/> object containing  information about
-            the type to be instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, the constructor that takes
-            no parameters(the default constructor) is invoked.
-            </param>
-            <returns>
-            An instance of the type defined by the <paramref name="runtime_type"/>
-            object casted to <typeparamref name="T"/>.
-            </returns>
-            <remarks>
-            If a constructor that match the specified array of arguments is not
-            found, this method try to create an instance of the type defined by
-            the <paramref name="runtime_type"/> object using the constructor that
-            takes no parameters(the default constructor).
-            </remarks>
-            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])"/>
-            <seealso cref="T:Nohros.IRuntimeType"/>
-        </member>
-        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstanceFallback(System.Type,System.Object[])">
-            <summary>
-            Creates a new instance of the type defined by the
-            <paramref name="type"/> object and the specified
-            arguments, falling back to the default class constructor.
-            </summary>
-            <param name="type">
-            A <see cref="T:System.Type"/> object containing  information about
-            the type to be instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, the constructor that takes
-            no parameters(the default constructor) is invoked.
-            </param>
-            <returns>
-            An instance of the type defined by the <paramref name="type"/>
-            object casted to <typeparamref name="T"/>.
-            </returns>
-            <remarks>
-            If a constructor that match the specified array of arguments is not
-            found, this method try to create an instance of the type defined by
-            the <paramref name="type"/> object using the constructor that
-            takes no parameters(the default constructor).
-            </remarks>
-            <seealso cref="M:Nohros.RuntimeTypeFactory`1.CreateInstance(System.Type,System.Object[])"/>
-            <seealso cref="T:Nohros.IRuntimeType"/>
-        </member>
-        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstance(Nohros.IRuntimeType,System.Object[])">
-            <summary>
-            Creates a new instance of the type defined by the
-            <paramref name="runtime_type"/> object and the specified arguments.
-            </summary>
-            <param name="runtime_type">
-            A <see cref="T:Nohros.IRuntimeType"/> object containing  information about
-            the type to be instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, the constructor that takes
-            no parameters(the default constructor) is invoked.
-            </param>
-            <returns>
-            An instance of the type defined by the <paramref name="runtime_type"/>
-            object casted to <typeparamref name="T"/>.
-            </returns>
-        </member>
-        <member name="M:Nohros.RuntimeTypeFactory`1.CreateInstance(System.Type,System.Object[])">
-            <summary>
-            Creates a new instance of the type defined by the
-            <paramref name="type"/> object and the specified arguments.
-            </summary>
-            <param name="type">
-            A <see cref="T:System.Type"/> object containing  information about
-            the type to be instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, the constructor that takes
-            no parameters(the default constructor) is invoked.
-            </param>
-            <returns>
-            An instance of the type defined by the <paramref name="type"/>
-            object casted to <typeparamref name="T"/>.
-            </returns>
-        </member>
-        <member name="T:Nohros.Extensions.RuntimeTypeFactoryExtensions">
-            <summary>
-            Extension methods used to create instances of a <see cref="T:System.Type"/>
-            at runtime.
-            </summary>
-        </member>
-        <member name="M:Nohros.Extensions.RuntimeTypeFactoryExtensions.ForAllTypes``1(System.Collections.Generic.IEnumerable{System.Type},System.Action{System.Type})">
-            <summary>
-            Applies the given action to all the types that can be assigned
-            to <typeparamref name="T" />.
-            </summary>
-        </member>
-        <member name="M:Nohros.Extensions.RuntimeTypeFactoryExtensions.CreateInstances``1(System.Collections.Generic.IEnumerable{System.Type},System.Object[])">
-            <summary>
-            Creates new instances to all types that can be assigned
-            to <typeparamref name="T"/>.
-            the types.
-            </summary>
-            <param name="types">
-            A list of <see cref="T:System.Type"/> objects containing the type to be
-            filtered and instantiated.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, or if a matching constructor
-            is not found the constructor that takes no parameters(the default
-            constructor) is invoked.
-            </param>
-            <returns>
-            An collection of <typeparamref name="T"/> containing an instance for
-            each type of the <paramref name="types"/> list that can be assigned to
-            <typeparamref name="T"/>.
-            </returns>
-        </member>
-        <member name="M:Nohros.Extensions.RuntimeTypeFactoryExtensions.CreateInstances``1(System.Collections.Generic.IEnumerable{System.Type},System.Boolean,System.Boolean,System.Object[])">
-            <summary>
-            Creates new instances to all types that can be assigned
-            to <typeparamref name="T"/>.
-            the types.
-            </summary>
-            <param name="types">
-            A list of <see cref="T:System.Type"/> objects containing the type to be
-            filtered and instantiated.
-            </param>
-            <param name="fallback">
-            A value that indicates if we should fallback to the default constructor
-            when a constructor that accepts the given <paramref name="args"/> as
-            parameters is not found. Default to <c>true</c>.
-            </param>
-            <param name="throw">
-            A value that indicates if exceptions should be propagated to the
-            caller or silently ignored. Default to <c>true</c>.
-            </param>
-            <param name="args">
-            An array of arguments that match the parameters of the constructor to
-            invoke. If args is an empty array or null, or if a matching constructor
-            is not found the constructor that takes no parameters(the default
-            constructor) is invoked.
-            </param>
-            <returns>
-            An collection of <typeparamref name="T"/> containing an instance for
-            each type of the <paramref name="types"/> list that can be assigned to
-            <typeparamref name="T"/>.
-            </returns>
         </member>
     </members>
 </doc>
