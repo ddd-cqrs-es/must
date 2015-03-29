@@ -68,6 +68,17 @@ namespace Nohros.Logging.log4net
     }
 
     /// <summary>
+    /// Creates a configured <see cref="FileLogger"/> that uses the default
+    /// file name and layout pattern.
+    /// </summary>
+    /// <returns></returns>
+    public static FileLogger Create() {
+      var logger = new FileLogger();
+      logger.Configure();
+      return logger;
+    }
+
+    /// <summary>
     /// Configures the <see cref="FileLogger"/> logger adding the appenders to
     /// the root repository.
     /// </summary>
