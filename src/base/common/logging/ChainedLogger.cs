@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Nohros.Logging
 {
@@ -19,35 +21,16 @@ namespace Nohros.Logging
   /// </remarks>
   public class ChainedLogger : ILogger
   {
-    class LoggerListNode {
-      public ILogger logger;
-      public LoggerListNode next;
-
-      public LoggerListNode(ILogger logger) {
-        this.logger = logger;
-        next = null;
-      }
-    }
-
-    class LoggerList {
-      public LoggerListNode head;
-
-      public LoggerList(ILogger logger) {
-        head = new LoggerListNode(logger);
-      }
-    }
-
-    delegate void LogDelegate(string message, ILogger logger);
-    delegate void LogWithExceptionDelegate(string message, ILogger logger, Exception exeption);
-
-    readonly LoggerList logger_chain_;
+    readonly List<ILogger> loggers_;
     readonly ILogger main_logger_;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChainedLogger"/> class
     /// by using the specified logger.
     /// </summary>
-    /// <param name="logger">The first logger of the chain.</param>
+    /// <param name="loggers">
+    /// A list of <see cref="ILogger"/> to be chainable.
+    /// </param>
     /// <remarks>
     /// The first logger of the chain will dictate the behavior of the methods
     /// used to check if a particular level is enabled or not. Note that the
@@ -55,160 +38,113 @@ namespace Nohros.Logging
     /// class, each logger uses it own level to perform logging
     /// operations.
     /// </remarks>
-    public ChainedLogger(ILogger logger) {
-      logger_chain_ = new LoggerList(logger);
-      main_logger_ = logger;
+    public ChainedLogger(IEnumerable<ILogger> loggers) {
+      if (loggers == null) {
+        throw new ArgumentException("loggers");
+      }
+      loggers_ = new List<ILogger>(loggers);
+      main_logger_ = loggers_.First();
     }
-
-    #region IsEnabled
 
     /// <inherit />
     public bool IsDebugEnabled {
-      get {
-        return main_logger_.IsDebugEnabled;
-      }
+      get { return main_logger_.IsDebugEnabled; }
     }
 
     /// <inherit />
     public bool IsErrorEnabled {
-      get {
-        return main_logger_.IsErrorEnabled;
-      }
+      get { return main_logger_.IsErrorEnabled; }
     }
 
     /// <inherit />
     public bool IsFatalEnabled {
-      get {
-        return main_logger_.IsFatalEnabled;
-      }
+      get { return main_logger_.IsFatalEnabled; }
     }
 
     /// <inherit />
     public bool IsInfoEnabled {
-      get {
-        return main_logger_.IsInfoEnabled;
-      }
+      get { return main_logger_.IsInfoEnabled; }
     }
 
     /// <inherit />
     public bool IsWarnEnabled {
-      get {
-        return main_logger_.IsWarnEnabled;
-      }
+      get { return main_logger_.IsWarnEnabled; }
     }
 
     /// <inherit />
     public bool IsTraceEnabled {
-      get {
-        return main_logger_.IsTraceEnabled;
-      }
-    }
-
-    #endregion
-
-    void Log(string message, LogDelegate functor) {
-      LoggerListNode current = logger_chain_.head;
-      while(current.next != null) {
-        functor(message, current.logger);
-        current = current.next;
-      }
-    }
-
-    void LogWithException(string message, Exception exception, LogWithExceptionDelegate functor) {
-      LoggerListNode current = logger_chain_.head;
-      while (current != null) {
-        functor(message, current.logger, exception);
-        current = current.next;
-      }
+      get { return main_logger_.IsTraceEnabled; }
     }
 
     /// <inherit />
     public void Debug(string message) {
-      Log(message,
-        delegate(string msg, ILogger logger) {
-          logger.Debug(msg);
-        });
+      Log(message, (msg, logger) => logger.Debug(msg));
     }
 
     /// <inherit />
     public void Debug(string message, Exception exception) {
       LogWithException(message, exception,
-        delegate(string msg, ILogger logger, Exception e)
-        {
-          logger.Debug(msg, e);
-        });
+        (msg, logger, e) => logger.Debug(msg, e));
     }
 
     /// <inherit />
     public void Error(string message) {
-      Log(message,
-        delegate(string msg, ILogger logger)
-        {
-          logger.Error(msg);
-        });
+      Log(message, (msg, logger) => logger.Error(msg));
     }
 
     /// <inherit />
     public void Error(string message, Exception exception) {
       LogWithException(message, exception,
-        delegate(string msg, ILogger logger, Exception e)
-        {
-          logger.Debug(msg, e);
-        });
+        (msg, logger, e) => logger.Error(msg, e));
     }
 
     /// <inherit />
     public void Fatal(string message) {
-      Log(message,
-        delegate(string msg, ILogger logger)
-        {
-          logger.Fatal(msg);
-        });
+      Log(message, (msg, logger) => logger.Fatal(msg));
     }
 
     /// <inherit />
     public void Fatal(string message, Exception exception) {
       LogWithException(message, exception,
-        delegate(string msg, ILogger logger, Exception e)
-        {
-          logger.Debug(msg, e);
-        });
+        (msg, logger, e) => logger.Fatal(msg, e));
     }
 
     /// <inherit />
     public void Info(string message) {
       Log(message,
-        delegate(string msg, ILogger logger)
-        {
-          logger.Info(msg);
-        });
+        (msg, logger) => logger.Info(msg));
     }
 
     /// <inherit />
     public void Info(string message, Exception exception) {
       LogWithException(message, exception,
-        delegate(string msg, ILogger logger, Exception e)
-        {
-          logger.Debug(msg, e);
-        });
+        (msg, logger, e) => logger.Info(msg, e));
     }
 
     /// <inherit />
     public void Warn(string message) {
-      Log(message,
-        delegate(string msg, ILogger logger)
-        {
-          logger.Warn(msg);
-        });
+      Log(message, (msg, logger) => logger.Warn(msg));
     }
 
     /// <inherit />
     public void Warn(string message, Exception exception) {
       LogWithException(message, exception,
-        delegate(string msg, ILogger logger, Exception e)
-        {
-          logger.Debug(msg, e);
-        });
+        (msg, logger, e) => logger.Warn(msg, e));
+    }
+
+    void Log(string message, Action<string, ILogger> action) {
+      foreach (ILogger logger in loggers_) {
+        var l = logger;
+        action(message, l);
+      }
+    }
+
+    void LogWithException(string message, Exception exception,
+      Action<string, ILogger, Exception> action) {
+      foreach (ILogger logger in loggers_) {
+        var l = logger;
+        action(message, l, exception);
+      }
     }
   }
 }
