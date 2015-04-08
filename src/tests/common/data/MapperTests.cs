@@ -174,7 +174,9 @@ namespace Nohros.Common
           mapper.Map(reader);
         }
       }
+#if DEBUG
       Dynamics_.AssemblyBuilder.Save("dynamics.dll");
+#endif
     }
 
     public static TimeSpan FromSeconds(int i) {
@@ -205,8 +207,10 @@ namespace Nohros.Common
           //Assert.Pass("Value:" + mapper.Map(reader).Counter1);
           //mapper.Map(reader);
         }
-      }
+            }
+#if DEBUG
       Dynamics_.AssemblyBuilder.Save("dynamics.dll");
+#endif
     }
 
     [Test]
@@ -245,7 +249,9 @@ namespace Nohros.Common
       var mapper = new DataReaderMapperBuilder<NestedMapperTest>()
         .Map("usuario_nome", "name")
         .Build();
+#if DEBUG
       Dynamics_.AssemblyBuilder.Save("nohros.tests.dll");
+#endif
       // var inner = mapper.Map(reader).Nested;
       //Assert.That(inner, Is.AssignableTo<DataReaderMapper<MapperTest>>());
       //Assert.That(inner, Is.AssignableTo<MapperTest>());

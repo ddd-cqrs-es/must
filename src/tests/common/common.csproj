@@ -57,6 +57,7 @@
     <Compile Include="concurrent\AtomicLongTests.cs" />
     <Compile Include="concurrent\AtomicReferenceTests.cs" />
     <Compile Include="concurrent\MailboxTests.cs" />
+    <Compile Include="logging\ChainedLoggerTests.cs" />
     <Compile Include="time\EpochTests.cs" />
     <Compile Include="time\TimeConversionTests.cs" />
     <Compile Include="configuration\common\provider\ProvidersNodeParserTests.cs" />
@@ -88,9 +89,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="logging\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="config-tests.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

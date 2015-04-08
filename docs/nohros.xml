@@ -7947,12 +7947,14 @@
             </summary>
             <seealso cref="P:Nohros.Logging.ILogger.IsDebugEnabled"/>
         </member>
-        <member name="M:Nohros.Logging.ChainedLogger.#ctor(Nohros.Logging.ILogger)">
+        <member name="M:Nohros.Logging.ChainedLogger.#ctor(System.Collections.Generic.IEnumerable{Nohros.Logging.ILogger})">
             <summary>
             Initializes a new instance of the <see cref="T:Nohros.Logging.ChainedLogger"/> class
             by using the specified logger.
             </summary>
-            <param name="logger">The first logger of the chain.</param>
+            <param name="loggers">
+            A list of <see cref="T:Nohros.Logging.ILogger"/> to be chainable.
+            </param>
             <remarks>
             The first logger of the chain will dictate the behavior of the methods
             used to check if a particular level is enabled or not. Note that the
