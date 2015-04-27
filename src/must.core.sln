@@ -69,6 +69,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "informix", "impl\providers\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{87D81A5D-76B9-42C6-8593-C15A352CD15F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mysql.tests", "tests\providers\mysql.tests\mysql.tests.csproj", "{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -243,6 +245,16 @@ Global
 		{F73C8A5B-50A7-4DE0-8746-EC1106B82337}.release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F73C8A5B-50A7-4DE0-8746-EC1106B82337}.release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F73C8A5B-50A7-4DE0-8746-EC1106B82337}.release|x86.ActiveCfg = Release|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.debug|x86.ActiveCfg = Debug|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.release|Any CPU.Build.0 = Release|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}.release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -272,6 +284,7 @@ Global
 		{770CAF75-E747-4F34-8B48-AC710D024310} = {EAD6F83A-BB85-4AD5-9199-4D06CF5A4450}
 		{F2A44CEC-FB4F-4093-A703-7EB3EC0111A8} = {EAD6F83A-BB85-4AD5-9199-4D06CF5A4450}
 		{0BF8B966-F5DF-427D-A8DD-47A183014F57} = {EAD6F83A-BB85-4AD5-9199-4D06CF5A4450}
+		{1E1A06E9-20A3-43D8-B837-328B2DDD1B15} = {EAD6F83A-BB85-4AD5-9199-4D06CF5A4450}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		BuildVersion_BuildVersioningStyle = None.None.None.None

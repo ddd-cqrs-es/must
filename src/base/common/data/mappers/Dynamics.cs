@@ -7,7 +7,11 @@ using System.Security.Permissions;
 
 namespace Nohros.Dynamics
 {
+#if DEBUG
+  public static class Dynamics_
+#else
   internal static class Dynamics_
+#endif
   {
     const string kDynamicAssemblyName = "Nohros.Dynamics";
 

@@ -154,6 +154,8 @@ namespace Nohros.Data
       return mapper_.Map(reader_, defer, post_map);
     }
 
+    public IDataReader Reader { get { return reader_; } }
+
     /// <inheritdoc/>
     public void Dispose() {
       reader_.Dispose();
