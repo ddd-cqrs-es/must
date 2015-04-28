@@ -135,6 +135,7 @@ namespace Nohros.Concurrent
     [Obsolete("Use the Run method.", true)]
     public void Runnable(Action<object> task, object state,
       bool use_thread_pool = false) {
+      Run(task, TimeSpan.Zero, state);
     }
 
     /// <summary>
@@ -154,6 +155,7 @@ namespace Nohros.Concurrent
     /// </param>
     public void Run(Action<object> task, object state,
       bool use_thread_pool = false) {
+      Run(task, TimeSpan.Zero, state);
     }
 
     /// <summary>

@@ -27,8 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{269B
 		nuget\must-data-sqlce.nuspec = nuget\must-data-sqlce.nuspec
 		nuget\must-data-sqlserver.nuspec = nuget\must-data-sqlserver.nuspec
 		nuget\must-desktop.nuspec = nuget\must-desktop.nuspec
-		nuget\must-logging-log4net.nuspec = nuget\must-logging-log4net.nuspec
-		nuget\must-logging-log4net.ps1 = nuget\must-logging-log4net.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(templates)", "(templates)", "{F164A4C3-1B1D-4CEB-BDCE-9D3677022C22}"
