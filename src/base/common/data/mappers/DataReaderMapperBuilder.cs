@@ -16,7 +16,7 @@ using R = Nohros.Resources.Resources;
 
 namespace Nohros.Data
 {
-  public class DataReaderMapperBuilder<T>
+  public partial class DataReaderMapperBuilder<T>
   {
     class ValueMap
     {
@@ -59,12 +59,15 @@ namespace Nohros.Data
 
     readonly IDictionary<string, ITypeMap> mappings_;
     readonly Type type_t_;
+    Type concrete_type_;
     readonly string type_t_type_name_;
     readonly Type data_reader_type_;
     bool auto_map_;
     CallableDelegate<T> factory_;
 
-    #region .ctor
+    const string kMapperTypeSuffix = "_mapper";
+    const string kImplTypeSuffix = "_impl";
+
     /// <summary>
     /// Initializes a new instance of the
     /// <see cref="DataReaderMapperBuilder{T}"/> class that uses the namespace
@@ -104,11 +107,11 @@ namespace Nohros.Data
       mappings_ = new Dictionary<string, ITypeMap>(
         StringComparer.OrdinalIgnoreCase);
       type_t_ = type_t;
+      concrete_type_ = type_t;
       type_t_type_name_ = prefix;
       data_reader_type_ = data_reader_type;
       auto_map_ = false;
     }
-    #endregion
 
     /// <summary>
     /// Builds a dynamic <see cref="DataReaderMapper{T}"/> for the type
@@ -510,8 +513,9 @@ namespace Nohros.Data
     /// </remarks>
     /// <seealso cref="DataReaderMapperBuilder{T}"/>
     public IDataReaderMapper<T> Build() {
-      DataReaderMapper<T> mapper = (DataReaderMapper<T>)
-        Activator.CreateInstance(GetDynamicType(type_t_type_name_));
+      var mapper = (DataReaderMapper<T>)
+        Activator
+          .CreateInstance(GetDynamicType(type_t_type_name_));
       if (factory_ != null) {
         mapper.loader_ = factory_;
       }
@@ -573,18 +577,29 @@ namespace Nohros.Data
     Type GetDynamicType(string prefix) {
       string dynamic_type_name =
         Dynamics_
-          .GetDynamicTypeName(prefix, type_t_, "_mapper");
-      Type type = Dynamics_.ModuleBuilder.GetType(dynamic_type_name);
+          .GetDynamicTypeName(prefix, type_t_, kMapperTypeSuffix);
+      Type type =
+        Dynamics_
+          .ModuleBuilder
+          .GetType(dynamic_type_name);
+
+      // The mapper for the type T does not exists, lets create it dynamically.
       if (type == null) {
-        // If the specified type is an interface and the factory was not
-        // specified we are not able to perform the mapping.
-        //
-        // TODO(neylor.silva) Create
-        if (type_t_.IsInterface && factory_ == null) {
-          throw new ArgumentException(
-            R.Mappers_CannotMapInterfaces.Fmt(type_t_.FullName));
+        PropertyInfo[] properties = GetProperties();
+
+        // If the type is an interface we no factory was defined for it
+        // we should create a new type that implements it before create the
+        // mapper proxy.
+        string impl_type_name =
+          Dynamics_
+            .GetDynamicTypeName(prefix, type_t_, kImplTypeSuffix);
+        if (factory_ == null && type_t_.IsInterface) {
+          concrete_type_ = new TypeMaker().MakeType(impl_type_name, properties);
+          // We should read the type properties again to ensure that the set
+          // methods that was implemented is captured.
+          properties = GetProperties();
         }
-        type = MakeDynamicType(dynamic_type_name);
+        type = MakeDynamicType(dynamic_type_name, properties);
       }
       return type;
     }
@@ -614,31 +629,21 @@ namespace Nohros.Data
     /// The type is dynamically created and added to the current
     /// <see cref="AppDomain"/>.
     /// </remarks>
-    Type MakeDynamicType(string dynamic_type_name) {
-      TypeBuilder builder;
-      try {
-        builder = Dynamics_.ModuleBuilder.DefineType(
-          dynamic_type_name,
-          TypeAttributes.Public |
-            TypeAttributes.Class |
-            TypeAttributes.AutoClass |
-            TypeAttributes.AutoLayout,
-          typeof (DataReaderMapper<T>),
-          new Type[] {
-            typeof (IDataReaderMapper<T>)
-          });
-      } catch (ArgumentException) {
-        // Check if the type was created by another thread.
-        Type type = Dynamics_.ModuleBuilder.GetType(dynamic_type_name);
-        if (type == null) {
-          throw;
-        }
-        return type;
-      }
+    Type MakeDynamicType(string dynamic_type_name, PropertyInfo[] properties) {
+      const TypeAttributes kTypeAttributes =
+        TypeAttributes.Public |
+          TypeAttributes.Class |
+          TypeAttributes.AutoClass |
+          TypeAttributes.AutoLayout;
 
-      PropertyInfo[] properties = GetProperties();
+      TypeBuilder builder =
+        Dynamics_
+          .ModuleBuilder
+          .DefineType(dynamic_type_name, kTypeAttributes,
+            typeof (DataReaderMapper<T>),
+            new[] {typeof (IDataReaderMapper<T>)});
 
-      MappingResult result = new MappingResult();
+      var result = new MappingResult();
 
       // Get the mappings for the properties that return value types.
       GetMappings(properties, result);
@@ -655,8 +660,9 @@ namespace Nohros.Data
     }
 
     void OnPreCreateType(TypeBuilder builder) {
-      Listeners.SafeInvoke(PreCreateType,
-        delegate(PreCreateTypeEventHandler handler) { handler(builder); });
+      Listeners
+        .SafeInvoke(PreCreateType,
+          (PreCreateTypeEventHandler handler) => handler(builder));
     }
 
     /// <summary>
@@ -721,8 +727,8 @@ namespace Nohros.Data
       ILGenerator il = builder.GetILGenerator();
 
       if (factory_ == null) {
-        // calls the default constructor of the type T
-        ConstructorInfo t_constructor = type_t_
+        // calls the default constructor of the concrete type
+        ConstructorInfo t_constructor = concrete_type_
           .GetConstructor(
             BindingFlags.Public |
               BindingFlags.NonPublic | BindingFlags.Instance,
@@ -836,7 +842,7 @@ namespace Nohros.Data
       il.Emit(OpCodes.Callvirt, callable);
       il.Emit(OpCodes.Stloc_0);
 
-      // Set the value of the properties of the newly created T object.
+      // Set the values of the properties of the newly created T object.
       OrdinalMap[] fields = result.OrdinalsMapping;
       for (int i = 0, j = fields.Length; i < j; i++) {
         OrdinalMap field = fields[i];
@@ -1093,29 +1099,34 @@ namespace Nohros.Data
       return true;
     }
 
+    /// <summary>
+    /// Gets all properties defined by the type <typeparamref name="T"/>
+    /// and its parents on the tyep hierarchy.
+    /// </summary>
     PropertyInfo[] GetProperties() {
       var properties = new Dictionary<string, PropertyInfo>();
-      var considered = new HashSet<Type>();
-      var queue = new Queue<Type>(5);
+      var observed_types = new HashSet<Type>();
+      var types_to_scan = new Queue<Type>(5);
 
-      considered.Add(type_t_);
-      queue.Enqueue(type_t_);
+      observed_types.Add(concrete_type_);
+      types_to_scan.Enqueue(concrete_type_);
 
-      while (queue.Count > 0) {
-        Type type = queue.Dequeue();
+      while (types_to_scan.Count > 0) {
+        Type type = types_to_scan.Dequeue();
         foreach (Type t in type.GetInterfaces()) {
-          if (considered.Add(t)) {
-            queue.Enqueue(t);
+          if (observed_types.Add(t)) {
+            types_to_scan.Enqueue(t);
           }
         }
 
-        foreach (var property in type.GetProperties()) {
-          PropertyInfo existent;
+        foreach (PropertyInfo property in type.GetProperties()) {
+          PropertyInfo existent_property;
 
-          // If a property with the same name already exists, check if it
-          // has a set property and replac it if not.
-          if (properties.TryGetValue(property.Name, out existent)) {
-            MethodInfo method = existent.GetSetMethod(true);
+          // If a property with the same name already exists...
+          if (properties.TryGetValue(property.Name, out existent_property)) {
+            //...check if it has a set property...
+            MethodInfo method = existent_property.GetSetMethod(true);
+            // ... and replace it if not.
             if (method == null) {
               properties.Remove(property.Name);
               properties.Add(property.Name, property);
@@ -1126,23 +1137,35 @@ namespace Nohros.Data
         }
       }
 
-      // If the factory was defined, check if it have set properties that does
-      // not have it in the base type.
+      // If the factory was defined, check if it the type that it creates
+      // define set methods for the readonly properties defined by the base
+      // type and replace it, if positive.
       if (factory_ != null) {
         T t = factory_();
-        Type derived = t.GetType();
+        Type from_factory_type = t.GetType();
+
         var properties_to_replace =
           new List<Tuple<PropertyInfo, PropertyInfo>>();
-        foreach (var property in properties.Values) {
+
+        foreach (PropertyInfo property in properties.Values) {
           MethodInfo set_method = property.GetSetMethod(true);
           if (set_method == null) {
-            PropertyInfo derived_property = derived.GetProperty(property.Name);
-            if (derived_property != null) {
-              set_method = derived_property.GetSetMethod(true);
+            // The property of the base type is readonly, lets check if the
+            // custom type defines a set method for that property.
+            PropertyInfo from_factory_property =
+              from_factory_type
+                .GetProperty(property.Name);
+
+            if (from_factory_property != null) {
+              set_method = from_factory_property.GetSetMethod(true);
+
+              // The custom type defines a set method for the readonly property
+              // of the base method, so lets use it instead.
               if (set_method != null) {
-                properties_to_replace.Add(
+                var tuple =
                   new Tuple<PropertyInfo, PropertyInfo>(property,
-                    derived_property));
+                    from_factory_property);
+                properties_to_replace.Add(tuple);
               }
             }
           }
@@ -1153,8 +1176,6 @@ namespace Nohros.Data
           properties.Add(property.Item2.Name, property.Item2);
         }
       }
-
-      // Properties with no set method should be ignored
       return properties.Values.ToArray();
     }
 

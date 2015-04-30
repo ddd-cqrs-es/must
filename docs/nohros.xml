@@ -6591,7 +6591,7 @@
             to access is performed.
             </remarks>
         </member>
-        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.MakeDynamicType(System.String)">
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.MakeDynamicType(System.String,System.Reflection.PropertyInfo[])">
             <summary>
             Generates the dynamic type for <typeparamref source="T"/>.
             </summary>
@@ -6608,9 +6608,26 @@
             Emit the constuctor code.
             </summary>
         </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.GetProperties">
+            <summary>
+            Gets all properties defined by the type <typeparamref name="T"/>
+            and its parents on the tyep hierarchy.
+            </summary>
+        </member>
         <member name="E:Nohros.Data.DataReaderMapperBuilder`1.PreCreateType">
             <summary>
             Raised before the dynamic type is created.
+            </summary>
+        </member>
+        <member name="T:Nohros.Data.DataReaderMapperBuilder`1.TypeMaker">
+            <summary>
+            A class that is used to implement interfaces that does not have any
+            behaviour except for storage and retrieval of its own data. 
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.TypeMaker.#ctor">
+            <summary>
+            Initialize a new instance of the <see cref="T:Nohros.Data.DataReaderMapperBuilder`1.TypeMaker"/>
             </summary>
         </member>
         <member name="T:Nohros.Data.ConstStringMapType">
