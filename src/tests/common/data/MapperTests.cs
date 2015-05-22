@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Nohros.Data;
 using Telerik.JustMock;
@@ -162,6 +164,30 @@ namespace Nohros.Common
           .Map("name", new ConstStringMapType("myname"))
           .Build();
       Assert.That(mapper.Map(reader).Name, Is.EqualTo("myname"));
+    }
+
+    [Test]
+    public void should_be_thread_safe() {
+      IDataReader reader = GetDataReader();
+
+      var sync = new CountdownEvent(2);
+
+      Action method = () => {
+        var mapper =
+          new DataReaderMapperBuilder<IgnoreType>("shoud_map_to_a_constant")
+            .Map("name", new ConstStringMapType("myname"))
+            .Build();
+        sync.Signal();
+        Assert.That(mapper.Map(reader).Name, Is.EqualTo("myname"));
+      };
+
+      Action parallel = () => {
+        ThreadPool.QueueUserWorkItem(state => method());
+        ThreadPool.QueueUserWorkItem(state => method());
+      };
+
+      Assert.That(() => parallel(), Throws.Nothing);
+      sync.Wait();
     }
 
     IDataReader GetDataReader() {

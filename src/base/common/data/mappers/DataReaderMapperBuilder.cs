@@ -57,6 +57,12 @@ namespace Nohros.Data
 
     protected delegate void PreCreateTypeEventHandler(TypeBuilder builder);
 
+    // Note that generic types does not share static members and that is
+    // exactly the behavior needed. We want to have a static member that
+    // is shared only by the builders of the same type T, so the locking
+    // of one type T does not interfere with the lock of another type T.
+    static readonly object sync_ = new object();
+
     readonly IDictionary<string, ITypeMap> mappings_;
     readonly Type type_t_;
     Type concrete_type_;
@@ -127,6 +133,7 @@ namespace Nohros.Data
     /// column name and the <see cref="KeyValuePair{TKey,TValue}.Key"/> is
     /// used as the destination property name.
     /// </remarks>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(
       IEnumerable<KeyValuePair<string, string>> mapping) {
       foreach (KeyValuePair<string, string> map in mapping) {
@@ -149,6 +156,7 @@ namespace Nohros.Data
     /// column name and the <see cref="KeyValuePair{TKey,TValue}.Key"/> is
     /// used as the destination property name.
     /// </remarks>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(
       IEnumerable<KeyValuePair<string, ITypeMap>> mapping) {
       foreach (KeyValuePair<string, ITypeMap> map in mapping) {
@@ -173,6 +181,7 @@ namespace Nohros.Data
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
     /// to the property named <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, string source) {
       return Map(destination, source, null);
     }
@@ -193,6 +202,7 @@ namespace Nohros.Data
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
     /// to the property named <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map<TMap>(string destination,
       string source) {
       return Map(destination, source, typeof (TMap));
@@ -217,6 +227,7 @@ namespace Nohros.Data
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
     /// to the property named <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, string source,
       Type type) {
       return Map(destination, GetTypeMap(source, type));
@@ -256,6 +267,7 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, int value) {
       return Map(destination, new IntMapType(value));
     }
@@ -278,6 +290,7 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, short value) {
       return Map(destination, new ShortMapType(value));
     }
@@ -300,6 +313,7 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, long value) {
       return Map(destination, new LongMapType(value));
     }
@@ -322,6 +336,7 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, float value) {
       return Map(destination, new FloatMapType(value));
     }
@@ -344,6 +359,7 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
+    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
     public DataReaderMapperBuilder<T> Map(string destination, decimal value) {
       return Map(destination, new DecimalMapType(value));
     }
@@ -513,9 +529,9 @@ namespace Nohros.Data
     /// </remarks>
     /// <seealso cref="DataReaderMapperBuilder{T}"/>
     public IDataReaderMapper<T> Build() {
-      var mapper = (DataReaderMapper<T>)
-        Activator
-          .CreateInstance(GetDynamicType(type_t_type_name_));
+      Type type = GetDynamicType(type_t_type_name_);
+
+      var mapper = (DataReaderMapper<T>) Activator.CreateInstance(type, true);
       if (factory_ != null) {
         mapper.loader_ = factory_;
       }
@@ -578,30 +594,40 @@ namespace Nohros.Data
       string dynamic_type_name =
         Dynamics_
           .GetDynamicTypeName(prefix, type_t_, kMapperTypeSuffix);
-      Type type =
-        Dynamics_
-          .ModuleBuilder
-          .GetType(dynamic_type_name);
 
-      // The mapper for the type T does not exists, lets create it dynamically.
-      if (type == null) {
-        PropertyInfo[] properties = GetProperties();
-
-        // If the type is an interface we no factory was defined for it
-        // we should create a new type that implements it before create the
-        // mapper proxy.
-        string impl_type_name =
+      // TypeBuilder's methods are not thread-safe so we need to enclose the
+      // dynamic type creation in a critical region.
+      // 
+      // The critical region should be defined here because
+      // ModuleBuilder.GetType() could return a non-nullable Type while that
+      // type is beign builded the TypeBuilder. The returned type is a valid
+      // type but it cannot be instantiated via Activator.CreateInstance.
+      lock (sync_) {
+        Type type =
           Dynamics_
-            .GetDynamicTypeName(prefix, type_t_, kImplTypeSuffix);
-        if (factory_ == null && type_t_.IsInterface) {
-          concrete_type_ = new TypeMaker().MakeType(impl_type_name, properties);
-          // We should read the type properties again to ensure that the set
-          // methods that was implemented is captured.
-          properties = GetProperties();
+            .ModuleBuilder
+            .GetType(dynamic_type_name);
+
+        // The mapper for the type T does not exists, lets create it dynamically.
+        if (type == null) {
+          PropertyInfo[] properties = GetProperties();
+
+          // If the type is an interface we no factory was defined for it
+          // we should create a new type that implements it before create the
+          // mapper proxy.
+          string impl_type_name =
+            Dynamics_
+              .GetDynamicTypeName(prefix, type_t_, kImplTypeSuffix);
+          if (factory_ == null && type_t_.IsInterface) {
+            concrete_type_ = new TypeMaker().MakeType(impl_type_name, properties);
+            // We should read the type properties again to ensure that the set
+            // methods that was implemented is captured.
+            properties = GetProperties();
+          }
+          type = MakeDynamicType(dynamic_type_name, properties);
         }
-        type = MakeDynamicType(dynamic_type_name, properties);
+        return type;
       }
-      return type;
     }
 
     /// <summary>

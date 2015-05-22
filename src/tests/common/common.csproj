@@ -59,6 +59,7 @@
     <Compile Include="concurrent\MailboxTests.cs" />
     <Compile Include="logging\ChainedLoggerTests.cs" />
     <Compile Include="time\EpochTests.cs" />
+    <Compile Include="time\StrictDateRangeTests.cs" />
     <Compile Include="time\TimeConversionTests.cs" />
     <Compile Include="configuration\common\provider\ProvidersNodeParserTests.cs" />
     <Compile Include="data\id\HiLoGeneratorTests.cs" />

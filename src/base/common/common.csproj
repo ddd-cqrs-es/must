@@ -198,8 +198,6 @@
     <Compile Include="data\readers\DataReaderReader.cs" />
     <Compile Include="data\repositories\AbstractStateDao.cs" />
     <Compile Include="data\repositories\ComparisonOperator.cs" />
-    <Compile Include="data\repositories\ICriteria.cs" />
-    <Compile Include="data\repositories\ICriteriaT.cs" />
     <Compile Include="data\repositories\IHiLoDao.cs" />
     <Compile Include="data\repositories\IAppState.cs" />
     <Compile Include="data\repositories\ISetStateCommand.cs" />
@@ -207,7 +205,6 @@
     <Compile Include="data\repositories\IStateDao.cs" />
     <Compile Include="data\repositories\IStateDaoFactory.cs" />
     <Compile Include="data\repositories\IStateRepositoryFactory.cs" />
-    <Compile Include="data\repositories\CriteriaResolver.cs" />
     <Compile Include="data\TransactionScopes.cs" />
     <Compile Include="exception\ConstraintViolationException.cs" />
     <Compile Include="exception\CustomProviderException.cs" />
@@ -288,7 +285,9 @@
     <Compile Include="RuntimeType.cs" />
     <Compile Include="RuntimeTypeFactoryExtensions.cs" />
     <Compile Include="time\Clock.cs" />
+    <Compile Include="time\DateGranularity.cs" />
     <Compile Include="time\DateRange.cs" />
+    <Compile Include="time\StrictDateRange.cs" />
     <Compile Include="type\collections\AbstractRingQueue.cs" />
     <Compile Include="type\collections\IForwardOnlyEnumerable.cs" />
     <Compile Include="type\collections\IRingQueue.cs" />

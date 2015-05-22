@@ -2274,51 +2274,6 @@
             <see cref="T:Nohros.CustomProviderException"/>to be throw.
             </param>
         </member>
-        <member name="T:Nohros.Data.CriteriaResolver">
-            <summary>
-            Resolve <see cref="T:Nohros.Data.ICriteria"/> to other related objects.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.CriteriaResolver.#cctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.CriteriaResolver"/> class.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.CriteriaResolver.Resolve(Nohros.Data.ICriteria,System.String,System.Data.IDbConnection)">
-            <summary>
-            Resolve the given <paramref name="criteria"/> into a
-            <see cref="T:Nohros.Data.CommandBuilder"/> object.
-            </summary>
-            <param name="from_clause"></param>
-            <param name="connection"></param>
-            <param name="criteria"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Nohros.Data.CriteriaResolver.Resolve(Nohros.Data.ICriteria,System.String,System.Data.IDbCommand)">
-            <summary>
-            Resolve the given <paramref name="criteria"/> into a
-            <see cref="T:Nohros.Data.CommandBuilder"/> object.
-            </summary>
-            <remarks>
-            The <see cref="P:System.Data.SqlClient.SqlCommand.CommandText"/>,
-            <see cref="P:System.Data.SqlClient.SqlCommand.CommandType"/> properties of the
-            <paramref name="cmd"/> will be modified. The parameters
-            that is already present in the <see cref="P:System.Data.IDbCommand.Parameters"/>
-            will not be removed, but new parameters will be added.
-            </remarks>
-        </member>
-        <member name="M:Nohros.Data.CriteriaResolver.Resolve(Nohros.Data.ICriteria,System.String,Nohros.Data.CommandBuilder)">
-            <summary>
-            Resolve the given <paramref name="criteria"/> into a
-            <see cref="T:Nohros.Data.CommandBuilder"/> object.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.CriteriaResolver.Resolve``1(Nohros.Data.ICriteria,System.String)">
-            <summary>
-            Resolve the given <paramref name="criteria"/> into a
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> object.
-            </summary>
-        </member>
         <member name="T:Nohros.Data.IHiLoDao">
             <summary>
             Provides an abstract interface to the database where information about
@@ -3827,6 +3782,41 @@
             size as the number of elements copied.
             </summary>
             <param name="elements"></param>
+        </member>
+        <member name="T:Nohros.DateGranularity">
+            <summary>
+            Defines the small unit of a date range.
+            </summary>
+        </member>
+        <member name="F:Nohros.DateGranularity.Second">
+            <summary>
+            Represents a second
+            </summary>
+        </member>
+        <member name="F:Nohros.DateGranularity.Minute">
+            <summary>
+            Represents a minute
+            </summary>
+        </member>
+        <member name="F:Nohros.DateGranularity.Hour">
+            <summary>
+            Represents an hour
+            </summary>
+        </member>
+        <member name="F:Nohros.DateGranularity.Day">
+            <summary>
+            Represents a day.
+            </summary>
+        </member>
+        <member name="F:Nohros.DateGranularity.Month">
+            <summary>
+            Represents a month.
+            </summary>
+        </member>
+        <member name="F:Nohros.DateGranularity.Year">
+            <summary>
+            Represents a year.
+            </summary>
         </member>
         <member name="T:Nohros.Extensions.RuntimeTypeFactoryExtensions">
             <summary>
@@ -5959,43 +5949,6 @@
         <member name="M:Nohros.Logging.ConsoleLogger.Warn(System.String,System.Exception)">
             <inheritdoc/>
         </member>
-        <member name="T:Nohros.Data.ICriteria">
-            <summary>
-            Defines the criteria to be used while resolving a database query.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ICriteria.GetFieldMap(System.String)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.IDictionary`2"/> class containing the
-            custom maps between a object properties and a the returned fields
-            set.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ICriteria.GetFilterMap(System.String)">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.IDictionary`2"/> class containing the
-            custom maps between a object properties and the filter set.
-            </summary>
-        </member>
-        <member name="P:Nohros.Data.ICriteria.Fields">
-            <summary>
-            Gets the list of fields that should be selected from the database.
-            </summary>
-            <remarks>
-            This represents the list of columns of the <c>SELECT</c> clause of
-            the SQL-92 standard
-            </remarks>
-        </member>
-        <member name="P:Nohros.Data.ICriteria.Filters">
-            <summary>
-            Get a <see cref="T:System.Collections.Generic.IDictionary`2"/> containing the defined
-            filtering.
-            </summary>
-            <remarks>
-            This represents the clause of the <c>WHERE</c> clause of the 
-            the SQL-92 standard
-            </remarks>
-        </member>
         <member name="T:Nohros.Data.AbstractStateDao">
             <summary>
             Provides an skeletal implementation of the
@@ -7289,6 +7242,169 @@
             </exception>
             <seealso cref="T:Nohros.Concurrent.IFuture`1"/>
             <seealso cref="M:Nohros.Concurrent.IFuture`1.TryGet(System.Int64,Nohros.TimeUnit,`0@)"/>
+        </member>
+        <member name="T:Nohros.StrictDateRange">
+            <summary>
+            Represents a range of dates and times that has strict boundaries.
+            </summary>
+            <remarks>
+            The boundaries is defined as the following:
+            <list type="bullet">
+            <item>
+            <term>
+            For <see cref="F:Nohros.DateGranularity.Second"/></term>
+            <description>
+            The millisecond component of the begin and end dates is set to zero.
+            </description>
+            </item>
+            <item>
+            <term>
+            For <see cref="F:Nohros.DateGranularity.Minute"/></term>
+            <description>
+            The millisecond and second components of the begin and end dates is set
+            to zero.
+            </description>
+            </item>
+            <item>
+            <term>
+            For <see cref="F:Nohros.DateGranularity.Hour"/></term>
+            <description>
+            The millisecond, second and minute components of the begin and end dates
+            is set to zero.
+            </description>
+            </item>
+            <item>
+            <term>
+            For <see cref="F:Nohros.DateGranularity.Day"/></term>
+            <description>
+            The millisecond, second, minute and hour components of the begin and end
+            dates is set to zero.
+            </description>
+            </item>
+            <item>
+            <term>
+            For <see cref="F:Nohros.DateGranularity.Month"/></term>
+            <description>
+            The millisecond, second, minute and hour components of the begin and end
+            dates is set to zero and its day component is set to one.
+            </description>
+            </item>
+            <item>
+            <term>
+            For <see cref="F:Nohros.DateGranularity.Year"/></term>
+            <description>
+            The millisecond, second, minute and hour components of the begin and end
+            dates is set to zero and its day and month components is set to one.
+            </description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:Nohros.StrictDateRange.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.StrictDateRange"/> class.
+            </summary>
+        </member>
+        <member name="M:Nohros.StrictDateRange.#ctor(System.DateTime,System.DateTime)">
+            <summary>
+            Initializes the <see cref="T:Nohros.DateRange"/> by using the given first and
+            last dates of the range.
+            </summary>
+            <param name="begin">
+            The first date of the range.
+            </param>
+            <param name="end">
+            The last date if the range
+            </param>
+            <remarks>
+            The dates of the range is enumerated using one unit of
+            <see cref="F:Nohros.DateGranularity.Day"/>.
+            </remarks>
+        </member>
+        <member name="M:Nohros.StrictDateRange.#ctor(System.DateTime,System.DateTime,System.Int32)">
+            <summary>
+            Initializes the <see cref="T:Nohros.DateRange"/> by using the given first and
+            last dates of the range.
+            </summary>
+            <param name="begin">
+            The first date of the range.
+            </param>
+            <param name="end">
+            The last date if the range
+            </param>
+            <param name="granularity">
+            The granularity of the step. This represents the number of steps to
+            advance per item enumerated while enumerating the dates of a range.
+            </param>
+            <remarks>
+            The dates of the range is enumerated using
+            <paramref name="granularity"/> units of
+            <see cref="F:Nohros.DateGranularity.Day"/>.
+            </remarks>
+        </member>
+        <member name="M:Nohros.StrictDateRange.#ctor(System.DateTime,System.DateTime,System.Int32,Nohros.DateGranularity)">
+            <summary>
+            Initializes the <see cref="T:Nohros.DateRange"/> by using the given first,
+            step type and number of steps per unit.
+            </summary>
+            <param name="begin">
+            The first date of the range.
+            </param>
+            <param name="end">
+            The last date if the range
+            </param>
+            <param name="granularity">
+            The granularity of the step. This represents the number of steps to
+            advance per item enumerated while enumerating the dates of a range.
+            </param>
+            <param name="unit">
+            The type of the <paramref name="granularity"/>.
+            </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="begin"/> is greater than
+            <paramref name="end"/> - or -
+            <para>
+            <paramref name="granularity"/> is negative - or -
+            </para>
+            </exception>
+            <remarks>
+            The dates of the range is enumerated using
+            <paramref name="granularity"/> units of
+            <paramref name="unit"/>.
+            </remarks>
+        </member>
+        <member name="M:Nohros.StrictDateRange.GetEnumerator">
+            <summary>
+            Gets a <see cref="T:System.Collections.IEnumerator"/> that enumerates the dates of a
+            range.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.IEnumerator"/> that enumerates the dates of a range.
+            </returns>
+            <remarks>
+            The enumeration starts at <see cref="P:Nohros.StrictDateRange.FirstDate"/> and increments one
+            <see cref="P:Nohros.StrictDateRange.Granularity"/> at each enumeration.
+            </remarks>
+        </member>
+        <member name="P:Nohros.StrictDateRange.FirstDate">
+            <summary>
+            Gets the first date of the range.
+            </summary>
+        </member>
+        <member name="P:Nohros.StrictDateRange.LastDate">
+            <summary>
+            Gets the last date of the range.
+            </summary>
+        </member>
+        <member name="P:Nohros.StrictDateRange.GranularityUnit">
+            <summary>
+            Gets the unit of the granularity.
+            </summary>
+        </member>
+        <member name="P:Nohros.StrictDateRange.Granularity">
+            <summary>
+            Gets the granularity that is used to enumerate the dates of a range.
+            </summary>
         </member>
         <member name="T:Nohros.Data.Providers.TransactionContext">
             <summary>
@@ -13818,29 +13934,9 @@
             wrapped in a <see cref="T:Nohros.ProviderException"/>.
             </exception>
         </member>
-        <member name="T:Nohros.DateGranularityUnit">
-            <summary>
-            Defines the small unit of a date range.
-            </summary>
-        </member>
-        <member name="F:Nohros.DateGranularityUnit.Day">
-            <summary>
-            Represents a day.
-            </summary>
-        </member>
-        <member name="F:Nohros.DateGranularityUnit.Month">
-            <summary>
-            Represents a month.
-            </summary>
-        </member>
-        <member name="F:Nohros.DateGranularityUnit.Year">
-            <summary>
-            Represents a year.
-            </summary>
-        </member>
         <member name="T:Nohros.DateRange">
             <summary>
-            Represents a range of dates.
+            Represents a range of dates and times.
             </summary>
         </member>
         <member name="M:Nohros.DateRange.#ctor(System.DateTime,System.DateTime)">
@@ -13880,7 +13976,7 @@
             <see cref="!:GranularityUnit.Day"/>.
             </remarks>
         </member>
-        <member name="M:Nohros.DateRange.#ctor(System.DateTime,System.DateTime,System.Int32,Nohros.DateGranularityUnit)">
+        <member name="M:Nohros.DateRange.#ctor(System.DateTime,System.DateTime,System.Int32,Nohros.DateGranularity)">
             <summary>
             Initializes the <see cref="T:Nohros.DateRange"/> by using the given first,
             step type and number of steps per unit.
@@ -17343,75 +17439,6 @@
             <returns>
             The newly created <see cref="T:Nohros.Data.IStateDao"/> object.
             </returns>
-        </member>
-        <member name="T:Nohros.Data.ICriteria`1">
-            <summary>
-            Defines the criteria to be used while resolving a database query.
-            </summary>
-            <typeparam name="TField">
-            The type of object(s) that will be returned by the query.
-            </typeparam>
-        </member>
-        <member name="M:Nohros.Data.ICriteria`1.Select``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
-            <summary>
-            Add the given property to the list of properties to be returned from
-            the database.
-            </summary>
-            <remarks>
-            For SQL-92 compatible repositories, this represents the list of columns
-            of the <c>SELECT</c> clause.
-            </remarks>
-        </member>
-        <member name="M:Nohros.Data.ICriteria`1.Where``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Object)">
-            <summary>
-            Add the given property/value as a filter.
-            </summary>
-            <param name="expression"></param>
-            <param name="value"></param>
-            <remarks>
-            For SQL-92 compatible repositories, this represents the clause of the
-            <c>WHERE</c> clause.
-            </remarks>
-        </member>
-        <member name="T:Nohros.Data.ICriteria`2">
-            <summary>
-            Defines the criteria to be used while resolving a database query.
-            </summary>
-            <typeparam name="TField">
-            The type of object(s) that will be returned by the query.
-            </typeparam>
-        </member>
-        <member name="M:Nohros.Data.ICriteria`2.Select``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
-            <summary>
-            Add the given property to the list of properties to be returned from
-            the database.
-            </summary>
-            <remarks>
-            For SQL-92 compatible repositories, this represents the list of columns
-            of the <c>SELECT</c> clause.
-            </remarks>
-        </member>
-        <member name="M:Nohros.Data.ICriteria`2.Where``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Object)">
-            <summary>
-            Add the given property/value as a filter.
-            </summary>
-            <param name="expression"></param>
-            <param name="value"></param>
-            <remarks>
-            For SQL-92 compatible repositories, this represents the clause of the
-            <c>WHERE</c> clause.
-            </remarks>
-        </member>
-        <member name="M:Nohros.Data.ICriteria`2.Where``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Object)">
-            <summary>
-            Add the given property/value as a filter.
-            </summary>
-            <param name="expression"></param>
-            <param name="value"></param>
-            <remarks>
-            For SQL-92 compatible repositories, this represents the clause of the
-            <c>WHERE</c> clause.
-            </remarks>
         </member>
         <member name="T:Nohros.Data.TypeMapType">
             <summary>

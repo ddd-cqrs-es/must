@@ -5,34 +5,13 @@ using System.Collections.Generic;
 namespace Nohros
 {
   /// <summary>
-  /// Defines the small unit of a date range.
-  /// </summary>
-  public enum DateGranularityUnit
-  {
-    /// <summary>
-    /// Represents a day.
-    /// </summary>
-    Day = 0,
-
-    /// <summary>
-    /// Represents a month.
-    /// </summary>
-    Month = 1,
-
-    /// <summary>
-    /// Represents a year.
-    /// </summary>
-    Year = 2
-  }
-
-  /// <summary>
-  /// Represents a range of dates.
+  /// Represents a range of dates and times.
   /// </summary>
   public struct DateRange : IEnumerable<DateTime>
   {
     readonly DateTime first_date_;
     readonly int granularity_;
-    readonly DateGranularityUnit granularity_unit_;
+    readonly DateGranularity granularity_unit_;
     readonly DateTime last_date_;
 
     /// <summary>
@@ -50,7 +29,7 @@ namespace Nohros
     /// <see cref="GranularityUnit.Day"/>.
     /// </remarks>
     public DateRange(DateTime first_date, DateTime last_date)
-      : this(first_date, last_date, 1, DateGranularityUnit.Day) {
+      : this(first_date, last_date, 1, DateGranularity.Day) {
     }
 
     /// <summary>
@@ -73,7 +52,7 @@ namespace Nohros
     /// <see cref="GranularityUnit.Day"/>.
     /// </remarks>
     public DateRange(DateTime first_date, DateTime last_date, int granularity)
-      : this(first_date, last_date, granularity, DateGranularityUnit.Day) {
+      : this(first_date, last_date, granularity, DateGranularity.Day) {
     }
 
     /// <summary>
@@ -106,7 +85,7 @@ namespace Nohros
     /// <paramref name="granularity_unit"/>.
     /// </remarks>
     public DateRange(DateTime first_date, DateTime last_date, int granularity,
-      DateGranularityUnit granularity_unit) {
+      DateGranularity granularity_unit) {
       if (first_date > last_date) {
         throw new ArgumentOutOfRangeException("first_date",
           "The first date should be greater than the last date of the range");
@@ -151,14 +130,44 @@ namespace Nohros
     /// </remarks>
     public IEnumerator<DateTime> GetEnumerator() {
       switch (granularity_unit_) {
-        case DateGranularityUnit.Day:
+        case DateGranularity.Second:
+          return GetEnumeratorForSecond();
+        case DateGranularity.Minute:
+          return GetEnumeratorForMinute();
+        case DateGranularity.Hour:
+          return GetEnumeratorForHour();
+        case DateGranularity.Day:
           return GetEnumeratorForDay();
-        case DateGranularityUnit.Month:
+        case DateGranularity.Month:
           return GetEnumeratorForMonth();
-        case DateGranularityUnit.Year:
+        case DateGranularity.Year:
           return GetEnumeratorForYear();
         default:
           throw new NotReachedException();
+      }
+    }
+
+    IEnumerator<DateTime> GetEnumeratorForSecond() {
+      DateTime current = first_date_;
+      while (current <= last_date_) {
+        yield return current;
+        current = current.AddSeconds(Granularity);
+      }
+    }
+
+    IEnumerator<DateTime> GetEnumeratorForMinute() {
+      DateTime current = first_date_;
+      while (current <= last_date_) {
+        yield return current;
+        current = current.AddMinutes(Granularity);
+      }
+    }
+
+    IEnumerator<DateTime> GetEnumeratorForHour() {
+      DateTime current = first_date_;
+      while (current <= last_date_) {
+        yield return current;
+        current = current.AddHours(Granularity);
       }
     }
 
@@ -170,19 +179,19 @@ namespace Nohros
       }
     }
 
-    IEnumerator<DateTime> GetEnumeratorForYear() {
-      DateTime current = first_date_;
-      while (current <= last_date_) {
-        yield return current;
-        current = current.AddYears(Granularity);
-      }
-    }
-
     IEnumerator<DateTime> GetEnumeratorForMonth() {
       DateTime current = first_date_;
       while (current <= last_date_) {
         yield return current;
         current = current.AddMonths(Granularity);
+      }
+    }
+
+    IEnumerator<DateTime> GetEnumeratorForYear() {
+      DateTime current = first_date_;
+      while (current <= last_date_) {
+        yield return current;
+        current = current.AddYears(Granularity);
       }
     }
 
@@ -203,7 +212,7 @@ namespace Nohros
     /// <summary>
     /// Gets the unit of the granularity.
     /// </summary>
-    public DateGranularityUnit GranularityUnit {
+    public DateGranularity GranularityUnit {
       get { return granularity_unit_; }
     }
 
