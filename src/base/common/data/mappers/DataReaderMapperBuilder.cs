@@ -16,6 +16,10 @@ using R = Nohros.Resources.Resources;
 
 namespace Nohros.Data
 {
+  /// <summary>
+  /// A dynamic <see cref="IDataReaderMapper{T}"/> builder.
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
   public partial class DataReaderMapperBuilder<T>
   {
     class ValueMap
@@ -24,11 +28,13 @@ namespace Nohros.Data
         Key = key;
         Value = value;
         RawType = raw_type;
+        Optional = false;
       }
 
       public string Key { get; set; }
       public PropertyInfo Value { get; set; }
       public Type RawType { get; set; }
+      public bool Optional { get; set; }
       public LambdaExpression Conversor { get; set; }
     }
 
@@ -38,12 +44,14 @@ namespace Nohros.Data
         Key = key;
         Value = value;
         RawType = raw_type;
+        Optional = false;
       }
 
       public int Key { get; set; }
       public PropertyInfo Value { get; set; }
       public Type RawType { get; set; }
       public LambdaExpression Conversor { get; set; }
+      public bool Optional { get; set; }
     }
 
     class MappingResult
@@ -69,6 +77,7 @@ namespace Nohros.Data
     readonly string type_t_type_name_;
     readonly Type data_reader_type_;
     bool auto_map_;
+    bool auto_map_optional_;
     CallableDelegate<T> factory_;
 
     const string kMapperTypeSuffix = "_mapper";
@@ -117,6 +126,7 @@ namespace Nohros.Data
       type_t_type_name_ = prefix;
       data_reader_type_ = data_reader_type;
       auto_map_ = false;
+      auto_map_optional_ = false;
     }
 
     /// <summary>
@@ -133,7 +143,9 @@ namespace Nohros.Data
     /// column name and the <see cref="KeyValuePair{TKey,TValue}.Key"/> is
     /// used as the destination property name.
     /// </remarks>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(
       IEnumerable<KeyValuePair<string, string>> mapping) {
       foreach (KeyValuePair<string, string> map in mapping) {
@@ -156,7 +168,9 @@ namespace Nohros.Data
     /// column name and the <see cref="KeyValuePair{TKey,TValue}.Key"/> is
     /// used as the destination property name.
     /// </remarks>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(
       IEnumerable<KeyValuePair<string, ITypeMap>> mapping) {
       foreach (KeyValuePair<string, ITypeMap> map in mapping) {
@@ -181,7 +195,9 @@ namespace Nohros.Data
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
     /// to the property named <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, string source) {
       return Map(destination, source, null);
     }
@@ -202,7 +218,9 @@ namespace Nohros.Data
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
     /// to the property named <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map<TMap>(string destination,
       string source) {
       return Map(destination, source, typeof (TMap));
@@ -227,25 +245,23 @@ namespace Nohros.Data
     /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
     /// to the property named <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, string source,
       Type type) {
       return Map(destination, GetTypeMap(source, type));
     }
 
     ITypeMap GetTypeMap(string source, Type type,
-      LambdaExpression expression = null) {
+      LambdaExpression expression = null, bool optional = false) {
       if (source == null) {
         return new IgnoreMapType();
       }
 
-      //if (expression != null && expression.Target != null) {
-      //throw new ArgumentException(
-      //"The conversor method should not be an instance method.\r\n It shoud be a static method, a lambda expression or an anonymous method");
-      //}
-      return new StringTypeMap(source) {
+      return new StringTypeMap(source, optional) {
         RawType = type,
-        Conversor = expression
+        Conversor = expression,
       };
     }
 
@@ -267,9 +283,11 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, int value) {
-      return Map(destination, new IntMapType(value));
+      return Map(destination, TypeMaps.Integer(value));
     }
 
     /// <summary>
@@ -290,9 +308,11 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, short value) {
-      return Map(destination, new ShortMapType(value));
+      return Map(destination, TypeMaps.Short(value));
     }
 
     /// <summary>
@@ -313,9 +333,11 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, long value) {
-      return Map(destination, new LongMapType(value));
+      return Map(destination, TypeMaps.Long(value));
     }
 
     /// <summary>
@@ -336,9 +358,11 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, float value) {
-      return Map(destination, new FloatMapType(value));
+      return Map(destination, TypeMaps.Float(value));
     }
 
     /// <summary>
@@ -359,9 +383,11 @@ namespace Nohros.Data
     /// <paramref source="value"/> to the property named
     /// <paramref source="destination"/>.
     /// </returns>
-    [Obsolete("This method is obsolete. Use the Map method that receives a LINQ expression.", true)]
+    [Obsolete(
+      "This method is obsolete. Use the Map method that receives a LINQ expression."
+      , true)]
     public DataReaderMapperBuilder<T> Map(string destination, decimal value) {
-      return Map(destination, new DecimalMapType(value));
+      return Map(destination, TypeMaps.Decimal(value));
     }
 
     /// <summary>
@@ -424,6 +450,30 @@ namespace Nohros.Data
     /// <param name="source">
     /// The name of the source column to be mapped.
     /// </param>
+    /// <returns>
+    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of
+    /// type <typeparamref source="T"/> and mapping the value of the source
+    /// column <paramref name="source"/> to the property described by
+    /// the <paramref name="expression"/> object.
+    /// </returns>
+    public DataReaderMapperBuilder<T> Map<TProperty>(
+      Expression<Func<T, TProperty>> expression, string source, bool optional) {
+      return Map(expression, source, null, optional);
+    }
+
+    /// <summary>
+    /// Maps the source column <see cref="source"/> to a object property.
+    /// </summary>
+    /// <typeparam name="TProperty">
+    /// The type of the property to be mapped
+    /// </typeparam>
+    /// <param name="expression">
+    /// A <see cref="Expression{TDelegate}"/> that describes the property to
+    /// be mapped.
+    /// </param>
+    /// <param name="source">
+    /// The name of the source column to be mapped.
+    /// </param>
     /// <param name="type">
     /// The type of the value that will be returned by the database.
     /// </param>
@@ -431,7 +481,31 @@ namespace Nohros.Data
     public DataReaderMapperBuilder<T> Map<TProperty>(
       Expression<Func<T, TProperty>> expression, string source, Type type) {
       return Map(expression, source, type,
-        (Expression<Func<TProperty, TProperty>>) null);
+        (Expression<Func<TProperty, TProperty>>) null, false);
+    }
+
+    /// <summary>
+    /// Maps the source column <see cref="source"/> to a object property.
+    /// </summary>
+    /// <typeparam name="TProperty">
+    /// The type of the property to be mapped
+    /// </typeparam>
+    /// <param name="expression">
+    /// A <see cref="Expression{TDelegate}"/> that describes the property to
+    /// be mapped.
+    /// </param>
+    /// <param name="source">
+    /// The name of the source column to be mapped.
+    /// </param>
+    /// <param name="type">
+    /// The type of the value that will be returned by the database.
+    /// </param>
+    /// <returns></returns>
+    public DataReaderMapperBuilder<T> Map<TProperty>(
+      Expression<Func<T, TProperty>> expression, string source, Type type,
+      bool optional) {
+      return Map(expression, source, type,
+        (Expression<Func<TProperty, TProperty>>) null, optional);
     }
 
     /// <summary>
@@ -451,13 +525,35 @@ namespace Nohros.Data
     public DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
       Expression<Func<TConverted, TProperty>> conversor) {
-      Map(expression, source, typeof (TConverted), conversor);
+      Map(expression, source, typeof (TConverted), conversor, false);
+      return this;
+    }
+
+    /// <summary>
+    /// Maps the source column <see cref="source"/> to a object property.
+    /// </summary>
+    /// <typeparam name="TProperty">
+    /// The type of the property to be mapped
+    /// </typeparam>
+    /// <param name="expression">
+    /// A <see cref="Expression{TDelegate}"/> that describes the property to
+    /// be mapped.
+    /// </param>
+    /// <param name="source">
+    /// The name of the source column to be mapped.
+    /// </param>
+    /// <returns></returns>
+    public DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
+      Expression<Func<T, TProperty>> expression, string source,
+      Expression<Func<TConverted, TProperty>> conversor, bool optional) {
+      Map(expression, source, typeof (TConverted), conversor, optional);
       return this;
     }
 
     DataReaderMapperBuilder<T> Map<TConverted, TProperty>(
       Expression<Func<T, TProperty>> expression, string source,
-      Type type, Expression<Func<TConverted, TProperty>> conversor) {
+      Type type, Expression<Func<TConverted, TProperty>> conversor,
+      bool optional) {
       MemberExpression member;
       if (expression.Body is UnaryExpression) {
         member = ((UnaryExpression) expression.Body).Operand as MemberExpression;
@@ -468,7 +564,8 @@ namespace Nohros.Data
       if (member == null) {
         throw new ArgumentException("[member] should be a class property");
       }
-      return Map(member.Member.Name, GetTypeMap(source, type, conversor));
+      return Map(member.Member.Name,
+        GetTypeMap(source, type, conversor, optional));
     }
 
     /// <summary>
@@ -480,7 +577,23 @@ namespace Nohros.Data
     /// field that has the same name as the mapped property.
     /// </remarks>
     public DataReaderMapperBuilder<T> AutoMap() {
+      return AutoMap(false);
+    }
+
+    /// <summary>
+    /// Automatically maps the properties defined by the type
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="optional">
+    /// A flag that indicates if the mapping should be optional.
+    /// </param>
+    /// <remarks>
+    /// The properties that has no mapping defined will be mapped to the
+    /// field that has the same name as the mapped property.
+    /// </remarks>
+    public DataReaderMapperBuilder<T> AutoMap(bool optional) {
       auto_map_ = true;
+      auto_map_optional_ = optional;
       return this;
     }
 
@@ -800,10 +913,9 @@ namespace Nohros.Data
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Ldfld, result.OrdinalsField);
         il.Emit(OpCodes.Ldnull);
-        il.Emit(OpCodes.Ceq);
 
         Label label = il.DefineLabel();
-        il.Emit(OpCodes.Brtrue_S, label);
+        il.Emit(OpCodes.Beq_S, label);
         il.Emit(OpCodes.Ret);
         il.MarkLabel(label);
 
@@ -888,7 +1000,36 @@ namespace Nohros.Data
             "The property {0} does not have a set method.".Fmt(property.Name));
         }
 
-        // loaded the "data transfer object"
+        // Define the label that will be used to jump if a optional field
+        // is defined and its columns does not exists.
+        Label label = il.DefineLabel();
+
+        // If the field is optional we need to check if the data reader
+        // contains the column fetching its value.
+        if (field.Optional) {
+          // load the |ordinals_| array
+          il.Emit(OpCodes.Ldarg_0);
+          il.Emit(OpCodes.Ldfld, result.OrdinalsField);
+
+          // load the element of the array at |ordinal| position
+          EmitLoad(il, ordinal);
+          il.Emit(OpCodes.Ldelem_I4);
+
+          // The columns existence if performed by the GetOrdinal method. If
+          // the column is not defined a value of -1 is placed into the
+          // |ordinals_| array the the columns ordinal position. We need to
+          // check this condition to decide if we need to emit the code to set
+          // the value of the field.
+          //
+          // load the value of -1
+          il.Emit(OpCodes.Ldc_I4_M1);
+
+          // define the label to jump if the condition is not satisfied.
+          label = il.DefineLabel();
+          il.Emit(OpCodes.Beq_S, label);
+        }
+
+        // load the T object
         il.Emit(OpCodes.Ldloc_0);
 
         // if the conversor method is defined we need to load the
@@ -931,6 +1072,11 @@ namespace Nohros.Data
 
         // store it on the loaded field.
         il.Emit(OpCodes.Callvirt, set_x_property);
+
+        // Mark the jump point for optional fields
+        if (field.Optional) {
+          il.MarkLabel(label);
+        }
       }
 
       ConstantMap[] constant_maps = result.ConstantMappings;
@@ -1087,26 +1233,61 @@ namespace Nohros.Data
       OrdinalMap[] ordinals_mapping = new OrdinalMap[fields.Length];
 
       if (fields.Length > 0) {
-        MethodInfo get_ordinal_method =
-          Dynamics_.GetDataReaderMethod("GetOrdinal");
+        // IDataReader.GetOrdinal throws an IndexOutOfRangeException
+        // when you try to get the ordinal of a missing field, for optional
+        // field we need to return -1 instead of throw an execption.
+        // 
+        // To achieve this behavior we will use the FieldNameLookup.IndexOf
+        // method do get the ordinal for optional fields and GetOrdinal for
+        // non-optional fields.
+        ConstructorInfo lookup_ctor = typeof (FieldNameLookup)
+          .GetConstructor(
+            BindingFlags.Public |
+              BindingFlags.NonPublic |
+              BindingFlags.Instance,
+            null, new[] {typeof (IDataReader)}, null);
 
+        Type field_name_lookup_type = typeof (FieldNameLookup);
+
+        MethodInfo get_ordinal_method =
+          field_name_lookup_type
+            .GetMethod("GetOrdinal");
+
+        MethodInfo index_of_method =
+          field_name_lookup_type
+            .GetMethod("IndexOf");
+
+        // load the data reader and creates a new FieldNameLookup
+        LocalBuilder lookup = il.DeclareLocal(field_name_lookup_type);
+        il.Emit(OpCodes.Ldarg_1);
+        il.Emit(OpCodes.Newobj, lookup_ctor);
+        il.Emit(OpCodes.Stloc_0, lookup);
+
+        // instantiates the |ordinals_| array
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Ldc_I4, fields.Length);
         il.Emit(OpCodes.Newarr, typeof (int));
         il.Emit(OpCodes.Stfld, result.OrdinalsField);
 
         for (int i = 0, j = fields.Length; i < j; i++) {
+          ValueMap field = fields[i];
           il.Emit(OpCodes.Ldarg_0);
           il.Emit(OpCodes.Ldfld, result.OrdinalsField);
           il.Emit(OpCodes.Ldc_I4, i);
-          il.Emit(OpCodes.Ldarg_1);
-          il.Emit(OpCodes.Ldstr, fields[i].Key);
-          il.Emit(OpCodes.Callvirt, get_ordinal_method);
+          il.Emit(OpCodes.Ldloc_0);
+          il.Emit(OpCodes.Ldstr, field.Key);
+
+          il.Emit(OpCodes.Callvirt,
+            field.Optional
+              ? index_of_method
+              : get_ordinal_method);
+
           il.Emit(OpCodes.Stelem_I4);
 
           ordinals_mapping[i] =
-            new OrdinalMap(i, fields[i].Value, fields[i].RawType) {
-              Conversor = fields[i].Conversor
+            new OrdinalMap(i, field.Value, field.RawType) {
+              Conversor = field.Conversor,
+              Optional = field.Optional
             };
         }
       }
@@ -1206,10 +1387,9 @@ namespace Nohros.Data
     }
 
     void GetMappings(PropertyInfo[] properties, MappingResult result) {
-      List<ValueMap> value_mappings =
-        new List<ValueMap>(properties.Length);
-      List<ConstantMap> const_mappings =
-        new List<ConstantMap>(properties.Length);
+      var value_mappings = new List<ValueMap>(properties.Length);
+      var const_mappings = new List<ConstantMap>(properties.Length);
+
       for (int i = 0, j = properties.Length; i < j; i++) {
         PropertyInfo property = properties[i];
         ITypeMap mapping;
@@ -1222,16 +1402,20 @@ namespace Nohros.Data
             : new IgnoreMapType(property.Name);
         }
 
-        if (mapping.MapType == TypeMapType.Ignore || IsReferenceType(property)) {
-          mapping = new IgnoreMapType(GetDefaultValue(property.PropertyType));
-          const_mappings.Add(new ConstantMap(mapping, property));
-        } else if (mapping.MapType == TypeMapType.String) {
+        if (mapping.MapType == TypeMapType.String) {
           var map = mapping as StringTypeMap;
-          value_mappings.Add(
+          var value_map =
             new ValueMap((string) map.Value, property, map.RawType) {
-              Conversor = map.Conversor
-            });
+              Conversor = map.Conversor,
+              Optional = map.Optional
+            };
+          value_mappings.Add(value_map);
         } else {
+          // Reference types should be ignored, since we do not know how
+          // to construct it.
+          if (mapping.MapType == TypeMapType.Ignore || IsReferenceType(property)) {
+            mapping = new IgnoreMapType(GetDefaultValue(property.PropertyType));
+          }
           const_mappings.Add(new ConstantMap(mapping, property));
         }
       }

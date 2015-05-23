@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
-using Nohros.Data;
 
 namespace Nohros.Data
 {
@@ -11,6 +9,16 @@ namespace Nohros.Data
     /// </summary>
     object Value { get; }
 
+    /// <summary>
+    /// Gets a <see cref="TypeMapType"/> that defines how the
+    /// <see cref="Value"/> should be interpreted.
+    /// </summary>
     TypeMapType MapType { get; }
+
+    /// <summary>
+    /// Gets a valus that indicates if the presence of the column associated
+    /// with the type is optional.
+    /// </summary>
+    bool Optional { get; }
   }
 }

@@ -50,6 +50,12 @@ namespace Nohros.Common
     public void should_map_interfaces_when_no_factory_supplied() {
       IDataReader reader = GetDataReader();
       Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
         .Arrange(() => reader.GetOrdinal("name"))
         .Returns(0);
       Mock
@@ -67,6 +73,18 @@ namespace Nohros.Common
     [Test]
     public void should_map_nested_interfaces() {
       IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(3);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetName(1))
+        .Returns("name1");
+      Mock
+        .Arrange(() => reader.GetName(2))
+        .Returns("name2");
       Mock
         .Arrange(() => reader.GetOrdinal("name"))
         .Returns(0);
@@ -104,6 +122,12 @@ namespace Nohros.Common
     public void should_map_interfaces_when_factory_supplied() {
       IDataReader reader = GetDataReader();
       Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
         .Arrange(() => reader.GetOrdinal("name"))
         .Returns(0);
       Mock
@@ -124,6 +148,15 @@ namespace Nohros.Common
     public void should_not_map_ignored_property() {
       var reader = GetDataReader();
       Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(2);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetName(1))
+        .Returns("location");
+      Mock
         .Arrange(() => reader.GetOrdinal("name"))
         .Returns(0);
       Mock
@@ -140,28 +173,11 @@ namespace Nohros.Common
     }
 
     [Test]
-    public void should_map_array_of_key_value_pairs() {
-      IDataReader reader = GetDataReader();
-      Mock
-        .Arrange(() => reader.GetOrdinal("usuario_nome"))
-        .Returns(0);
-      Mock
-        .Arrange(() => reader.GetString(0))
-        .Returns("nohros");
-      var mapper =
-        new DataReaderMapperBuilder<SimpleType>(
-          "should_map_array_of_key_value_pairs")
-          .Map(new[] {new KeyValuePair<string, string>("name", "usuario_nome")})
-          .Build();
-      Assert.That(mapper.Map(reader).Name, Is.EqualTo("nohros"));
-    }
-
-    [Test]
     public void shoud_map_to_a_constant() {
       IDataReader reader = GetDataReader();
       var mapper =
         new DataReaderMapperBuilder<IgnoreType>("shoud_map_to_a_constant")
-          .Map("name", new ConstStringMapType("myname"))
+          .Map("name", TypeMaps.String("myname"))
           .Build();
       Assert.That(mapper.Map(reader).Name, Is.EqualTo("myname"));
     }
@@ -175,7 +191,7 @@ namespace Nohros.Common
       Action method = () => {
         var mapper =
           new DataReaderMapperBuilder<IgnoreType>("shoud_map_to_a_constant")
-            .Map("name", new ConstStringMapType("myname"))
+            .Map("name", TypeMaps.String("myname"))
             .Build();
         sync.Signal();
         Assert.That(mapper.Map(reader).Name, Is.EqualTo("myname"));
@@ -188,6 +204,61 @@ namespace Nohros.Common
 
       Assert.That(() => parallel(), Throws.Nothing);
       sync.Wait();
+    }
+
+    [Test]
+    public void should_ignore_field_if_column_not_exists_and_optional_is_set() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name2");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name2"))
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Throws<ArgumentException>();
+
+      var mapper =
+        new DataReaderMapperBuilder<IgnoreType>(
+          "should_ignore_field_if_column_not_exists_and_optional_is_set")
+          .Map(x => x.Name, "nohros", true)
+          .Build();
+      //Dynamics.Dynamics_.Save("test.dll");
+      try {
+        IgnoreType type = mapper.Map(reader);
+        Assert.That(type.Name, Is.Null);
+      } catch {
+        Assert.Fail("Should not throws any exception");
+      }
+    }
+
+    [Test]
+    public void
+      should_not_ignore_field_if_column_not_exists_and_optional_is_not_set() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name2");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name2"))
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Throws<ArgumentException>();
+
+      var mapper =
+        new DataReaderMapperBuilder<IgnoreType>(
+          "should_not_ignore_field_if_column_not_exists_and_optional_is_not_set")
+          .Map(x => x.Name, "nohros")
+          .Build();
+      Assert.That(() => mapper.Map(reader).Name, Throws.InstanceOf<Exception>());
     }
 
     IDataReader GetDataReader() {

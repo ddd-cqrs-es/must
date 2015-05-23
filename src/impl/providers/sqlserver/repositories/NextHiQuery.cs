@@ -59,8 +59,8 @@ namespace Nohros.Data.SqlServer
 
     IDataReaderMapper<HiLoRangeDto> CreateMapper() {
       return new DataReaderMapperBuilder<HiLoRangeDto>(kClassName)
-        .Map("High", kCurrentHiField)
-        .Map("MaxLow", kMaxLoField)
+        .Map(x => x.High, kCurrentHiField)
+        .Map(x => x.MaxLow, kMaxLoField)
         .Build();
     }
   }

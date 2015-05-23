@@ -8,7 +8,6 @@ namespace Nohros.Data
   /// </summary>s
   public class IgnoreMapType : TypeMap
   {
-    #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="DoubleMapType"/> class
     /// using the specified column name.
@@ -23,6 +22,5 @@ namespace Nohros.Data
     /// </summary>
     internal IgnoreMapType(object value) : base(value, TypeMapType.Ignore) {
     }
-    #endregion
   }
 }

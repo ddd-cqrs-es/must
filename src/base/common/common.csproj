@@ -167,29 +167,21 @@
     <Compile Include="data\id\ThreadSafeHiLoGenerator.cs" />
     <Compile Include="data\IQuery.cs" />
     <Compile Include="data\json\datafields\JsonDataFieldDateTime.cs" />
-    <Compile Include="data\mappers\BooleanMapType.cs" />
-    <Compile Include="data\mappers\ByteMapType.cs" />
-    <Compile Include="data\mappers\CharMapType.cs" />
-    <Compile Include="data\mappers\ConstStringMapType.cs" />
     <Compile Include="data\mappers\DataReaderMapper.cs" />
     <Compile Include="data\mappers\DataReaderMapperBuilder.cs" />
+    <Compile Include="data\mappers\FieldNameLookup.cs" />
     <Compile Include="data\mappers\IQueryExecutor.cs" />
     <Compile Include="data\mappers\IQueryMapper.cs" />
     <Compile Include="data\mappers\TypeMaker.cs" />
     <Compile Include="data\mappers\QueryMapper.cs" />
+    <Compile Include="data\mappers\TypeMaps.cs" />
     <Compile Include="data\mappers\ValueTypeDataReaderMapper.cs" />
-    <Compile Include="data\mappers\DecimalMapType.cs" />
-    <Compile Include="data\mappers\DoubleMapType.cs" />
     <Compile Include="data\mappers\Dynamics.cs" />
-    <Compile Include="data\mappers\FloatMapType.cs" />
     <Compile Include="data\mappers\IDataReaderMapper.cs" />
     <Compile Include="data\mappers\IgnoreMapType.cs" />
     <Compile Include="data\mappers\IMapper.cs" />
-    <Compile Include="data\mappers\IntMapType.cs" />
     <Compile Include="data\mappers\ITypeMap.cs" />
-    <Compile Include="data\mappers\LongMapType.cs" />
     <Compile Include="data\mappers\Mappers.cs" />
-    <Compile Include="data\mappers\ShortMapType.cs" />
     <Compile Include="data\mappers\StringTypeMap.cs" />
     <Compile Include="data\mappers\TypeMap.cs" />
     <Compile Include="data\mappers\TypeMapType.cs" />
@@ -432,7 +424,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -2302,19 +2302,57 @@
             Gets the value that is used on the map operation.
             </summary>
         </member>
-        <member name="T:Nohros.Data.DoubleMapType">
+        <member name="P:Nohros.Data.ITypeMap.MapType">
             <summary>
-            Maps a class property to constant <see cref="T:System.Double"/>.
-            </summary>s
+            Gets a <see cref="T:Nohros.Data.TypeMapType"/> that defines how the
+            <see cref="P:Nohros.Data.ITypeMap.Value"/> should be interpreted.
+            </summary>
         </member>
-        <member name="M:Nohros.Data.DoubleMapType.#ctor(System.Double)">
+        <member name="P:Nohros.Data.ITypeMap.Optional">
             <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.DoubleMapType"/> class
-            using the specified column name.
+            Gets a valus that indicates if the presence of the column associated
+            with the type is optional.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.TypeMap.#ctor(System.Object,Nohros.Data.TypeMapType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.Data.TypeMap"/> class by
+            using the given <paramref name="value"/> and <paramref name="map_type"/>
             </summary>
             <param name="value">
-            The constant value to be mapped.
+            The value associated with the type.
             </param>
+            <param name="map_type">
+            A <see cref="T:Nohros.Data.TypeMapType"/> object that describes how
+            <paramref name="value"/> should be treated.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMap.#ctor(System.Object,Nohros.Data.TypeMapType,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.Data.TypeMap"/> class by
+            using the given <paramref name="value"/>,
+            <paramref name="map_type"/> and <paramref name="optional"/> flag.
+            </summary>
+            <param name="value">
+            The value associated with the type.
+            </param>
+            <param name="map_type">
+            A <see cref="T:Nohros.Data.TypeMapType"/> object that describes how
+            <paramref name="value"/> should be treated.
+            </param>
+            <param name="optional">
+            A flag that indicates if the presence of the column associated
+            with the type is optional.
+            </param>
+        </member>
+        <member name="P:Nohros.Data.TypeMap.Value">
+            <inheritdoc/>
+        </member>
+        <member name="P:Nohros.Data.TypeMap.MapType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Nohros.Data.TypeMap.Optional">
+            <inheritdoc/>
         </member>
         <member name="T:Nohros.Data.ICommand">
             <summary>
@@ -4139,20 +4177,6 @@
             <param name="reader">
             A <see cref="T:System.Data.IDataReader"/> that can be used to extract a string
             at the field position.
-            </param>
-        </member>
-        <member name="T:Nohros.Data.ByteMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Byte"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.ByteMapType.#ctor(System.Byte)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.ByteMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
             </param>
         </member>
         <member name="T:Nohros.Configuration.DataServerConfigCollection">
@@ -6146,6 +6170,12 @@
             throwed by this method will be propagated to the caller.
             </remarks>
         </member>
+        <member name="T:Nohros.Data.DataReaderMapperBuilder`1">
+            <summary>
+            A dynamic <see cref="T:Nohros.Data.IDataReaderMapper`1"/> builder.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
         <member name="M:Nohros.Data.DataReaderMapperBuilder`1.#ctor(System.Type)">
             <summary>
             Initializes a new instance of the
@@ -6400,7 +6430,47 @@
             the <paramref name="expression"/> object.
             </returns>
         </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.Map``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.String,System.Boolean)">
+            <summary>
+            Maps the source column <see cref="!:source"/> to a object property.
+            </summary>
+            <typeparam name="TProperty">
+            The type of the property to be mapped
+            </typeparam>
+            <param name="expression">
+            A <see cref="T:System.Linq.Expressions.Expression`1"/> that describes the property to
+            be mapped.
+            </param>
+            <param name="source">
+            The name of the source column to be mapped.
+            </param>
+            <returns>
+            A <see cref="T:Nohros.Data.DataReaderMapperBuilder`1"/> that builds an object of
+            type <typeparamref source="T"/> and mapping the value of the source
+            column <paramref name="source"/> to the property described by
+            the <paramref name="expression"/> object.
+            </returns>
+        </member>
         <member name="M:Nohros.Data.DataReaderMapperBuilder`1.Map``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.String,System.Type)">
+            <summary>
+            Maps the source column <see cref="!:source"/> to a object property.
+            </summary>
+            <typeparam name="TProperty">
+            The type of the property to be mapped
+            </typeparam>
+            <param name="expression">
+            A <see cref="T:System.Linq.Expressions.Expression`1"/> that describes the property to
+            be mapped.
+            </param>
+            <param name="source">
+            The name of the source column to be mapped.
+            </param>
+            <param name="type">
+            The type of the value that will be returned by the database.
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.Map``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.String,System.Type,System.Boolean)">
             <summary>
             Maps the source column <see cref="!:source"/> to a object property.
             </summary>
@@ -6435,11 +6505,40 @@
             </param>
             <returns></returns>
         </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.Map``2(System.Linq.Expressions.Expression{System.Func{`0,``1}},System.String,System.Linq.Expressions.Expression{System.Func{``0,``1}},System.Boolean)">
+            <summary>
+            Maps the source column <see cref="!:source"/> to a object property.
+            </summary>
+            <typeparam name="TProperty">
+            The type of the property to be mapped
+            </typeparam>
+            <param name="expression">
+            A <see cref="T:System.Linq.Expressions.Expression`1"/> that describes the property to
+            be mapped.
+            </param>
+            <param name="source">
+            The name of the source column to be mapped.
+            </param>
+            <returns></returns>
+        </member>
         <member name="M:Nohros.Data.DataReaderMapperBuilder`1.AutoMap">
             <summary>
             Automatically maps the properties defined by the type
             <typeparamref name="T"/>.
             </summary>
+            <remarks>
+            The properties that has no mapping defined will be mapped to the
+            field that has the same name as the mapped property.
+            </remarks>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.AutoMap(System.Boolean)">
+            <summary>
+            Automatically maps the properties defined by the type
+            <typeparamref name="T"/>.
+            </summary>
+            <param name="optional">
+            A flag that indicates if the mapping should be optional.
+            </param>
             <remarks>
             The properties that has no mapping defined will be mapped to the
             field that has the same name as the mapped property.
@@ -6582,20 +6681,6 @@
             <summary>
             Initialize a new instance of the <see cref="T:Nohros.Data.DataReaderMapperBuilder`1.TypeMaker"/>
             </summary>
-        </member>
-        <member name="T:Nohros.Data.ConstStringMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.String"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.ConstStringMapType.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.ConstStringMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
         </member>
         <member name="T:Nohros.Configuration.RepositoriesNode">
             <summary>
@@ -8131,34 +8216,6 @@
             to an <see cref="T:System.DateTime"/>.
             </exception>
         </member>
-        <member name="T:Nohros.Data.ShortMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Int16"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ShortMapType.#ctor(System.Int16)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.ShortMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
-        </member>
-        <member name="T:Nohros.Data.IntMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Int32"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.IntMapType.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.IntMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
-        </member>
         <member name="T:Nohros.Data.IMapper`1">
             <summary>
             Provides a means of mapping a result to a object.
@@ -8176,20 +8233,6 @@
             A object of type <typeparamref name="T"/> containing the data of the
             current element of a record set.
             </returns>
-        </member>
-        <member name="T:Nohros.Data.FloatMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Single"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.FloatMapType.#ctor(System.Single)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.FloatMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
         </member>
         <member name="T:Nohros.Configuration.AssemblyScannerResults">
             <summary>
@@ -11850,20 +11893,6 @@
             A collection of objects of type <typeparamref name="T"/> containing
             the data readed from the associated <see cref="T:System.Data.IDataReader"/>.
             </returns>
-        </member>
-        <member name="T:Nohros.Data.BooleanMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Boolean"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.BooleanMapType.#ctor(System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.BooleanMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
         </member>
         <member name="T:Nohros.Strings">
             <summary>
@@ -17505,20 +17534,6 @@
             Maps to A CONSTANT <see cref="T:System.Decimal"/>.
             </summary>
         </member>
-        <member name="T:Nohros.Data.DecimalMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Single"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.DecimalMapType.#ctor(System.Decimal)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.DecimalMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
-        </member>
         <member name="T:Nohros.Data.IQuery`1">
             <summary>
             Provides functionality to execute queries that returns a value against a
@@ -18548,6 +18563,19 @@
             The name of the column to use as data source for the map operation.
             </param>
         </member>
+        <member name="M:Nohros.Data.StringTypeMap.#ctor(System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.Data.StringTypeMap"/> class
+            using the specified column name.
+            </summary>
+            <param name="value">
+            The name of the column to use as data source for the map operation.
+            </param>
+            <param name="optional">
+            A flag that indicates if the presence of the column associated
+            with the type is optional.
+            </param>
+        </member>
         <member name="M:Nohros.Data.StringTypeMap.#ctor(System.String,System.Type)">
             <summary>
             Initializes a new instance of the <see cref="T:Nohros.Data.StringTypeMap"/> class
@@ -18556,6 +18584,37 @@
             <param name="value">
             The name of the column to use as data source for the map operation.
             </param>
+            <param name="raw_type">
+            The type of the column to be mapped.
+            </param>
+            <remarks>
+            If the type of the column to be mapped is not equals to the type of
+            the mapped field you should set the <paramref name="raw_type"/> to
+            the type of the columun. This way the mapper can perform the type
+            conversion and use the right Get method of the <see cref="T:System.Data.IDataReader"/>.
+            </remarks>
+        </member>
+        <member name="M:Nohros.Data.StringTypeMap.#ctor(System.String,System.Type,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.Data.StringTypeMap"/> class
+            using the specified column name.
+            </summary>
+            <param name="value">
+            The name of the column to use as data source for the map operation.
+            </param>
+            <param name="raw_type">
+            The type of the column to be mapped.
+            </param>
+            <param name="optional">
+            A flag that indicates if the presence of the column associated
+            with the type is optional.
+            </param>
+            <remarks>
+            If the type of the column to be mapped is not equals to the type of
+            the mapped field you should set the <paramref name="raw_type"/> to
+            the type of the columun. This way the mapper can perform the type
+            conversion and use the right Get method of the <see cref="T:System.Data.IDataReader"/>.
+            </remarks>
         </member>
         <member name="M:Nohros.Data.StringTypeMap.op_Implicit(System.String)~Nohros.Data.StringTypeMap">
             <summary>
@@ -18579,34 +18638,6 @@
             Gets or sets a expression that should be used to convert the value
             returned from the database to another type.
             </summary>
-        </member>
-        <member name="T:Nohros.Data.LongMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Int64"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.LongMapType.#ctor(System.Int64)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.LongMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
-        </member>
-        <member name="T:Nohros.Data.CharMapType">
-            <summary>
-            Maps a class property to constant <see cref="T:System.Char"/>.
-            </summary>s
-        </member>
-        <member name="M:Nohros.Data.CharMapType.#ctor(System.Char)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.CharMapType"/> class
-            using the specified column name.
-            </summary>
-            <param name="value">
-            The constant value to be mapped.
-            </param>
         </member>
         <member name="T:Nohros.Data.IHiLoGeneratorFactory">
             <summary>
@@ -20087,13 +20118,13 @@
         </member>
         <member name="M:Nohros.Data.IgnoreMapType.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.DoubleMapType"/> class
+            Initializes a new instance of the <see cref="!:DoubleMapType"/> class
             using the specified column name.
             </summary>
         </member>
         <member name="M:Nohros.Data.IgnoreMapType.#ctor(System.Object)">
             <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.DoubleMapType"/> class
+            Initializes a new instance of the <see cref="!:DoubleMapType"/> class
             using the specified column name.
             </summary>
         </member>
@@ -20223,6 +20254,102 @@
             <summary>
             Gets or sets the current value, as an atomic operation.
             </summary>
+        </member>
+        <member name="T:Nohros.Data.TypeMaps">
+            <summary>
+            Factory for <see cref="T:Nohros.Data.ITypeMap"/> class that maps a field to a
+            constant value.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Boolean(System.Boolean)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Boolean"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Byte(System.Byte)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Byte"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Char(System.Char)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Char"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Integer(System.Int32)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Int32"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Long(System.Int64)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Int64"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Decimal(System.Decimal)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Decimal"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Double(System.Double)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Double"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Float(System.Single)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Single"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Short(System.Int16)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Int16"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.String(System.String)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.String"/> value to be mapped.
+            </param>
         </member>
     </members>
 </doc>
