@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Nohros.Data;
 using Telerik.JustMock;
+using Telerik.JustMock.Helpers;
 
 namespace Nohros.Common
 {
@@ -36,12 +37,12 @@ namespace Nohros.Common
       public string Location { get; set; }
     }
 
-    public interface INestedType : ISimpleType
+    public interface IDerivedType : ISimpleType
     {
       string Name2 { get; }
     }
 
-    public interface INestedType2 : INestedType
+    public interface IDerivedType2 : IDerivedType
     {
       string Name3 { get; }
     }
@@ -71,7 +72,7 @@ namespace Nohros.Common
     }
 
     [Test]
-    public void should_map_nested_interfaces() {
+    public void should_map_all_implemented_interfaces() {
       IDataReader reader = GetDataReader();
       Mock
         .Arrange(() => reader.FieldCount)
@@ -105,14 +106,14 @@ namespace Nohros.Common
         .Returns("nohros2");
 
       var mapper =
-        new DataReaderMapperBuilder<INestedType2>(
-          "should_map_nested_interfaces")
+        new DataReaderMapperBuilder<IDerivedType2>(
+          "should_map_all_implemented_interfaces")
           .Map(x => x.Name, "name")
           .Map(x => x.Name2, "name1")
           .Map(x => x.Name3, "name2")
           .Build();
 
-      INestedType2 obj = mapper.Map(reader);
+      IDerivedType2 obj = mapper.Map(reader);
       Assert.That(obj.Name, Is.EqualTo("nohros"));
       Assert.That(obj.Name2, Is.EqualTo("nohros1"));
       Assert.That(obj.Name3, Is.EqualTo("nohros2"));
@@ -227,13 +228,95 @@ namespace Nohros.Common
           "should_ignore_field_if_column_not_exists_and_optional_is_set")
           .Map(x => x.Name, "nohros", true)
           .Build();
-      //Dynamics.Dynamics_.Save("test.dll");
+
       try {
         IgnoreType type = mapper.Map(reader);
         Assert.That(type.Name, Is.Null);
       } catch {
         Assert.Fail("Should not throws any exception");
       }
+    }
+
+    [Test]
+    public void should_map_field_if_column_exists_and_optional_is_set() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name"))
+        .Returns(0);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Returns("nohros");
+
+      var mapper =
+        new DataReaderMapperBuilder<IgnoreType>(
+          "should_map_field_if_column_exists_and_optional_is_set")
+          .Map(x => x.Name, "name", true)
+          .Build();
+
+      IgnoreType type = mapper.Map(reader);
+      Assert.That(type.Name, Is.EqualTo("nohros"));
+    }
+
+    [Test]
+    public void should_apply_transformations_in_order() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name"))
+        .Returns(0);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Returns("nohros");
+
+      var mapper =
+        new DataReaderMapperBuilder<SimpleType>(
+          "should_apply_transformation_in_order")
+          .Map(x => x.Name, "name")
+          .Transform((r, t) => t.Name += "_1")
+          .Transform((r, t) => t.Name += "_2")
+          .Build();
+
+      SimpleType type = mapper.Map(reader);
+      Assert.That(type.Name, Is.EqualTo("nohros_1_2"));
+    }
+
+    [Test]
+    public void should_apply_transformation_before_post_action() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name"))
+        .Returns(0);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Returns("nohros");
+
+      var mapper =
+        new DataReaderMapperBuilder<SimpleType>(
+          "should_apply_transformation_before_post_action")
+          .Map(x => x.Name, "name")
+          .Transform((r, t) => t.Name += "_1")
+          .Transform((r, t) => t.Name += "_2")
+          .Build();
+
+      SimpleType type = mapper.Map(reader, t => t.Name += "_3");
+      Assert.That(type.Name, Is.EqualTo("nohros_1_2_3"));
     }
 
     [Test]

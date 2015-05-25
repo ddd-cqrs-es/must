@@ -5046,6 +5046,19 @@
             <see cref="T:System.Single"/> at the field position.
             </param>
         </member>
+        <member name="T:Nohros.Data.ValueTypeDataReaderMapper`1">
+            <summary>
+            A implementation of the <see cref="T:Nohros.Data.IDataReaderMapper`1"/> for
+            <see cref="T:System.Data.ValueType"/>
+            </summary>
+            <typeparam name="T">
+            The type to be mapped.
+            </typeparam>
+            <remarks>
+            <typeparamref name="T"/> should be a type that derives from
+            <seealso cref="T:System.Data.ValueType"/>
+            </remarks>
+        </member>
         <member name="T:Nohros.Data.DataReaderMapper`1">
             <summary>
             An implementation of the <see cref="T:Nohros.Data.IDataReaderMapper`1"/> interface.
@@ -5281,6 +5294,12 @@
             another query on the application data access layer).
             </para>
             </remarks>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.#ctor">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Nohros.Data.ValueTypeDataReaderMapper`1"/> class.
+            </summary>
         </member>
         <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.Map(System.Data.IDataReader)">
             <inheritdoc/>
@@ -6170,6 +6189,102 @@
             throwed by this method will be propagated to the caller.
             </remarks>
         </member>
+        <member name="T:Nohros.Data.TypeMaps">
+            <summary>
+            Factory for <see cref="T:Nohros.Data.ITypeMap"/> class that maps a field to a
+            constant value.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Boolean(System.Boolean)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Boolean"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Byte(System.Byte)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Byte"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Char(System.Char)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Char"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Integer(System.Int32)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Int32"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Long(System.Int64)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Int64"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Decimal(System.Decimal)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Decimal"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Double(System.Double)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Double"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Float(System.Single)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Single"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.Short(System.Int16)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.Int16"/> value to be mapped.
+            </param>
+        </member>
+        <member name="M:Nohros.Data.TypeMaps.String(System.String)">
+            <summary>
+            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
+            given <paramref name="value"/> to a class field.
+            </summary>
+            <param name="value">
+            The <see cref="T:System.String"/> value to be mapped.
+            </param>
+        </member>
         <member name="T:Nohros.Data.DataReaderMapperBuilder`1">
             <summary>
             A dynamic <see cref="T:Nohros.Data.IDataReaderMapper`1"/> builder.
@@ -6542,6 +6657,22 @@
             <remarks>
             The properties that has no mapping defined will be mapped to the
             field that has the same name as the mapped property.
+            </remarks>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapperBuilder`1.Transform(System.Action{System.Data.IDataReader,`0})">
+            <summary>
+            Transform the mapped type using the given s<paramref name="link"/>
+            method.
+            </summary>
+            <param name="link">
+            A <see cref="T:System.Action`1"/> that can be used to transform the a object
+            of type <typeparamref name="T"/>.
+            </param>
+            <returns></returns>
+            <remarks>
+            This method can be used to define a sequence of transformation
+            functions to be applied over the mapped type. The transformation
+            functions are applied in the same order as they are added.
             </remarks>
         </member>
         <member name="M:Nohros.Data.DataReaderMapperBuilder`1.SetFactory(Nohros.CallableDelegate{`0})">
@@ -10661,17 +10792,17 @@
         </member>
         <member name="F:Nohros.ValueType.Dictionary">
             <summary>
-            A <see cref="!:DictionaryValue"/> type.
+            A <see cref="T:Nohros.Collections.DictionaryValue"/> type.
             </summary>
         </member>
         <member name="F:Nohros.ValueType.List">
             <summary>
-            A <see cref="!:ListValue.cs"/> type.
+            A <see cref="T:Nohros.Collections.ListValue"/> type.
             </summary>
         </member>
         <member name="F:Nohros.ValueType.Generic">
             <summary>
-            A <see cref="!:GenericValue.cs"/> type.
+            A <see cref="T:Nohros.GenericValue`1"/> type.
             </summary>
         </member>
         <member name="F:Nohros.ValueType.Class">
@@ -10681,7 +10812,7 @@
         </member>
         <member name="F:Nohros.ValueType.GenericDictionary">
             <summary>
-            A <see cref="!:DictionaryValue&lt;&gt;"/> type.
+            A <see cref="T:Nohros.Collections.DictionaryValue"/> type.
             </summary>
         </member>
         <member name="T:Nohros.GenericValue`1">
@@ -19139,6 +19270,11 @@
               Looks up a localized string similar to The range of valid values are {0} to {1}..
             </summary>
         </member>
+        <member name="P:Nohros.Resources.Resources.Arg_ShouldBeValueType">
+            <summary>
+              Looks up a localized string similar to The type T should be a ValueType..
+            </summary>
+        </member>
         <member name="P:Nohros.Resources.Resources.Arg_TransactionContext_Command_Connection">
             <summary>
               Looks up a localized string similar to The connection that is associated with the specified command should be the same as the specified in the context constructor..
@@ -20255,101 +20391,117 @@
             Gets or sets the current value, as an atomic operation.
             </summary>
         </member>
-        <member name="T:Nohros.Data.TypeMaps">
+        <member name="T:Nohros.Data.ValueTypeMappers">
             <summary>
-            Factory for <see cref="T:Nohros.Data.ITypeMap"/> class that maps a field to a
-            constant value.
+            Factory class for implementations of the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> interface that maps to value types.
             </summary>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Boolean(System.Boolean)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Boolean">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Boolean"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Boolean"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Byte(System.Byte)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Byte">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Byte"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Byte"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Char(System.Char)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Char">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Char"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Char"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Integer(System.Int32)">
+        <member name="M:Nohros.Data.ValueTypeMappers.DateTime">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="M:Nohros.Data.ValueTypeMappers.DateTime"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Int32"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Long(System.Int64)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Decimal">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Decimal"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Int64"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Decimal(System.Decimal)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Double">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Double"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Decimal"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Double(System.Double)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Float">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Single"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Double"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Float(System.Single)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Guid">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="M:Nohros.Data.ValueTypeMappers.Guid"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Single"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.Short(System.Int16)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Int16">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int16"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.Int16"/> value to be mapped.
-            </param>
         </member>
-        <member name="M:Nohros.Data.TypeMaps.String(System.String)">
+        <member name="M:Nohros.Data.ValueTypeMappers.Int32">
             <summary>
-            Returns a instance of the <see cref="T:Nohros.Data.ITypeMap"/> class that maps the
-            given <paramref name="value"/> to a class field.
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int32"/>.
             </summary>
-            <param name="value">
-            The <see cref="T:System.String"/> value to be mapped.
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Long">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int64"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.String">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.String"/>.
+            </summary>
+        </member>
+        <member name="T:Nohros.Data.LinkedDataReaderMapper`1">
+            <summary>
+            A <see cref="T:Nohros.Data.IDataReaderMapper`1"/> that can be used to map a single
+            row to multiple objects through linking.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.#ctor(Nohros.Data.IDataReaderMapper{`0},System.Collections.Generic.IEnumerable{System.Action{System.Data.IDataReader,`0}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.Data.LinkedDataReaderMapper`1"/>
+            class by using the given <paramref name="mapper"/>.
+            </summary>
+            <param name="mapper">
+            The first <see cref="T:Nohros.Data.IDataReaderMapper`1"/> of the chain.
             </param>
+            <param name="nodes"></param>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,`0@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,System.Action{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.MapCurrent(System.Data.IDataReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,System.Boolean,System.Action{`0})">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

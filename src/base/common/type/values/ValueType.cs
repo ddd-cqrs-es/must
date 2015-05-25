@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using Nohros.Collections;
 
 namespace Nohros
 {
@@ -41,12 +40,12 @@ namespace Nohros
     Dictionary = 5,
 
     /// <summary>
-    /// A <see cref="ListValue.cs"/> type.
+    /// A <see cref="ListValue"/> type.
     /// </summary>
     List = 6,
 
     /// <summary>
-    /// A <see cref="GenericValue.cs"/> type.
+    /// A <see cref="GenericValue{T}"/> type.
     /// </summary>
     Generic = 7,
 
@@ -56,7 +55,7 @@ namespace Nohros
     Class = 8,
 
     /// <summary>
-    /// A <see cref="DictionaryValue&lt;&gt;"/> type.
+    /// A <see cref="DictionaryValue"/> type.
     /// </summary>
     GenericDictionary = 9
   }

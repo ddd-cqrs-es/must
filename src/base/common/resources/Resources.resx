@@ -367,4 +367,7 @@ Remove any option that has the following pattern &lt;option ref=""/&gt;</value>
     <value>We cannot map the [{0}] interface directly.
 You should define a factory to create an instance of the interface using the SetFactory method.</value>
   </data>
+  <data name="Arg_ShouldBeValueType" xml:space="preserve">
+    <value>The type T should be a ValueType.</value>
+  </data>
 </root>

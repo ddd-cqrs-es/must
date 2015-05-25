@@ -6,15 +6,14 @@ namespace Nohros.Data
   /// Factory class for implementations of the
   /// <see cref="IDataReaderMapper{T}"/> interface that maps to value types.
   /// </summary>
-  [Obsolete("This class is obsolete and was replaced by the ValueTypeMappers")]
-  public static class Mappers
+  public static class ValueTypeMappers
   {
     /// <summary>
     /// Creates an instance of a class that implements the
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="bool"/>.
     /// </summary>
     public static IDataReaderMapper<bool> Boolean() {
-      return ValueTypeMappers.Boolean();
+      return new BooleanDataReaderMapper();
     }
 
     /// <summary>
@@ -22,7 +21,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="byte"/>.
     /// </summary>
     public static IDataReaderMapper<byte> Byte() {
-      return ValueTypeMappers.Byte();
+      return new ByteDataReaderMapper();
     }
 
     /// <summary>
@@ -30,7 +29,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="char"/>.
     /// </summary>
     public static IDataReaderMapper<char> Char() {
-      return ValueTypeMappers.Char();
+      return new CharDataReaderMapper();
     }
 
     /// <summary>
@@ -38,7 +37,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="DateTime"/>.
     /// </summary>
     public static IDataReaderMapper<DateTime> DateTime() {
-      return ValueTypeMappers.DateTime();
+      return new DateTimeDataReaderMapper();
     }
 
     /// <summary>
@@ -46,7 +45,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="decimal"/>.
     /// </summary>
     public static IDataReaderMapper<decimal> Decimal() {
-      return ValueTypeMappers.Decimal();
+      return new DecimalDataReaderMapper();
     }
 
     /// <summary>
@@ -54,7 +53,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="double"/>.
     /// </summary>
     public static IDataReaderMapper<double> Double() {
-      return ValueTypeMappers.Double();
+      return new DoubleDataReaderMapper();
     }
 
     /// <summary>
@@ -62,7 +61,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="float"/>.
     /// </summary>
     public static IDataReaderMapper<float> Float() {
-      return ValueTypeMappers.Float();
+      return new FloatDataReaderMapper();
     }
 
     /// <summary>
@@ -70,7 +69,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="Guid"/>.
     /// </summary>
     public static IDataReaderMapper<Guid> Guid() {
-      return ValueTypeMappers.Guid();
+      return new GuidDataReaderMapper();
     }
 
     /// <summary>
@@ -78,7 +77,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="short"/>.
     /// </summary>
     public static IDataReaderMapper<short> Int16() {
-      return ValueTypeMappers.Int16();
+      return new Int16DataReaderMapper();
     }
 
     /// <summary>
@@ -86,7 +85,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="int"/>.
     /// </summary>
     public static IDataReaderMapper<int> Int32() {
-      return ValueTypeMappers.Int32();
+      return new Int32DataReaderMapper();
     }
 
     /// <summary>
@@ -94,7 +93,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="long"/>.
     /// </summary>
     public static IDataReaderMapper<long> Long() {
-      return ValueTypeMappers.Long();
+      return new LongDataReaderMapper();
     }
 
     /// <summary>
@@ -102,7 +101,7 @@ namespace Nohros.Data
     /// <see cref="IDataReaderMapper{T}"/> where T is <see cref="string"/>.
     /// </summary>
     public static IDataReaderMapper<string> String() {
-      return ValueTypeMappers.String();
+      return new StringDataReaderMapper();
     }
   }
 }

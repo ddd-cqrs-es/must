@@ -7,11 +7,11 @@ namespace Nohros.Data
   /// <summary>
   /// Represents a reader that can read data from a <see cref="IDataReader"/>.
   /// </summary>
+  [Obsolete("This class is obsolete. Use the FieldNameLookup class.")]
   public class DataReaderReader
   {
     readonly IDataReader reader_;
 
-    #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="DataReaderReader"/> class
     /// using the specified <see cref="IDataReader"/>.
@@ -28,7 +28,6 @@ namespace Nohros.Data
       }
       reader_ = reader;
     }
-    #endregion
 
     /// <summary>
     /// Advances the reader to the next record.

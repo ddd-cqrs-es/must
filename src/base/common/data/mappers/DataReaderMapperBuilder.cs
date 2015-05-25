@@ -79,6 +79,7 @@ namespace Nohros.Data
     bool auto_map_;
     bool auto_map_optional_;
     CallableDelegate<T> factory_;
+    readonly List<Action<IDataReader, T>> links_;
 
     const string kMapperTypeSuffix = "_mapper";
     const string kImplTypeSuffix = "_impl";
@@ -108,11 +109,10 @@ namespace Nohros.Data
     /// search for the Get...(int i) methods.
     /// </param>
     public DataReaderMapperBuilder(string prefix, Type data_rader_type = null)
-      : this(typeof (T), prefix, null) {
+      : this(typeof (T), prefix, data_rader_type) {
       if (prefix == null) {
         throw new ArgumentNullException("prefix");
       }
-      data_reader_type_ = data_rader_type;
     }
 
     DataReaderMapperBuilder(Type type_t, string prefix, Type data_reader_type) {
@@ -127,6 +127,7 @@ namespace Nohros.Data
       data_reader_type_ = data_reader_type;
       auto_map_ = false;
       auto_map_optional_ = false;
+      links_ = new List<Action<IDataReader, T>>();
     }
 
     /// <summary>
@@ -598,6 +599,25 @@ namespace Nohros.Data
     }
 
     /// <summary>
+    /// Transform the mapped type using the given s<paramref name="link"/>
+    /// method.
+    /// </summary>
+    /// <param name="link">
+    /// A <see cref="Action{T}"/> that can be used to transform the a object
+    /// of type <typeparamref name="T"/>.
+    /// </param>
+    /// <returns></returns>
+    /// <remarks>
+    /// This method can be used to define a sequence of transformation
+    /// functions to be applied over the mapped type. The transformation
+    /// functions are applied in the same order as they are added.
+    /// </remarks>
+    public DataReaderMapperBuilder<T> Transform(Action<IDataReader, T> link) {
+      links_.Add(link);
+      return this;
+    }
+
+    /// <summary>
     /// Defines the factory that shoud be used to create an instance of the
     /// <typeparamref name="T"/> class.
     /// </summary>
@@ -648,6 +668,8 @@ namespace Nohros.Data
       if (factory_ != null) {
         mapper.loader_ = factory_;
       }
+
+      mapper.links_ = links_;
       return mapper;
     }
 
@@ -1398,7 +1420,7 @@ namespace Nohros.Data
         // if auto map is enabled, ignoring if not.
         if (!mappings_.TryGetValue(property.Name, out mapping)) {
           mapping = auto_map_
-            ? (ITypeMap) new StringTypeMap(property.Name)
+            ? (ITypeMap) new StringTypeMap(property.Name, auto_map_optional_)
             : new IgnoreMapType(property.Name);
         }
 

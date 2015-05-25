@@ -172,6 +172,7 @@
     <Compile Include="data\mappers\FieldNameLookup.cs" />
     <Compile Include="data\mappers\IQueryExecutor.cs" />
     <Compile Include="data\mappers\IQueryMapper.cs" />
+    <Compile Include="data\mappers\LinkedDataReaderMapper.cs" />
     <Compile Include="data\mappers\TypeMaker.cs" />
     <Compile Include="data\mappers\QueryMapper.cs" />
     <Compile Include="data\mappers\TypeMaps.cs" />
@@ -186,6 +187,7 @@
     <Compile Include="data\mappers\TypeMap.cs" />
     <Compile Include="data\mappers\TypeMapType.cs" />
     <Compile Include="data\mappers\ValueTypeDataReaderMappers.cs" />
+    <Compile Include="data\mappers\ValueTypeMappers.cs" />
     <Compile Include="data\readers\DataFieldDateTime.cs" />
     <Compile Include="data\readers\DataReaderReader.cs" />
     <Compile Include="data\repositories\AbstractStateDao.cs" />
@@ -424,7 +426,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

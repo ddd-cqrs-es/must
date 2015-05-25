@@ -4,8 +4,29 @@ using System.Data;
 
 namespace Nohros.Data
 {
+  /// <summary>
+  /// A implementation of the <see cref="IDataReaderMapper{T}"/> for
+  /// <see cref="System.Data.ValueType"/>
+  /// </summary>
+  /// <typeparam name="T">
+  /// The type to be mapped.
+  /// </typeparam>
+  /// <remarks>
+  /// <typeparamref name="T"/> should be a type that derives from
+  /// <seealso cref="System.Data.ValueType"/>
+  /// </remarks>
   internal abstract class ValueTypeDataReaderMapper<T> : DataReaderMapper<T>
   {
+    /// <summary>
+    /// Initializes a new instance of the
+    /// <see cref="ValueTypeDataReaderMapper{T}"/> class.
+    /// </summary>
+    public ValueTypeDataReaderMapper() {
+      if (!typeof (T).IsValueType) {
+        throw new ArgumentException(Resources.Resources.Arg_ShouldBeValueType);
+      }
+    }
+
     /// <inheritdoc/>
     public override T Map(IDataReader reader) {
       T t;

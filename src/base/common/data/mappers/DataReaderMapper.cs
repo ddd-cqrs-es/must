@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using Nohros.Dynamics;
+using System.Linq;
 
 namespace Nohros.Data
 {
@@ -44,22 +44,18 @@ namespace Nohros.Data
     }
 
     internal CallableDelegate<T> loader_;
+    internal List<Action<IDataReader, T>> links_;
 
-    #region .ctor
     internal DataReaderMapper() {
       loader_ = NewT;
+      links_ = Enumerable.Empty<Action<IDataReader, T>>().ToList();
     }
-    #endregion
 
 #if DEBUG
     public void Save(string assembly_file_name) {
       Dynamics_.AssemblyBuilder.Save(assembly_file_name);
     }
 #endif
-    protected CallableDelegate<T> Loader {
-      get { return loader_; }
-      set { loader_ = value; }
-    }
 
     /// <summary>
     /// Reads the first row from <paramref name="reader"/> and maps it
@@ -237,14 +233,21 @@ namespace Nohros.Data
     internal bool Map(IDataReader reader, bool read, out T t) {
       if (read) {
         if (reader.Read()) {
-          t = MapInternal(reader);
+          t = Link(reader, MapInternal(reader));
           return true;
         }
         t = default(T);
         return false;
       }
-      t = MapInternal(reader);
+      t = Link(reader, MapInternal(reader));
       return true;
+    }
+
+    T Link(IDataReader reader, T t) {
+      foreach (Action<IDataReader, T> action in links_) {
+        action(reader, t);
+      }
+      return t;
     }
 
     internal abstract T MapInternal(IDataReader reader);
