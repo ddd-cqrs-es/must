@@ -172,7 +172,6 @@
     <Compile Include="data\mappers\FieldNameLookup.cs" />
     <Compile Include="data\mappers\IQueryExecutor.cs" />
     <Compile Include="data\mappers\IQueryMapper.cs" />
-    <Compile Include="data\mappers\LinkedDataReaderMapper.cs" />
     <Compile Include="data\mappers\TypeMaker.cs" />
     <Compile Include="data\mappers\QueryMapper.cs" />
     <Compile Include="data\mappers\TypeMaps.cs" />
@@ -426,7 +425,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

@@ -117,6 +117,7 @@ namespace Nohros.Common
       Assert.That(obj.Name, Is.EqualTo("nohros"));
       Assert.That(obj.Name2, Is.EqualTo("nohros1"));
       Assert.That(obj.Name3, Is.EqualTo("nohros2"));
+      //Dynamics.Dynamics_.Save("test.dll");
     }
 
     [Test]

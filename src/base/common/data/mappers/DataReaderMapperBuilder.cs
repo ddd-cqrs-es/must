@@ -931,41 +931,26 @@ namespace Nohros.Data
 
         result.OrdinalsMapping = new OrdinalMap[0];
       } else {
-        // check if the ordinals is not already got.
+        Label label = il.DefineLabel();
+
+        // Check if |ordinals_| is null...
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Ldfld, result.OrdinalsField);
-        il.Emit(OpCodes.Ldnull);
+        il.Emit(OpCodes.Brtrue, label);
 
-        Label label = il.DefineLabel();
-        il.Emit(OpCodes.Beq_S, label);
-        il.Emit(OpCodes.Ret);
-        il.MarkLabel(label);
-
-        // get the columns ordinals, using a try/catch block to prevent a
-        // InvalidOperationException to be throw when no recordset is returned.
-        il.BeginExceptionBlock();
+        // ...and the reader has at least one column
+        MethodInfo get_field_count =
+          typeof (IDataRecord)
+            .GetProperty("FieldCount")
+            .GetGetMethod();
+        il.Emit(OpCodes.Ldarg_1);
+        il.Emit(OpCodes.Callvirt, get_field_count);
+        il.Emit(OpCodes.Brfalse, label);
 
         result.OrdinalsMapping = EmitOrdinals(il, result);
 
-        //il.Emit(OpCodes.Leave, exit_try_label);
-        il.BeginCatchBlock(typeof (InvalidOperationException));
-
-        // remove the exception from the stack
-        il.Emit(OpCodes.Pop);
-
-        // set [ordinals_] to null
-        il.Emit(OpCodes.Ldarg_0);
-        il.Emit(OpCodes.Ldnull);
-        il.Emit(OpCodes.Stfld, result.OrdinalsField);
-        il.EndExceptionBlock();
+        il.MarkLabel(label);
       }
-
-      /*MethodInfo method_info =
-          typeof (DataReaderMapper<T>).GetMethod("Initialize",
-            BindingFlags.NonPublic | BindingFlags.Public |
-              BindingFlags.Instance,
-            null, new Type[] {typeof (IDataReader)}, null);*/
-
       il.Emit(OpCodes.Ret);
     }
 

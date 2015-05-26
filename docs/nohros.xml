@@ -5046,6 +5046,84 @@
             <see cref="T:System.Single"/> at the field position.
             </param>
         </member>
+        <member name="T:Nohros.Data.ValueTypeMappers">
+            <summary>
+            Factory class for implementations of the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> interface that maps to value types.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Boolean">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Boolean"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Byte">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Byte"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Char">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Char"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.DateTime">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="M:Nohros.Data.ValueTypeMappers.DateTime"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Decimal">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Decimal"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Double">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Double"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Float">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Single"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Guid">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="M:Nohros.Data.ValueTypeMappers.Guid"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Int16">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int16"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Int32">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int32"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.Long">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int64"/>.
+            </summary>
+        </member>
+        <member name="M:Nohros.Data.ValueTypeMappers.String">
+            <summary>
+            Creates an instance of a class that implements the
+            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.String"/>.
+            </summary>
+        </member>
         <member name="T:Nohros.Data.ValueTypeDataReaderMapper`1">
             <summary>
             A implementation of the <see cref="T:Nohros.Data.IDataReaderMapper`1"/> for
@@ -20390,118 +20468,6 @@
             <summary>
             Gets or sets the current value, as an atomic operation.
             </summary>
-        </member>
-        <member name="T:Nohros.Data.ValueTypeMappers">
-            <summary>
-            Factory class for implementations of the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> interface that maps to value types.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Boolean">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Boolean"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Byte">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Byte"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Char">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Char"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.DateTime">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="M:Nohros.Data.ValueTypeMappers.DateTime"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Decimal">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Decimal"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Double">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Double"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Float">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Single"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Guid">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="M:Nohros.Data.ValueTypeMappers.Guid"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Int16">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int16"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Int32">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int32"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.Long">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.Int64"/>.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.ValueTypeMappers.String">
-            <summary>
-            Creates an instance of a class that implements the
-            <see cref="T:Nohros.Data.IDataReaderMapper`1"/> where T is <see cref="T:System.String"/>.
-            </summary>
-        </member>
-        <member name="T:Nohros.Data.LinkedDataReaderMapper`1">
-            <summary>
-            A <see cref="T:Nohros.Data.IDataReaderMapper`1"/> that can be used to map a single
-            row to multiple objects through linking.
-            </summary>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.#ctor(Nohros.Data.IDataReaderMapper{`0},System.Collections.Generic.IEnumerable{System.Action{System.Data.IDataReader,`0}})">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.LinkedDataReaderMapper`1"/>
-            class by using the given <paramref name="mapper"/>.
-            </summary>
-            <param name="mapper">
-            The first <see cref="T:Nohros.Data.IDataReaderMapper`1"/> of the chain.
-            </param>
-            <param name="nodes"></param>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,`0@)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,System.Action{`0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.MapCurrent(System.Data.IDataReader)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,System.Boolean)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Nohros.Data.LinkedDataReaderMapper`1.Map(System.Data.IDataReader,System.Boolean,System.Action{`0})">
-            <inheritdoc/>
         </member>
     </members>
 </doc>
