@@ -65,6 +65,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -150,6 +151,7 @@
     <Compile Include="configuration\DataServerConfig.cs" />
     <Compile Include="configuration\DataServerConfigCollection.cs" />
     <Compile Include="configuration\DataServersConfig.cs" />
+    <Compile Include="configuration\EncryptedConfigurationElement.cs" />
     <Compile Include="configuration\IConfigurationLoader.cs" />
     <Compile Include="configuration\Image.cs" />
     <Compile Include="configuration\IMustConfiguration.cs" />
@@ -425,7 +427,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

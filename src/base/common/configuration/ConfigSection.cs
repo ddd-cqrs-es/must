@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Configuration;
 
 namespace Nohros.Configuration
@@ -12,11 +13,22 @@ namespace Nohros.Configuration
     /// Gets a <see cref="ConfigurationSection"/> based on the given type.
     /// </summary>
     public static T GetConfiguration<T>() where T : class, new() {
-      if (!typeof (ConfigurationSection).IsAssignableFrom(typeof (T))) {
+      Type type_of_t = typeof (T);
+      if (!typeof (ConfigurationSection).IsAssignableFrom(type_of_t)) {
         throw new ArgumentException(
           "Only supports .NET ConfigurationSections is supported");
       }
-      return ConfigurationManager.GetSection(typeof(T).Name) as T;
+      var t = ConfigurationManager.GetSection(type_of_t.Name) as T;
+
+      // If the section could not be found by name try to find it by type.
+      if (t == (default(T))) {
+        return ConfigurationManager
+          .OpenExeConfiguration(ConfigurationUserLevel.None)
+          .Sections
+          .Cast<ConfigurationSection>()
+          .FirstOrDefault(cfg => cfg is T) as T;
+      }
+      return t;
     }
   }
 }

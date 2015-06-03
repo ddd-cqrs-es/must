@@ -216,19 +216,31 @@ namespace Nohros.Concurrent
         }
       }
 
-      try {
-        // Run the task until the scheduler is stopped.
-        do {
+      // Run the task until the scheduler is stopped.
+      do {
+        // Ensure that the scheduler will not be stop if an unhandled
+        // exception is thrown. If the user wants to stop the scheduler
+        // they can subscribe to the ExceptionThrown event and stop the
+        // scheduler from there.
+        try {
           task_(state);
-        } while (!signaler_.WaitOne(interval_));
-      } catch (Exception e) {
-        OnExceptionThrown(e);
-      }
+        } catch (Exception e) {
+          OnExceptionThrown(e);
+        }
+      } while (!signaler_.WaitOne(interval_));
     }
 
     void OnExceptionThrown(Exception exception) {
       if (ExceptionThrown != null) {
-        ExceptionThrown(exception);
+        // Ensure that a exception raised by the method that is handling
+        // the first exception does dot crash the scheduler.
+        try {
+          ExceptionThrown(exception);
+        } catch (Exception ex) {
+          MustLogger.ForCurrentProcess.Error(
+            StringResources.Log_ThrowsException.Fmt("Scheduled Task",
+              kClassName), ex);
+        }
       } else {
         MustLogger.ForCurrentProcess.Error(
           StringResources.Log_ThrowsException.Fmt("Scheduled Task",
