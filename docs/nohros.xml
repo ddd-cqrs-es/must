@@ -20499,5 +20499,35 @@
             Gets or sets the current value, as an atomic operation.
             </summary>
         </member>
+        <member name="T:Nohros.Configuration.EncryptedConfigurationSection">
+            <summary>
+            Defines a <see cref="T:System.Configuration.ConfigurationElement"/> that contains data encrypted
+            with DPAPI for <see cref="F:System.Security.Cryptography.DataProtectionScope.LocalMachine"/> scope.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.EncryptedConfigurationSection.Decrypt(System.String)">
+            <summary>
+            Decrypt the encrypted data.
+            </summary>
+            <param name="encrypted">
+            The data to be decrypted.
+            </param>
+            <returns>
+            The <paramref name="encrypted"/> data decrypted.
+            </returns>
+            <remarks>
+            The data should be encrypted using the DPAPI engine for the
+            <see cref="F:System.Security.Cryptography.DataProtectionScope.LocalMachine"/> scope.
+            </remarks>
+        </member>
+        <member name="P:Nohros.Configuration.EncryptedConfigurationSection.Encrypted">
+            <summary>
+            Gets a value indicating if the data is encrypted.
+            </summary>
+            <value>
+            <c>true</c> if the element contains encrypted data; otherwise,
+            <c>false</c>.
+            </value>
+        </member>
     </members>
 </doc>

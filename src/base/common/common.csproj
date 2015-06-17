@@ -152,6 +152,7 @@
     <Compile Include="configuration\DataServerConfigCollection.cs" />
     <Compile Include="configuration\DataServersConfig.cs" />
     <Compile Include="configuration\EncryptedConfigurationElement.cs" />
+    <Compile Include="configuration\EncryptedConfigurationSection.cs" />
     <Compile Include="configuration\IConfigurationLoader.cs" />
     <Compile Include="configuration\Image.cs" />
     <Compile Include="configuration\IMustConfiguration.cs" />
@@ -427,7 +428,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
