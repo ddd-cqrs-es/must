@@ -14,7 +14,7 @@ namespace Nohros.Common
   {
     public interface ISimpleType
     {
-      string Name { get; }
+      string Name { get; set; }
     }
 
     public class SimpleType : ISimpleType
@@ -45,6 +45,11 @@ namespace Nohros.Common
     public interface IDerivedType2 : IDerivedType
     {
       string Name3 { get; }
+    }
+
+    public interface ICompositeType : ISimpleType
+    {
+      IgnoreType IgnoreType { get; set; }
     }
 
     [Test]
@@ -117,7 +122,7 @@ namespace Nohros.Common
       Assert.That(obj.Name, Is.EqualTo("nohros"));
       Assert.That(obj.Name2, Is.EqualTo("nohros1"));
       Assert.That(obj.Name3, Is.EqualTo("nohros2"));
-      //Dynamics.Dynamics_.Save("test.dll");
+      //Dynamics.Dynamics_.AssemblyBuilder.Save("test.dll");
     }
 
     [Test]
@@ -290,6 +295,100 @@ namespace Nohros.Common
 
       SimpleType type = mapper.Map(reader);
       Assert.That(type.Name, Is.EqualTo("nohros_1_2"));
+    }
+
+    [Test]
+    public void should_map_partial_objects_through_transformation() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(2);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetName(1))
+        .Returns("location");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name"))
+        .Returns(0);
+      Mock
+        .Arrange(() => reader.GetOrdinal("location"))
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Returns("nohros");
+      Mock
+        .Arrange(() => reader.GetString(1))
+        .Returns("127.0.0.1");
+
+      var transformer =
+        new DataReaderMapperBuilder<ISimpleType>(
+          "should_map_partial_objects_through_transformation")
+          .Map(x => x.Name, "location")
+          .Build();
+
+      var mapper =
+        new DataReaderMapperBuilder<IDerivedType>(
+          "should_map_partial_objects_through_transformation")
+          .Map(x => x.Name, "name")
+          .Transform(transformer.MapCurrent)
+          .Build();
+
+      IDerivedType type = mapper.Map(reader);
+      Assert.That(type.Name, Is.EqualTo("nohros"));
+      Assert.That(type.Name2, Is.EqualTo("127.0.0.1"));
+    }
+
+    [Test]
+    public void should_map_composite_objects() {
+      IDataReader reader = GetDataReader();
+      Mock
+        .Arrange(() => reader.FieldCount)
+        .Returns(2);
+      Mock
+        .Arrange(() => reader.GetName(0))
+        .Returns("name");
+      Mock
+        .Arrange(() => reader.GetName(1))
+        .Returns("location");
+      Mock
+        .Arrange(() => reader.GetOrdinal("name"))
+        .Returns(0);
+      Mock
+        .Arrange(() => reader.GetOrdinal("location"))
+        .Returns(1);
+      Mock
+        .Arrange(() => reader.GetString(0))
+        .Returns("nohros");
+      Mock
+        .Arrange(() => reader.GetString(1))
+        .Returns("127.0.0.1");
+
+      var simple =
+        new DataReaderMapperBuilder<ISimpleType>(
+          "should_map_composite_objects")
+          .Map(x => x.Name, "name")
+          .Build();
+
+      var ignore =
+        new DataReaderMapperBuilder<IgnoreType>(
+          "should_map_composite_objects")
+          .Map(x => x.Name, "name")
+          .Map(x=>x.Location, "location")
+          .Build();
+
+      var composite =
+        new DataReaderMapperBuilder<ICompositeType>(
+          "should_map_composite_objects")
+          .Transform((r, c) => simple.MapCurrent(r, (ISimpleType)c))
+          .Transform((r, c) => c.IgnoreType = ignore.MapCurrent(r))
+          .Build();
+
+      ICompositeType type = composite.Map(reader);
+      Assert.That(type.IgnoreType, Is.Not.Null);
+      Assert.That(type.Name, Is.EqualTo("nohros"));
+      //Dynamics.Dynamics_.AssemblyBuilder.Save("test.dll");
     }
 
     [Test]

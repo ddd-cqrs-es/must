@@ -37,7 +37,7 @@ namespace Nohros.Data
 
       public IEnumerator<T> GetEnumerator() {
         T t;
-        while (mapper_.Map(reader_, true, out t)) {
+        while (mapper_.MapNext(reader_, out t)) {
           post_map_(t);
           yield return t;
         }
@@ -76,7 +76,7 @@ namespace Nohros.Data
     public virtual T Map(IDataReader reader) {
       T t;
       GetOrdinals(reader);
-      if (!Map(reader, true, out t)) {
+      if (!MapNext(reader, out t)) {
         throw new NoResultException();
       }
       return t;
@@ -100,35 +100,7 @@ namespace Nohros.Data
     /// </returns>
     public virtual bool Map(IDataReader reader, out T t) {
       GetOrdinals(reader);
-      return Map(reader, true, out t);
-    }
-
-    /// <summary>
-    /// Maps the current row of the <paramref name="reader"/> and maps it to
-    /// a object of type <typeparamref name="T"/>.
-    /// </summary>
-    /// <param name="reader">
-    /// A <see cref="IDataReader"/> containing the data to be mapped.
-    /// </param>
-    /// <returns>
-    /// A object of type <typeparamref name="T"/> whose properties contains
-    /// the values readed from <paramref name="reader"/> accordingly to the
-    /// defined map.
-    /// </returns>
-    /// <exception cref="NoResultException">
-    /// The <paramref name="reader"/> does not contain any data.
-    /// </exception>
-    /// <remarks>
-    /// This method is usually used to map the same row to more than one
-    /// object. Generally by combining multiple
-    /// <see cref="DataReaderMapper{T}"/>s.
-    /// </remarks>
-    public virtual T MapCurrent(IDataReader reader) {
-      T t;
-      // Ensure that the ordinals array is populated.
-      GetOrdinals(reader);
-      Map(reader, false, out t);
-      return t;
+      return MapNext(reader, out t);
     }
 
     /// <summary>
@@ -231,27 +203,85 @@ namespace Nohros.Data
       return new List<T>(enumerable);
     }
 
-    internal bool Map(IDataReader reader, bool read, out T t) {
-      if (read) {
-        if (reader.Read()) {
-          t = Link(reader, MapInternal(reader));
-          return true;
-        }
-        t = default(T);
-        return false;
-      }
-      t = Link(reader, MapInternal(reader));
-      return true;
-    }
-
-    T Link(IDataReader reader, T t) {
-      foreach (Action<IDataReader, T> action in links_) {
-        action(reader, t);
-      }
+    /// <summary>
+    /// Maps the current row of the <paramref name="reader"/> and maps it to
+    /// a object of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> containing the data to be mapped.
+    /// </param>
+    /// <returns>
+    /// A object of type <typeparamref name="T"/> whose properties contains
+    /// the values readed from <paramref name="reader"/> accordingly to the
+    /// defined map.
+    /// </returns>
+    /// <exception cref="NoResultException">
+    /// The <paramref name="reader"/> does not contain any data.
+    /// </exception>
+    /// <remarks>
+    /// This method is usually used to map the same row to more than one
+    /// object. Generally by combining multiple
+    /// <see cref="DataReaderMapper{T}"/>s.
+    /// </remarks>
+    public virtual T MapCurrent(IDataReader reader) {
+      T t = loader_();
+      MapCurrent(reader, t);
       return t;
     }
 
-    internal abstract T MapInternal(IDataReader reader);
+    /// <summary>
+    /// Maps the current row of the <paramref name="reader"/> and maps it to
+    /// a object of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> containing the data to be mapped.
+    /// </param>
+    /// <param name="t">
+    /// The object to be mapped using the current row of the given
+    /// <paramref name="reader"/>.
+    /// </param>
+    /// <returns>
+    /// A object of type <typeparamref name="T"/> whose properties contains
+    /// the values readed from <paramref name="reader"/> accordingly to the
+    /// defined map.
+    /// </returns>
+    /// <exception cref="NoResultException">
+    /// The <paramref name="reader"/> does not contain any data.
+    /// </exception>
+    /// <remarks>
+    /// This method is usually used to map the same row to more than one
+    /// object. Generally by combining multiple
+    /// <see cref="DataReaderMapper{T}"/>s.
+    /// </remarks>
+    public virtual void MapCurrent(IDataReader reader, T t) {
+      GetOrdinals(reader);
+      MapInternal(reader, t);
+      Link(reader, t);
+    }
+
+    internal bool MapNext(IDataReader reader, out T t) {
+      if (reader.Read()) {
+        t = MapInternal(reader);
+        Link(reader, t);
+        return true;
+      }
+      t = default(T);
+      return false;
+    }
+
+    internal virtual T MapInternal(IDataReader reader) {
+      T t = loader_();
+      MapInternal(reader, t);
+      return t;
+    }
+
+    void Link(IDataReader reader, T t) {
+      foreach (Action<IDataReader, T> action in links_) {
+        action(reader, t);
+      }
+    }
+
+    internal abstract void MapInternal(IDataReader reader, T t);
 
     internal virtual void GetOrdinals(IDataReader reader) {
       throw new NotImplementedException();

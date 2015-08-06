@@ -40,13 +40,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nohros, Version=1.17.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\must.common.1.17.4.0\lib\net40\nohros.dll</HintPath>
-    </Reference>
-    <Reference Include="nohros.data.sqlserver, Version=0.5.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\must.data.sqlserver.0.5.8.0\lib\net20\nohros.data.sqlserver.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -64,6 +57,7 @@
     <Compile Include="concurrent\AtomicLongTests.cs" />
     <Compile Include="concurrent\AtomicReferenceTests.cs" />
     <Compile Include="concurrent\MailboxTests.cs" />
+    <Compile Include="data\Reflector.cs" />
     <Compile Include="logging\ChainedLoggerTests.cs" />
     <Compile Include="time\EpochTests.cs" />
     <Compile Include="time\StrictDateRangeTests.cs" />
@@ -97,12 +91,16 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="config-tests.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="scripts\create_states_tables.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\base\common\common.csproj">
+      <Project>{903B5354-C424-4ADD-BC2B-892E1AA4342A}</Project>
+      <Name>common %28%28base%29\common%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

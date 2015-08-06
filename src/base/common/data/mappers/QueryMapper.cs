@@ -25,7 +25,7 @@ namespace Nohros.Data
     readonly IDisposable[] disposables_;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataReaderReader"/>
+    /// Initializes a new instance of the <see cref="QueryMapper{T}"/>
     /// </summary>
     /// <param name="mapper">
     /// A <see cref="IDataReaderMapper{T}"/> that should be used to map
@@ -40,7 +40,7 @@ namespace Nohros.Data
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DataReaderReader"/>
+    /// Initializes a new instance of the <see cref="QueryMapper{T}"/>
     /// </summary>
     /// <param name="mapper">
     /// A <see cref="IDataReaderMapper{T}"/> that should be used to map
@@ -131,6 +131,19 @@ namespace Nohros.Data
     }
 
     /// <summary>
+    /// Maps a element of a query result to a object of type using the current
+    /// record of the <see cref="IDataReader"/>.
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// The associated <see cref="IDataReader"/> should be positioned at a
+    /// valid record.
+    /// </remarks>
+    public void MapCurrent(T t) {
+      mapper_.MapCurrent(reader_, t);
+    }
+
+    /// <summary>
     /// Maps a element of a query result to a collection of object of type
     /// <typeparamref name="T"/>.
     /// </summary>
@@ -154,7 +167,20 @@ namespace Nohros.Data
       return mapper_.Map(reader_, defer, post_map);
     }
 
-    public IDataReader Reader { get { return reader_; } }
+    /// <summary>
+    /// Gets the underlying <see cref="IDataReader"/>.
+    /// </summary>
+    [Obsolete("This method is obsolte. Use the BaseDataReader instead", false)]
+    public IDataReader Reader {
+      get { return BaseDataReader; }
+    }
+
+    /// <summary>
+    /// Gets the underlying <see cref="IDataReader"/>.
+    /// </summary>
+    public IDataReader BaseDataReader {
+      get { return reader_; }
+    }
 
     /// <inheritdoc/>
     public void Dispose() {

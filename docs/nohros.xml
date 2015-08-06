@@ -5240,6 +5240,17 @@
             record.
             </remarks>
         </member>
+        <member name="M:Nohros.Data.IDataReaderMapper`1.MapCurrent(System.Data.IDataReader,`0)">
+            <summary>
+            Maps a element of a query result to a object of type using the current
+            record of the <see cref="T:System.Data.IDataReader"/>.
+            <typeparamref name="T"/>.
+            </summary>
+            <remarks>
+            The given <paramref name="reader"/> should be positioned at a valid
+            record.
+            </remarks>
+        </member>
         <member name="M:Nohros.Data.IDataReaderMapper`1.Map(System.Data.IDataReader,System.Boolean)">
             <summary>
             Maps a element of a query result to a collection of object of type
@@ -5294,28 +5305,6 @@
             <c>true</c> if <paramref name="reader"/> contains at least one row;
             otherwise <c>false</c>.
             </returns>
-        </member>
-        <member name="M:Nohros.Data.DataReaderMapper`1.MapCurrent(System.Data.IDataReader)">
-            <summary>
-            Maps the current row of the <paramref name="reader"/> and maps it to
-            a object of type <typeparamref name="T"/>.
-            </summary>
-            <param name="reader">
-            A <see cref="T:System.Data.IDataReader"/> containing the data to be mapped.
-            </param>
-            <returns>
-            A object of type <typeparamref name="T"/> whose properties contains
-            the values readed from <paramref name="reader"/> accordingly to the
-            defined map.
-            </returns>
-            <exception cref="T:Nohros.NoResultException">
-            The <paramref name="reader"/> does not contain any data.
-            </exception>
-            <remarks>
-            This method is usually used to map the same row to more than one
-            object. Generally by combining multiple
-            <see cref="T:Nohros.Data.DataReaderMapper`1"/>s.
-            </remarks>
         </member>
         <member name="M:Nohros.Data.DataReaderMapper`1.Map(System.Data.IDataReader,System.Action{`0})">
             <summary>
@@ -5403,6 +5392,54 @@
             </para>
             </remarks>
         </member>
+        <member name="M:Nohros.Data.DataReaderMapper`1.MapCurrent(System.Data.IDataReader)">
+            <summary>
+            Maps the current row of the <paramref name="reader"/> and maps it to
+            a object of type <typeparamref name="T"/>.
+            </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> containing the data to be mapped.
+            </param>
+            <returns>
+            A object of type <typeparamref name="T"/> whose properties contains
+            the values readed from <paramref name="reader"/> accordingly to the
+            defined map.
+            </returns>
+            <exception cref="T:Nohros.NoResultException">
+            The <paramref name="reader"/> does not contain any data.
+            </exception>
+            <remarks>
+            This method is usually used to map the same row to more than one
+            object. Generally by combining multiple
+            <see cref="T:Nohros.Data.DataReaderMapper`1"/>s.
+            </remarks>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapper`1.MapCurrent(System.Data.IDataReader,`0)">
+            <summary>
+            Maps the current row of the <paramref name="reader"/> and maps it to
+            a object of type <typeparamref name="T"/>.
+            </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> containing the data to be mapped.
+            </param>
+            <param name="t">
+            The object to be mapped using the current row of the given
+            <paramref name="reader"/>.
+            </param>
+            <returns>
+            A object of type <typeparamref name="T"/> whose properties contains
+            the values readed from <paramref name="reader"/> accordingly to the
+            defined map.
+            </returns>
+            <exception cref="T:Nohros.NoResultException">
+            The <paramref name="reader"/> does not contain any data.
+            </exception>
+            <remarks>
+            This method is usually used to map the same row to more than one
+            object. Generally by combining multiple
+            <see cref="T:Nohros.Data.DataReaderMapper`1"/>s.
+            </remarks>
+        </member>
         <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.#ctor">
             <summary>
             Initializes a new instance of the
@@ -5424,7 +5461,7 @@
         <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.GetOrdinals(System.Data.IDataReader)">
             <inheritdoc/>
         </member>
-        <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.MapInternal(System.Data.IDataReader)">
+        <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.MapInternal(System.Data.IDataReader,`0)">
             <inheritdoc/>
         </member>
         <member name="M:Nohros.Dynamics.Dynamics_.DynamicTypeExists(System.String,System.Type)">
@@ -11435,6 +11472,36 @@
             <param name="inner_exception">The exception that caused this
             <see cref="T:Nohros.NoResultException"/>to be throw.</param>
         </member>
+        <member name="T:Nohros.Configuration.EncryptedConfigurationSection">
+            <summary>
+            Defines a <see cref="T:System.Configuration.ConfigurationElement"/> that contains data encrypted
+            with DPAPI for <see cref="F:System.Security.Cryptography.DataProtectionScope.LocalMachine"/> scope.
+            </summary>
+        </member>
+        <member name="M:Nohros.Configuration.EncryptedConfigurationSection.Decrypt(System.String)">
+            <summary>
+            Decrypt the encrypted data.
+            </summary>
+            <param name="encrypted">
+            The data to be decrypted.
+            </param>
+            <returns>
+            The <paramref name="encrypted"/> data decrypted.
+            </returns>
+            <remarks>
+            The data should be encrypted using the DPAPI engine for the
+            <see cref="F:System.Security.Cryptography.DataProtectionScope.LocalMachine"/> scope.
+            </remarks>
+        </member>
+        <member name="P:Nohros.Configuration.EncryptedConfigurationSection.Encrypted">
+            <summary>
+            Gets a value indicating if the data is encrypted.
+            </summary>
+            <value>
+            <c>true</c> if the element contains encrypted data; otherwise,
+            <c>false</c>.
+            </value>
+        </member>
         <member name="T:Nohros.Configuration.ProvidersNode">
             <summary>
             A <see cref="T:Nohros.Configuration.ProvidersNode"/> is a collection of
@@ -15153,7 +15220,7 @@
         </member>
         <member name="M:Nohros.Data.QueryMapper`1.#ctor(Nohros.Data.IDataReaderMapper{`0},System.Data.IDataReader)">
             <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.DataReaderReader"/>
+            Initializes a new instance of the <see cref="T:Nohros.Data.QueryMapper`1"/>
             </summary>
             <param name="mapper">
             A <see cref="T:Nohros.Data.IDataReaderMapper`1"/> that should be used to map
@@ -15166,7 +15233,7 @@
         </member>
         <member name="M:Nohros.Data.QueryMapper`1.#ctor(Nohros.Data.IDataReaderMapper{`0},System.Data.IDataReader,System.Collections.Generic.IEnumerable{System.IDisposable})">
             <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Data.DataReaderReader"/>
+            Initializes a new instance of the <see cref="T:Nohros.Data.QueryMapper`1"/>
             </summary>
             <param name="mapper">
             A <see cref="T:Nohros.Data.IDataReaderMapper`1"/> that should be used to map
@@ -15242,6 +15309,17 @@
             valid record.
             </remarks>
         </member>
+        <member name="M:Nohros.Data.QueryMapper`1.MapCurrent(`0)">
+            <summary>
+            Maps a element of a query result to a object of type using the current
+            record of the <see cref="T:System.Data.IDataReader"/>.
+            <typeparamref name="T"/>.
+            </summary>
+            <remarks>
+            The associated <see cref="T:System.Data.IDataReader"/> should be positioned at a
+            valid record.
+            </remarks>
+        </member>
         <member name="M:Nohros.Data.QueryMapper`1.Map(System.Boolean)">
             <summary>
             Maps a element of a query result to a collection of object of type
@@ -15264,6 +15342,16 @@
         </member>
         <member name="M:Nohros.Data.QueryMapper`1.Dispose">
             <inheritdoc/>
+        </member>
+        <member name="P:Nohros.Data.QueryMapper`1.Reader">
+            <summary>
+            Gets the underlying <see cref="T:System.Data.IDataReader"/>.
+            </summary>
+        </member>
+        <member name="P:Nohros.Data.QueryMapper`1.BaseDataReader">
+            <summary>
+            Gets the underlying <see cref="T:System.Data.IDataReader"/>.
+            </summary>
         </member>
         <member name="T:Nohros.CommandLine">
             <summary>
@@ -20498,36 +20586,6 @@
             <summary>
             Gets or sets the current value, as an atomic operation.
             </summary>
-        </member>
-        <member name="T:Nohros.Configuration.EncryptedConfigurationSection">
-            <summary>
-            Defines a <see cref="T:System.Configuration.ConfigurationElement"/> that contains data encrypted
-            with DPAPI for <see cref="F:System.Security.Cryptography.DataProtectionScope.LocalMachine"/> scope.
-            </summary>
-        </member>
-        <member name="M:Nohros.Configuration.EncryptedConfigurationSection.Decrypt(System.String)">
-            <summary>
-            Decrypt the encrypted data.
-            </summary>
-            <param name="encrypted">
-            The data to be decrypted.
-            </param>
-            <returns>
-            The <paramref name="encrypted"/> data decrypted.
-            </returns>
-            <remarks>
-            The data should be encrypted using the DPAPI engine for the
-            <see cref="F:System.Security.Cryptography.DataProtectionScope.LocalMachine"/> scope.
-            </remarks>
-        </member>
-        <member name="P:Nohros.Configuration.EncryptedConfigurationSection.Encrypted">
-            <summary>
-            Gets a value indicating if the data is encrypted.
-            </summary>
-            <value>
-            <c>true</c> if the element contains encrypted data; otherwise,
-            <c>false</c>.
-            </value>
         </member>
     </members>
 </doc>

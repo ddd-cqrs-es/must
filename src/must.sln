@@ -20,10 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(impl)", "(impl)", "{C67DBC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{269BDC37-B279-47C2-A3C3-14DB577BE5C7}"
 	ProjectSection(SolutionItems) = preProject
-		nuget\must-common.nuspec = nuget\must-common.nuspec
 		nuget\must-data-mysql.nuspec = nuget\must-data-mysql.nuspec
 		nuget\must-data-sqlce.nuspec = nuget\must-data-sqlce.nuspec
-		nuget\must-data-sqlserver.nuspec = nuget\must-data-sqlserver.nuspec
 		nuget\must-desktop.nuspec = nuget\must-desktop.nuspec
 	EndProjectSection
 EndProject
@@ -48,8 +46,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(providers)", "(providers)", "{EAD6F83A-BB85-4AD5-9199-4D06CF5A4450}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mongodb.tests", "tests\providers\mongodb\mongodb.tests.csproj", "{770CAF75-E747-4F34-8B48-AC710D024310}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlserver", "impl\providers\sqlserver\sqlserver.csproj", "{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlserver.tests", "tests\providers\sqlserver\sqlserver.tests.csproj", "{F2A44CEC-FB4F-4093-A703-7EB3EC0111A8}"
 EndProject
@@ -159,16 +155,6 @@ Global
 		{770CAF75-E747-4F34-8B48-AC710D024310}.release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{770CAF75-E747-4F34-8B48-AC710D024310}.release|Mixed Platforms.Build.0 = Release|Any CPU
 		{770CAF75-E747-4F34-8B48-AC710D024310}.release|x86.ActiveCfg = Release|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.debug|x86.ActiveCfg = Debug|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.release|Any CPU.Build.0 = Release|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.release|Mixed Platforms.Build.0 = Release|Any CPU
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4}.release|x86.ActiveCfg = Release|Any CPU
 		{F2A44CEC-FB4F-4093-A703-7EB3EC0111A8}.debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2A44CEC-FB4F-4093-A703-7EB3EC0111A8}.debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2A44CEC-FB4F-4093-A703-7EB3EC0111A8}.debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -249,7 +235,6 @@ Global
 		{FEB664E7-0935-4205-8131-2EACFA1D0D20} = {D2EF4153-8E74-45C3-B155-CB95DD726F04}
 		{39D3EFDD-983A-47CE-A53D-D1B5B170398F} = {D2EF4153-8E74-45C3-B155-CB95DD726F04}
 		{B5C90671-FB87-4DF2-98A2-9CCAB7051459} = {D2EF4153-8E74-45C3-B155-CB95DD726F04}
-		{2D4D183C-71A0-4850-865E-CF7BDDFC0AE4} = {D2EF4153-8E74-45C3-B155-CB95DD726F04}
 		{BE854EB6-AAF5-4BDF-B162-5B217B88DFB4} = {D2EF4153-8E74-45C3-B155-CB95DD726F04}
 		{F73C8A5B-50A7-4DE0-8746-EC1106B82337} = {D2EF4153-8E74-45C3-B155-CB95DD726F04}
 		{EAD6F83A-BB85-4AD5-9199-4D06CF5A4450} = {7EE3A75F-24F0-4052-9CEA-89C9E54E56CB}

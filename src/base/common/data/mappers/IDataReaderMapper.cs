@@ -73,6 +73,17 @@ namespace Nohros.Data
     T MapCurrent(IDataReader reader);
 
     /// <summary>
+    /// Maps a element of a query result to a object of type using the current
+    /// record of the <see cref="IDataReader"/>.
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// The given <paramref name="reader"/> should be positioned at a valid
+    /// record.
+    /// </remarks>
+    void MapCurrent(IDataReader reader, T t);
+
+    /// <summary>
     /// Maps a element of a query result to a collection of object of type
     /// <typeparamref name="T"/>.
     /// </summary>

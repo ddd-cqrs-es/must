@@ -958,8 +958,8 @@ namespace Nohros.Data
       MethodBuilder builder = type
         .DefineMethod("MapInternal",
           MethodAttributes.Public | MethodAttributes.HideBySig |
-            MethodAttributes.Virtual, typeof (T),
-          new Type[] {typeof (IDataReader)});
+            MethodAttributes.Virtual, typeof(void),
+          new Type[] {typeof (IDataReader), typeof (T)});
 
       // define that the method is allowed to acess non-public members.
       /*Type permission = typeof(ReflectionPermissionAttribute);
@@ -980,12 +980,12 @@ namespace Nohros.Data
 
       // Create a new instance of the T using the associated class loader and
       // stores in a local variable.
-      il.DeclareLocal(type_t_);
-      MethodInfo callable = typeof (CallableDelegate<T>).GetMethod("Invoke");
-      il.Emit(OpCodes.Ldarg_0);
-      il.Emit(OpCodes.Ldfld, result.LoaderField);
-      il.Emit(OpCodes.Callvirt, callable);
-      il.Emit(OpCodes.Stloc_0);
+      //il.DeclareLocal(type_t_);
+      //MethodInfo callable = typeof (CallableDelegate<T>).GetMethod("Invoke");
+      //il.Emit(OpCodes.Ldarg_2);
+      //il.Emit(OpCodes.Ldfld, result.LoaderField);
+      //il.Emit(OpCodes.Callvirt, callable);
+      //il.Emit(OpCodes.Stloc_0);
 
       // Set the values of the properties of the newly created T object.
       OrdinalMap[] fields = result.OrdinalsMapping;
@@ -1037,7 +1037,8 @@ namespace Nohros.Data
         }
 
         // load the T object
-        il.Emit(OpCodes.Ldloc_0);
+        //il.Emit(OpCodes.Ldloc_0);
+        il.Emit(OpCodes.Ldarg_2);
 
         // if the conversor method is defined we need to load the
         // "this" pointer onto the stack before the data reader, so we can
@@ -1098,14 +1099,15 @@ namespace Nohros.Data
             continue;
           }
 
-          il.Emit(OpCodes.Ldloc_0);
+          //il.Emit(OpCodes.Ldloc_0);
+          il.Emit(OpCodes.Ldarg_2);
           EmitLoad(il, map);
           il.Emit(OpCodes.Callvirt, set_x_property);
         }
       }
 
       // load the local T and return.
-      il.Emit(OpCodes.Ldloc_0);
+      //il.Emit(OpCodes.Ldloc_0);
       il.Emit(OpCodes.Ret);
     }
 

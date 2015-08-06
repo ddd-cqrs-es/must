@@ -30,7 +30,7 @@ namespace Nohros.Data
     /// <inheritdoc/>
     public override T Map(IDataReader reader) {
       T t;
-      if (!Map(reader, out t)) {
+      if (!MapNext(reader, out t)) {
         throw new NoResultException();
       }
       return t;
@@ -38,7 +38,7 @@ namespace Nohros.Data
 
     /// <inheritdoc/>
     public override bool Map(IDataReader reader, out T t) {
-      return Map(reader, true, out t);
+      return MapNext(reader, out t);
     }
 
     /// <inheritdoc/>
@@ -64,6 +64,9 @@ namespace Nohros.Data
     }
 
     /// <inheritdoc/>
-    internal abstract override T MapInternal(IDataReader reader);
+    internal override void MapInternal(IDataReader reader, T t) {
+      throw new NotSupportedException(
+        "This class should be used only to map ValuTypeObject and since a ValuTypeObject is not a reference type its value cannot be set");
+    }
   }
 }

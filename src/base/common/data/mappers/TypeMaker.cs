@@ -26,28 +26,33 @@ namespace Nohros.Data
         type_t_ = typeof (T);
       }
 
-      void EnsureNoMethods() {
-        var observed_types = new HashSet<Type>();
-        var types_to_scan = new Queue<Type>(5);
+      void EnsureNoMethods(IEnumerable<Type> interfaces) {
+        //var observed_types = new HashSet<Type>();
+        //var types_to_scan = new Queue<Type>(5);
 
-        observed_types.Add(type_t_);
-        types_to_scan.Enqueue(type_t_);
+        //observed_types.Add(type_t_);
+        //types_to_scan.Enqueue(type_t_);
 
-        while (types_to_scan.Count > 0) {
-          Type type = types_to_scan.Dequeue();
-          foreach (Type t in type.GetInterfaces()) {
-            if (observed_types.Add(t)) {
-              types_to_scan.Enqueue(t);
-            }
-          }
-        }
+        //while (types_to_scan.Count > 0) {
+        //Type type = types_to_scan.Dequeue();
+        //foreach (Type t in type.GetInterfaces()) {
+        //if (observed_types.Add(t)) {
+        //types_to_scan.Enqueue(t);
+        //}
+        //}
+        //}
 
         // If one of the interfaces of the type's hierarchy defines a method
         // we should thrown an exception since we cannot implement it.
-        if (types_to_scan.Any(t => t.GetMembers().Length > 0)) {
-          throw new ArgumentException(
-            "The interface \"{0}\" defines a method and cannot be dynamically implemented"
-              .Fmt(type_t_));
+        foreach (Type @interface in interfaces) {
+          MethodInfo[] methods = @interface.GetMethods();
+          foreach (MethodInfo method in methods) {
+            if (!method.IsSpecialName) {
+              throw new ArgumentException(
+                "The interface \"{0}\" defines a method and cannot be dynamically implemented"
+                  .Fmt(type_t_));
+            }
+          }
         }
       }
 
@@ -58,13 +63,18 @@ namespace Nohros.Data
             TypeAttributes.AutoClass |
             TypeAttributes.AutoLayout;
 
+        var interfaces =
+          new List<Type>(type_t_.GetInterfaces()) {
+            type_t_
+          }.ToArray();
+
         TypeBuilder builder =
           Dynamics_
             .ModuleBuilder
             .DefineType(impl_type_name, kTypeAttributes,
-              null, new[] {type_t_});
+              null, interfaces);
 
-        EnsureNoMethods();
+        EnsureNoMethods(interfaces);
 
         foreach (PropertyInfo property in properties) {
           MakeProperty(builder, property);
