@@ -57,7 +57,7 @@ namespace Nohros.Resources
     /// an empty string or a sequence of spaces].
     /// </summary>
     public static string Argument_EmptyStringOrSpaceSequence {
-      get { return Argument_EmptyStringOrSpaceSequence; }
+      get { return Resources.Argument_EmptyStringOrSpaceSequence; }
     }
 
     /// <summary>
