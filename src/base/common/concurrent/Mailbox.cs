@@ -152,12 +152,53 @@ namespace Nohros.Concurrent
           // queue between the first check and the lock operation.
           if (!message_queue_.TryDequeue(out message)) {
             active_ = false;
-            return false;
           }
+        }
+
+        // If the queue is empty we need to raise MaiboxEmpty event. The
+        // emptiness is detected inside a lock block that is in sync with the
+        // sender side. If we raise the event inside that lock block the
+        // sender side will be blocked until the event is processed and the
+        // event processing is not in the control of this class.
+        if (!active_) {
+          OnEmpty();
+          return false;
         }
       }
       return true;
     }
+
+    void OnEmpty() {
+      if (Empty != null) {
+        Empty(this);
+      }
+    }
+
+    void ThreadMain(object obj) {
+      var context = (SynchronizationContext) obj;
+      if (context == null) {
+        Receive();
+      } else {
+        Receive(context);
+      }
+    }
+
+    /// <summary>
+    /// Event that is raised when the queue becomes empty.
+    /// </summary>
+    /// <remarks>
+    /// This event is raised only after the first item was added and consumed
+    /// from the mailbox.
+    /// <para>
+    /// Note that this event is raised at the exactly moment when the
+    /// <see cref="Mailbox{T}"/> becomes empty. It may be the case that a
+    /// sender modify the <see cref="Mailbox{T}"/> after the event is raised.
+    /// The purpose of this event is just to notify that the
+    /// <see cref="Mailbox{T}"/> becomes empty but no conclusion should be
+    /// assumed about the current state of the <see cref="Mailbox{T}"/>.
+    /// </para>
+    /// </remarks>
+    public event Action<Mailbox<T>> Empty;
 
     /// <summary>
     /// Get the number of elements contained in the
@@ -191,15 +232,6 @@ namespace Nohros.Concurrent
     /// </remarks>
     public bool IsEmpty {
       get { return message_queue_.IsEmpty; }
-    }
-
-    void ThreadMain(object obj) {
-      var context = (SynchronizationContext) obj;
-      if (context == null) {
-        Receive();
-      } else {
-        Receive(context);
-      }
     }
   }
 }

@@ -10817,6 +10817,23 @@
             method switch to passive state and returns <c>false</c>.
             </remarks>
         </member>
+        <member name="E:Nohros.Concurrent.Mailbox`1.Empty">
+            <summary>
+            Event that is raised when the queue becomes empty.
+            </summary>
+            <remarks>
+            This event is raised only after the first item was added and consumed
+            from the mailbox.
+            <para>
+            Note that this event is raised at the exactly moment when the
+            <see cref="T:Nohros.Concurrent.Mailbox`1"/> becomes empty. It may be the case that a
+            sender modify the <see cref="T:Nohros.Concurrent.Mailbox`1"/> after the event is raised.
+            The purpose of this event is just to notify that the
+            <see cref="T:Nohros.Concurrent.Mailbox`1"/> becomes empty but no conclusion should be
+            assumed about the current state of the <see cref="T:Nohros.Concurrent.Mailbox`1"/>.
+            </para>
+            </remarks>
+        </member>
         <member name="P:Nohros.Concurrent.Mailbox`1.Count">
             <summary>
             Get the number of elements contained in the
