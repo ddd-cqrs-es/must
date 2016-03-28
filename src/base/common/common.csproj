@@ -293,6 +293,7 @@
     <Compile Include="type\delegates\CallableDelegate.cs" />
     <Compile Include="type\collections\EventedSet.cs" />
     <Compile Include="type\Ensure.cs" />
+    <Compile Include="type\IReadOnlyCollection.cs" />
     <Compile Include="type\Reflect.cs" />
     <Compile Include="RuntimeTypeFactory.cs" />
     <Compile Include="Resources\Resources.Designer.cs">
@@ -428,7 +429,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

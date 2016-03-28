@@ -5201,6 +5201,10 @@
             <typeparamref name="T"/> associated the data readed from the current
             row of the given <paramref name="reader"/>.
             </param>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
             <returns>
             <c>true</c> when the map operation the data returned from the database
             was successfully mapped to a object of type <typeparamref name="T"/>;
@@ -5216,6 +5220,14 @@
             Maps a element of a query result to a object of type
             <typeparamref name="T"/>.
             </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
+            <param name="post_map">
+            A <see cref="T:System.Action`1"/> that should be applied over all mapped
+            objects right before the map operation.
+            </param>
             <returns>
             A object of type <typeparamref name="T"/> containing the data readed
             from the next row of the given <paramref name="reader"/>.
@@ -5231,6 +5243,10 @@
             record of the <see cref="T:System.Data.IDataReader"/>.
             <typeparamref name="T"/>.
             </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
             <returns>
             A object of type <typeparamref name="T"/> containing the data readed
             from the current row of the given <paramref name="reader"/>.
@@ -5246,6 +5262,10 @@
             record of the <see cref="T:System.Data.IDataReader"/>.
             <typeparamref name="T"/>.
             </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
             <remarks>
             The given <paramref name="reader"/> should be positioned at a valid
             record.
@@ -5256,6 +5276,14 @@
             Maps a element of a query result to a collection of object of type
             <typeparamref name="T"/>.
             </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
+            <param name="defer">
+            A value that indicates if the returned <see cref="T:System.Collections.Generic.IEnumerable`1"/>
+            should be constructed through a deferred execution.
+            </param>
             <returns>
             A collection of objects of type <typeparamref name="T"/> containing
             the data readed from the given <paramref name="reader"/>.
@@ -5266,6 +5294,50 @@
             Maps a element of a query result to a collection of object of type
             <typeparamref name="T"/>.
             </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
+            <param name="defer">
+            A value that indicates if the returned <see cref="T:System.Collections.Generic.IEnumerable`1"/>
+            should be constructed through a deferred execution.
+            </param>
+            <param name="post_map">
+            A <see cref="T:System.Action`1"/> that should be applied over all mapped
+            objects right before the map operation.
+            </param>
+            <returns>
+            A collection of objects of type <typeparamref name="T"/> containing
+            the data readed from the given <paramref name="reader"/>.
+            </returns>
+        </member>
+        <member name="M:Nohros.Data.IDataReaderMapper`1.MapReadOnly(System.Data.IDataReader)">
+            <summary>
+            Maps a element of a query result to a collection of object of type
+            <typeparamref name="T"/>.
+            </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
+            <returns>
+            A collection of objects of type <typeparamref name="T"/> containing
+            the data readed from the given <paramref name="reader"/>.
+            </returns>
+        </member>
+        <member name="M:Nohros.Data.IDataReaderMapper`1.MapReadOnly(System.Data.IDataReader,System.Action{`0})">
+            <summary>
+            Maps a element of a query result to a collection of object of type
+            <typeparamref name="T"/>.
+            </summary>
+            <param name="reader">
+            A <see cref="T:System.Data.IDataReader"/> that can be used to fetch the data that
+            will be mapped.
+            </param>
+            <param name="post_map">
+            A <see cref="T:System.Action`1"/> that should be applied over all mapped
+            objects right before the map operation.
+            </param>
             <returns>
             A collection of objects of type <typeparamref name="T"/> containing
             the data readed from the given <paramref name="reader"/>.
@@ -5384,13 +5456,19 @@
             <paramref name="reader"/> will remain opened until the enumerable
             is resolved.
             <para>
-            Its a good practive to pass a deferred enumerable between applications
-            layers. You usually set the <paramref name="defer"/> to true if
-            you want to use the result of the enumerable to execute another action
-            on the same application layer (Ex. use the result of one query in
-            another query on the application data access layer).
+            Its not a good practive to pass a deferred enumerable between
+            applications layers. You usually set the <paramref name="defer"/> to
+            true if you want to use the result of the enumerable to execute another
+            action on the same application layer (Ex. use the result of one query
+            in another query on the application data access layer).
             </para>
             </remarks>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapper`1.MapReadOnly(System.Data.IDataReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.DataReaderMapper`1.MapReadOnly(System.Data.IDataReader,System.Action{`0})">
+            <inheritdoc/>
         </member>
         <member name="M:Nohros.Data.DataReaderMapper`1.MapCurrent(System.Data.IDataReader)">
             <summary>
@@ -5439,6 +5517,19 @@
             object. Generally by combining multiple
             <see cref="T:Nohros.Data.DataReaderMapper`1"/>s.
             </remarks>
+        </member>
+        <member name="T:Nohros.IReadOnlyCollection`1">
+            <summary>
+            Represents a stringly-typed, read-only collection of elements.
+            </summary>
+            <typeparam name="T">
+            The type of the elements
+            </typeparam>
+        </member>
+        <member name="P:Nohros.IReadOnlyCollection`1.Count">
+            <summary>
+            Gets the number of elements in the collection.
+            </summary>
         </member>
         <member name="M:Nohros.Data.ValueTypeDataReaderMapper`1.#ctor">
             <summary>
@@ -12217,6 +12308,26 @@
             the data readed from the associated <see cref="T:System.Data.IDataReader"/>.
             </returns>
         </member>
+        <member name="M:Nohros.Data.IQueryMapper`1.MapReadOnly">
+            <summary>
+            Maps a element of a query result to a collection of object of type
+            <typeparamref name="T"/>.
+            </summary>
+            <returns>
+            A collection of objects of type <typeparamref name="T"/> containing
+            the data readed from the associated <see cref="T:System.Data.IDataReader"/>.
+            </returns>
+        </member>
+        <member name="M:Nohros.Data.IQueryMapper`1.MapReadOnly(System.Action{`0})">
+            <summary>
+            Maps a element of a query result to a collection of object of type
+            <typeparamref name="T"/>.
+            </summary>
+            <returns>
+            A collection of objects of type <typeparamref name="T"/> containing
+            the data readed from the associated <see cref="T:System.Data.IDataReader"/>.
+            </returns>
+        </member>
         <member name="T:Nohros.Strings">
             <summary>
             Defines the constant string that could appear on the nohros
@@ -15356,6 +15467,12 @@
             A collection of objects of type <typeparamref name="T"/> containing
             the data readed from the associated <see cref="T:System.Data.IDataReader"/>.
             </returns>
+        </member>
+        <member name="M:Nohros.Data.QueryMapper`1.MapReadOnly">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nohros.Data.QueryMapper`1.MapReadOnly(System.Action{`0})">
+            <inheritdoc/>
         </member>
         <member name="M:Nohros.Data.QueryMapper`1.Dispose">
             <inheritdoc/>

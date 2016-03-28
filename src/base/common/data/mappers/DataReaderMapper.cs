@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using Nohros.Dynamics;
@@ -23,7 +24,8 @@ namespace Nohros.Data
       readonly IDataReader reader_;
 
       #region .ctor
-      public Enumerator(IDataReader reader, DataReaderMapper<T> mapper,
+      public Enumerator(IDataReader reader,
+        DataReaderMapper<T> mapper,
         Action<T> post_map) {
         mapper_ = mapper;
         reader_ = reader;
@@ -41,6 +43,27 @@ namespace Nohros.Data
           post_map_(t);
           yield return t;
         }
+      }
+    }
+
+    internal class ReadOnlyCollection : IReadOnlyCollection<T>
+    {
+      readonly ReadOnlyCollection<T> collection_;
+
+      public ReadOnlyCollection(IEnumerable<T> enumerator) {
+        collection_ = new ReadOnlyCollection<T>(new List<T>(enumerator));
+      }
+
+      IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
+      }
+
+      public IEnumerator<T> GetEnumerator() {
+        return collection_.GetEnumerator();
+      }
+
+      public int Count {
+        get { return collection_.Count; }
       }
     }
 
@@ -186,14 +209,15 @@ namespace Nohros.Data
     /// <paramref name="reader"/> will remain opened until the enumerable
     /// is resolved.
     /// <para>
-    /// Its a good practive to pass a deferred enumerable between applications
-    /// layers. You usually set the <paramref name="defer"/> to true if
-    /// you want to use the result of the enumerable to execute another action
-    /// on the same application layer (Ex. use the result of one query in
-    /// another query on the application data access layer).
+    /// Its not a good practive to pass a deferred enumerable between
+    /// applications layers. You usually set the <paramref name="defer"/> to
+    /// true if you want to use the result of the enumerable to execute another
+    /// action on the same application layer (Ex. use the result of one query
+    /// in another query on the application data access layer).
     /// </para>
     /// </remarks>
-    public virtual IEnumerable<T> Map(IDataReader reader, bool defer,
+    public virtual IEnumerable<T> Map(IDataReader reader,
+      bool defer,
       Action<T> post_map) {
       GetOrdinals(reader);
       var enumerable = new Enumerator(reader, this, post_map);
@@ -201,6 +225,19 @@ namespace Nohros.Data
         return enumerable;
       }
       return new List<T>(enumerable);
+    }
+
+    /// <inheritdoc/>
+    public virtual IReadOnlyCollection<T> MapReadOnly(IDataReader reader) {
+      return MapReadOnly(reader, (Action<T>) delegate { });
+    }
+
+    /// <inheritdoc/>
+    public virtual IReadOnlyCollection<T> MapReadOnly(IDataReader reader,
+      Action<T> post_map) {
+      GetOrdinals(reader);
+      var enumerable = new Enumerator(reader, this, post_map);
+      return new ReadOnlyCollection(enumerable);
     }
 
     /// <summary>
