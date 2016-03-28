@@ -55,7 +55,8 @@ namespace Nohros.Data
     /// given <paramref name="reader"/> that needs to be disposed as the same
     /// time as the <see cref="QueryMapper{T}"/> object.
     /// </param>
-    public QueryMapper(IDataReaderMapper<T> mapper, IDataReader reader,
+    public QueryMapper(IDataReaderMapper<T> mapper,
+      IDataReader reader,
       IEnumerable<IDisposable> disposables) {
       mapper_ = mapper;
       reader_ = reader;
@@ -165,6 +166,16 @@ namespace Nohros.Data
     /// </returns>
     public IEnumerable<T> Map(bool defer, Action<T> post_map) {
       return mapper_.Map(reader_, defer, post_map);
+    }
+
+    /// <inheritdoc/>
+    public IReadOnlyCollection<T> MapReadOnly() {
+      return mapper_.MapReadOnly(reader_);
+    }
+
+    /// <inheritdoc/>
+    public IReadOnlyCollection<T> MapReadOnly(Action<T> post_map) {
+      return mapper_.MapReadOnly(reader_, post_map);
     }
 
     /// <summary>

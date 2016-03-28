@@ -109,5 +109,25 @@ namespace Nohros.Data
     /// the data readed from the associated <see cref="IDataReader"/>.
     /// </returns>
     IEnumerable<T> Map(bool defer, Action<T> post_map);
+
+    /// <summary>
+    /// Maps a element of a query result to a collection of object of type
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <returns>
+    /// A collection of objects of type <typeparamref name="T"/> containing
+    /// the data readed from the associated <see cref="IDataReader"/>.
+    /// </returns>
+    IReadOnlyCollection<T> MapReadOnly();
+
+    /// <summary>
+    /// Maps a element of a query result to a collection of object of type
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <returns>
+    /// A collection of objects of type <typeparamref name="T"/> containing
+    /// the data readed from the associated <see cref="IDataReader"/>.
+    /// </returns>
+    IReadOnlyCollection<T> MapReadOnly(Action<T> post_map);
   }
 }

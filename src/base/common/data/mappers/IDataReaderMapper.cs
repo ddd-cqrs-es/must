@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Nohros;
 
 namespace Nohros.Data
 {
@@ -32,6 +33,10 @@ namespace Nohros.Data
     /// <typeparamref name="T"/> associated the data readed from the current
     /// row of the given <paramref name="reader"/>.
     /// </param>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
     /// <returns>
     /// <c>true</c> when the map operation the data returned from the database
     /// was successfully mapped to a object of type <typeparamref name="T"/>;
@@ -47,6 +52,14 @@ namespace Nohros.Data
     /// Maps a element of a query result to a object of type
     /// <typeparamref name="T"/>.
     /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
+    /// <param name="post_map">
+    /// A <see cref="Action{T}"/> that should be applied over all mapped
+    /// objects right before the map operation.
+    /// </param>
     /// <returns>
     /// A object of type <typeparamref name="T"/> containing the data readed
     /// from the next row of the given <paramref name="reader"/>.
@@ -62,6 +75,10 @@ namespace Nohros.Data
     /// record of the <see cref="IDataReader"/>.
     /// <typeparamref name="T"/>.
     /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
     /// <returns>
     /// A object of type <typeparamref name="T"/> containing the data readed
     /// from the current row of the given <paramref name="reader"/>.
@@ -77,6 +94,10 @@ namespace Nohros.Data
     /// record of the <see cref="IDataReader"/>.
     /// <typeparamref name="T"/>.
     /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
     /// <remarks>
     /// The given <paramref name="reader"/> should be positioned at a valid
     /// record.
@@ -87,6 +108,14 @@ namespace Nohros.Data
     /// Maps a element of a query result to a collection of object of type
     /// <typeparamref name="T"/>.
     /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
+    /// <param name="defer">
+    /// A value that indicates if the returned <see cref="IEnumerable{T}"/>
+    /// should be constructed through a deferred execution.
+    /// </param>
     /// <returns>
     /// A collection of objects of type <typeparamref name="T"/> containing
     /// the data readed from the given <paramref name="reader"/>.
@@ -97,10 +126,54 @@ namespace Nohros.Data
     /// Maps a element of a query result to a collection of object of type
     /// <typeparamref name="T"/>.
     /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
+    /// <param name="defer">
+    /// A value that indicates if the returned <see cref="IEnumerable{T}"/>
+    /// should be constructed through a deferred execution.
+    /// </param>
+    /// <param name="post_map">
+    /// A <see cref="Action{T}"/> that should be applied over all mapped
+    /// objects right before the map operation.
+    /// </param>
     /// <returns>
     /// A collection of objects of type <typeparamref name="T"/> containing
     /// the data readed from the given <paramref name="reader"/>.
     /// </returns>
     IEnumerable<T> Map(IDataReader reader, bool defer, Action<T> post_map);
+
+    /// <summary>
+    /// Maps a element of a query result to a collection of object of type
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
+    /// <returns>
+    /// A collection of objects of type <typeparamref name="T"/> containing
+    /// the data readed from the given <paramref name="reader"/>.
+    /// </returns>
+    IReadOnlyCollection<T> MapReadOnly(IDataReader reader);
+
+    /// <summary>
+    /// Maps a element of a query result to a collection of object of type
+    /// <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="reader">
+    /// A <see cref="IDataReader"/> that can be used to fetch the data that
+    /// will be mapped.
+    /// </param>
+    /// <param name="post_map">
+    /// A <see cref="Action{T}"/> that should be applied over all mapped
+    /// objects right before the map operation.
+    /// </param>
+    /// <returns>
+    /// A collection of objects of type <typeparamref name="T"/> containing
+    /// the data readed from the given <paramref name="reader"/>.
+    /// </returns>
+    IReadOnlyCollection<T> MapReadOnly(IDataReader reader, Action<T> post_map);
   }
 }
