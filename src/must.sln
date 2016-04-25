@@ -49,10 +49,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mysql.tests", "tests\providers\mysql.tests\mysql.tests.csproj", "{1E1A06E9-20A3-43D8-B837-328B2DDD1B15}"
 EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		debug|Any CPU = debug|Any CPU
 		debug|Mixed Platforms = debug|Mixed Platforms
