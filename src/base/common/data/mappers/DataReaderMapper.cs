@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using Nohros.Collections;
 using Nohros.Dynamics;
 
 namespace Nohros.Data
@@ -43,27 +43,6 @@ namespace Nohros.Data
           post_map_(t);
           yield return t;
         }
-      }
-    }
-
-    internal class ReadOnlyCollection : IReadOnlyCollection<T>
-    {
-      readonly ReadOnlyCollection<T> collection_;
-
-      public ReadOnlyCollection(IEnumerable<T> enumerator) {
-        collection_ = new ReadOnlyCollection<T>(new List<T>(enumerator));
-      }
-
-      IEnumerator IEnumerable.GetEnumerator() {
-        return GetEnumerator();
-      }
-
-      public IEnumerator<T> GetEnumerator() {
-        return collection_.GetEnumerator();
-      }
-
-      public int Count {
-        get { return collection_.Count; }
       }
     }
 
@@ -236,8 +215,9 @@ namespace Nohros.Data
     public virtual IReadOnlyCollection<T> MapReadOnly(IDataReader reader,
       Action<T> post_map) {
       GetOrdinals(reader);
-      var enumerable = new Enumerator(reader, this, post_map);
-      return new ReadOnlyCollection(enumerable);
+      return
+        new Enumerator(reader, this, post_map)
+          .AsReadOnly();
     }
 
     /// <summary>
