@@ -4,8 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common.tests", "tests\commo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{269BDC37-B279-47C2-A3C3-14DB577BE5C7}"
 	ProjectSection(SolutionItems) = preProject
-		nuget\must-data-mysql.nuspec = nuget\must-data-mysql.nuspec
-		nuget\must-data-sqlce.nuspec = nuget\must-data-sqlce.nuspec
+		nuget\must-common.nuspec = nuget\must-common.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "base\common\common.csproj", "{903B5354-C424-4ADD-BC2B-892E1AA4342A}"
