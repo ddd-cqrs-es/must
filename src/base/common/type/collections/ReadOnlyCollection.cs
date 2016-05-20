@@ -48,6 +48,47 @@ namespace Nohros.Collections
       this IEnumerable<T> enumerable) {
       return new ReadOnlyCollection<T>(enumerable);
     }
+
+    /// <summary>
+    /// Returns a read-only list wrapper for the given
+    /// <paramref name="enumerable"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of elements contained in the <paramref name="enumerable"/>.
+    /// </typeparam>
+    /// <param name="enumerable">
+    /// The <see cref="IEnumerable{T}"/> to wrap.
+    /// </param>
+    /// <remarks>
+    /// If the <paramref name="enumerable"/> is the result of a lazy-loaded
+    /// operation it will be resolved as soon as the this class is constructed.
+    /// <para>
+    /// If the <paramref name="enumerable"/> represents an class that
+    /// implements or derives from an <see cref="IList{T}"/> the list will be
+    /// used directly and no elements copy will be performed, otherwise, the
+    /// elements of the <see cref="enumerable"/> will be copied to a new
+    /// collection.
+    /// </para>
+    /// <para>
+    /// To prevent modifications to <paramref name="enumerable"/> objects that
+    /// inherits or derives from <see cref="IList{T}"/>, expose the
+    /// <paramref name="enumerable"/> only through this wrapper. The returned
+    /// <see cref="IReadOnlyCollection{T}"/> does not expose methods that modify
+    /// the collection. However, if changes are made to the underlying
+    /// <paramref name="enumerable"/>, the read-only collection reflects those
+    /// changes.
+    /// </para>
+    /// <para>
+    /// This constructor is a O(1) operation for <paramref name="enumerable"/>
+    /// that inherits or derive from <see cref="IList{T}"/> and a O(n)
+    /// operation for other types.
+    /// </para>
+    /// </remarks>
+    /// <returns></returns>
+    public static IReadOnlyList<T> AsReadOnlyList<T>(
+      this IEnumerable<T> enumerable) {
+      return new ReadOnlyCollection<T>(enumerable);
+    }
   }
 
   /// <summary>
@@ -56,7 +97,7 @@ namespace Nohros.Collections
   /// <typeparam name="T">
   /// The type of elements in the collection.
   /// </typeparam>
-  internal class ReadOnlyCollection<T> : IReadOnlyCollection<T>
+  internal class ReadOnlyCollection<T> : IReadOnlyList<T>
   {
     readonly System.Collections.ObjectModel.ReadOnlyCollection<T> collection_;
 
@@ -109,10 +150,12 @@ namespace Nohros.Collections
       return collection_.GetEnumerator();
     }
 
-    /// <summary>
-    /// Get the number of elements contained in the
-    /// <see cref="ReadOnlyCollection{T}"/>.
-    /// </summary>
+    /// <inheritdoc/>
+    public T this[int i] {
+      get { return collection_[i]; }
+    }
+
+    /// <inheritdoc/>
     public int Count {
       get { return collection_.Count; }
     }

@@ -286,6 +286,7 @@
     <Compile Include="time\StrictDateRange.cs" />
     <Compile Include="type\collections\AbstractRingQueue.cs" />
     <Compile Include="type\collections\IForwardOnlyEnumerable.cs" />
+    <Compile Include="type\collections\IReadOnlyList.cs" />
     <Compile Include="type\collections\IRingQueue.cs" />
     <Compile Include="type\collections\ReadOnlyCollection.cs" />
     <Compile Include="type\collections\RingQueue.cs" />
@@ -430,7 +431,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
