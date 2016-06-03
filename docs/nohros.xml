@@ -1625,6 +1625,169 @@
         <member name="P:Nohros.Collections.Visitor`2.IsCompleted">
             <inheritdoc/>
         </member>
+        <member name="T:Nohros.Collections.ReadOnlyCollectionExtensions">
+            <summary>
+            provides a way to convert a <see cref="T:System.Collections.Generic.IEnumerable`1"/> object into a
+            <see cref="T:Nohros.Collections.IReadOnlyCollection`1"/> object.
+            </summary>
+        </member>
+        <member name="M:Nohros.Collections.ReadOnlyCollectionExtensions.AsReadOnly``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a read-only wrapper for the given <paramref name="enumerable"/>.
+            </summary>
+            <typeparam name="T">
+            The type of elements contained in the <paramref name="enumerable"/>.
+            </typeparam>
+            <param name="enumerable">
+            The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to wrap.
+            </param>
+            <remarks>
+            If the <paramref name="enumerable"/> is the result of a lazy-loaded
+            operation it will be resolved as soon as the this class is constructed.
+            <para>
+            If the <paramref name="enumerable"/> represents an class that
+            implements or derives from an <see cref="T:System.Collections.Generic.IList`1"/> the list will be
+            used directly and no elements copy will be performed, otherwise, the
+            elements of the <see cref="!:enumerable"/> will be copied to a new
+            collection.
+            </para>
+            <para>
+            To prevent modifications to <paramref name="enumerable"/> objects that
+            inherits or derives from <see cref="T:System.Collections.Generic.IList`1"/>, expose the
+            <paramref name="enumerable"/> only through this wrapper. The returned
+            <see cref="T:Nohros.Collections.IReadOnlyCollection`1"/> does not expose methods that modify
+            the collection. However, if changes are made to the underlying
+            <paramref name="enumerable"/>, the read-only collection reflects those
+            changes.
+            </para>
+            <para>
+            This constructor is a O(1) operation for <paramref name="enumerable"/>
+            that inherits or derive from <see cref="T:System.Collections.Generic.IList`1"/> and a O(n)
+            operation for other types.
+            </para>
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:Nohros.Collections.ReadOnlyCollectionExtensions.AsReadOnlyList``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns a read-only list wrapper for the given
+            <paramref name="enumerable"/>.
+            </summary>
+            <typeparam name="T">
+            The type of elements contained in the <paramref name="enumerable"/>.
+            </typeparam>
+            <param name="enumerable">
+            The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to wrap.
+            </param>
+            <remarks>
+            If the <paramref name="enumerable"/> is the result of a lazy-loaded
+            operation it will be resolved as soon as the this class is constructed.
+            <para>
+            If the <paramref name="enumerable"/> represents an class that
+            implements or derives from an <see cref="T:System.Collections.Generic.IList`1"/> the list will be
+            used directly and no elements copy will be performed, otherwise, the
+            elements of the <see cref="!:enumerable"/> will be copied to a new
+            collection.
+            </para>
+            <para>
+            To prevent modifications to <paramref name="enumerable"/> objects that
+            inherits or derives from <see cref="T:System.Collections.Generic.IList`1"/>, expose the
+            <paramref name="enumerable"/> only through this wrapper. The returned
+            <see cref="T:Nohros.Collections.IReadOnlyCollection`1"/> does not expose methods that modify
+            the collection. However, if changes are made to the underlying
+            <paramref name="enumerable"/>, the read-only collection reflects those
+            changes.
+            </para>
+            <para>
+            This constructor is a O(1) operation for <paramref name="enumerable"/>
+            that inherits or derive from <see cref="T:System.Collections.Generic.IList`1"/> and a O(n)
+            operation for other types.
+            </para>
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="T:Nohros.Collections.ReadOnlyCollection`1">
+            <summary>
+            Provides the base class for generic read-only collection.
+            </summary>
+            <typeparam name="T">
+            The type of elements in the collection.
+            </typeparam>
+        </member>
+        <member name="T:Nohros.Collections.IReadOnlyList`1">
+            <summary>
+            Represents a stringly-typed, read-only collection of elements that can be
+            accessed by index.
+            </summary>
+            <typeparam name="T">
+            The type of the elements in the read-only list.
+            </typeparam>
+        </member>
+        <member name="T:Nohros.Collections.IReadOnlyCollection`1">
+            <summary>
+            Represents a stringly-typed, read-only collection of elements.
+            </summary>
+            <typeparam name="T">
+            The type of the elements
+            </typeparam>
+        </member>
+        <member name="P:Nohros.Collections.IReadOnlyCollection`1.Count">
+            <summary>
+            Gets the number of elements in the collection.
+            </summary>
+        </member>
+        <member name="P:Nohros.Collections.IReadOnlyList`1.Item(System.Int32)">
+            <summary>
+            Gets the element at the specified index in the read-only list.
+            </summary>
+            <param name="i">
+            The zero-based index of the element to get.
+            </param>
+            <value>
+            The element at the specified index in the read-only list.
+            </value>
+        </member>
+        <member name="M:Nohros.Collections.ReadOnlyCollection`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nohros.Collections.ReadOnlyCollection`1"/>
+            class that is a read-only wrapper around the specified
+            <paramref name="enumerable"/>.
+            </summary>
+            <param name="enumerable">
+            The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to wrap.
+            </param>
+            <remarks>
+            If the <paramref name="enumerable"/> is the result of a lazy-loaded
+            operation it will be resolved as soon as the this class is constructed.
+            <para>
+            If the <paramref name="enumerable"/> represents an class that
+            implements or derives from an <see cref="T:System.Collections.Generic.IList`1"/> the list will be
+            used directly and no elements copy will be performed, otherwise, the
+            elements of the <see cref="!:enumerable"/> will be copied to a new
+            collection.
+            </para>
+            <para>
+            To prevent modifications to <paramref name="enumerable"/> objects that
+            inherits or derives from <see cref="T:System.Collections.Generic.IList`1"/>, expose the
+            <paramref name="enumerable"/> only through this wrapper. A
+            <see cref="T:Nohros.Collections.ReadOnlyCollection`1"/> does not expose methods that modify
+            the collection. However, if changes are made to the underlying
+            <paramref name="enumerable"/>, the read-only collection reflects those
+            changes.
+            </para>
+            <para>
+            This constructor is a O(1) operation for <paramref name="enumerable"/>
+            that inherits or derive from <see cref="T:System.Collections.Generic.IList`1"/> and a O(n)
+            operation for other types.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Nohros.Collections.ReadOnlyCollection`1.Item(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Nohros.Collections.ReadOnlyCollection`1.Count">
+            <inheritdoc/>
+        </member>
         <member name="T:Nohros.Collections.AbstractRingQueue`1">
             <summary>
             Represents a first-in, first-out cyclic collection of objects.
@@ -10875,13 +11038,6 @@
             <remarks>
             This method runs into a single dedicated thread.
             </remarks>
-        </member>
-        <member name="M:Nohros.Concurrent.Mailbox`1.Receive(System.Threading.SynchronizationContext)">
-            <summary>
-            Receives messages from the mailbox and execute the receiver callback
-            using the context of the thread that creates the
-            <see cref="T:Nohros.Concurrent.Mailbox`1"/> object.
-            </summary>
         </member>
         <member name="M:Nohros.Concurrent.Mailbox`1.GetMessage(`0@)">
             <summary>
@@ -20706,111 +20862,6 @@
         <member name="P:Nohros.Concurrent.AtomicLong.Value">
             <summary>
             Gets or sets the current value, as an atomic operation.
-            </summary>
-        </member>
-        <member name="T:Nohros.Collections.IReadOnlyCollection`1">
-            <summary>
-            Represents a stringly-typed, read-only collection of elements.
-            </summary>
-            <typeparam name="T">
-            The type of the elements
-            </typeparam>
-        </member>
-        <member name="P:Nohros.Collections.IReadOnlyCollection`1.Count">
-            <summary>
-            Gets the number of elements in the collection.
-            </summary>
-        </member>
-        <member name="T:Nohros.Collections.ReadOnlyCollectionExtensions">
-            <summary>
-            provides a way to convert a <see cref="T:System.Collections.Generic.IEnumerable`1"/> object into a
-            <see cref="T:Nohros.Collections.IReadOnlyCollection`1"/> object.
-            </summary>
-        </member>
-        <member name="M:Nohros.Collections.ReadOnlyCollectionExtensions.AsReadOnly``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Returns a read-only wrapper for the given <paramref name="enumerable"/>.
-            </summary>
-            <typeparam name="T">
-            The type of elements contained in the <paramref name="enumerable"/>.
-            </typeparam>
-            <param name="enumerable">
-            The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to wrap.
-            </param>
-            <remarks>
-            If the <paramref name="enumerable"/> is the result of a lazy-loaded
-            operation it will be resolved as soon as the this class is constructed.
-            <para>
-            If the <paramref name="enumerable"/> represents an class that
-            implements or derives from an <see cref="T:System.Collections.Generic.IList`1"/> the list will be
-            used directly and no elements copy will be performed, otherwise, the
-            elements of the <see cref="!:enumerable"/> will be copied to a new
-            collection.
-            </para>
-            <para>
-            To prevent modifications to <paramref name="enumerable"/> objects that
-            inherits or derives from <see cref="T:System.Collections.Generic.IList`1"/>, expose the
-            <paramref name="enumerable"/> only through this wrapper. The returned
-            <see cref="T:Nohros.Collections.IReadOnlyCollection`1"/> does not expose methods that modify
-            the collection. However, if changes are made to the underlying
-            <paramref name="enumerable"/>, the read-only collection reflects those
-            changes.
-            </para>
-            <para>
-            This constructor is a O(1) operation for <paramref name="enumerable"/>
-            that inherits or derive from <see cref="T:System.Collections.Generic.IList`1"/> and a O(n)
-            operation for other types.
-            </para>
-            </remarks>
-            <returns></returns>
-        </member>
-        <member name="T:Nohros.Collections.ReadOnlyCollection`1">
-            <summary>
-            Provides the base class for generic read-only collection.
-            </summary>
-            <typeparam name="T">
-            The type of elements in the collection.
-            </typeparam>
-        </member>
-        <member name="M:Nohros.Collections.ReadOnlyCollection`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Initializes a new instance of the <see cref="T:Nohros.Collections.ReadOnlyCollection`1"/>
-            class that is a read-only wrapper around the specified
-            <paramref name="enumerable"/>.
-            </summary>
-            <param name="enumerable">
-            The <see cref="T:System.Collections.Generic.IEnumerable`1"/> to wrap.
-            </param>
-            <remarks>
-            If the <paramref name="enumerable"/> is the result of a lazy-loaded
-            operation it will be resolved as soon as the this class is constructed.
-            <para>
-            If the <paramref name="enumerable"/> represents an class that
-            implements or derives from an <see cref="T:System.Collections.Generic.IList`1"/> the list will be
-            used directly and no elements copy will be performed, otherwise, the
-            elements of the <see cref="!:enumerable"/> will be copied to a new
-            collection.
-            </para>
-            <para>
-            To prevent modifications to <paramref name="enumerable"/> objects that
-            inherits or derives from <see cref="T:System.Collections.Generic.IList`1"/>, expose the
-            <paramref name="enumerable"/> only through this wrapper. A
-            <see cref="T:Nohros.Collections.ReadOnlyCollection`1"/> does not expose methods that modify
-            the collection. However, if changes are made to the underlying
-            <paramref name="enumerable"/>, the read-only collection reflects those
-            changes.
-            </para>
-            <para>
-            This constructor is a O(1) operation for <paramref name="enumerable"/>
-            that inherits or derive from <see cref="T:System.Collections.Generic.IList`1"/> and a O(n)
-            operation for other types.
-            </para>
-            </remarks>
-        </member>
-        <member name="P:Nohros.Collections.ReadOnlyCollection`1.Count">
-            <summary>
-            Get the number of elements contained in the
-            <see cref="T:Nohros.Collections.ReadOnlyCollection`1"/>.
             </summary>
         </member>
     </members>
