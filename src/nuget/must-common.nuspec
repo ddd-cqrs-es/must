@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>must.common</id>
-        <version>1.20.3.0</version>
+        <version>2.2.0.0</version>
         <title>Must Framework - Common</title>
         <authors>Nohros Inc</authors>
         <owners>Nohros Inc</owners>

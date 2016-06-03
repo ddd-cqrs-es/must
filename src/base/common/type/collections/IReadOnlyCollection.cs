@@ -1,10 +1,10 @@
 ﻿#if NET45
-// .NET 4.5 already has a class named IReadOnlyCollection<T> that has the
-// same signature.
+  // .NET 4.5 already has a class named IReadOnlyCollection<T> that has the
+  // same signature.
 #else
 using System.Collections.Generic;
 
-namespace Nohros
+namespace Nohros.Collections
 {
   /// <summary>
   /// Represents a stringly-typed, read-only collection of elements.
@@ -20,4 +20,5 @@ namespace Nohros
     int Count { get; }
   }
 }
+
 #endif

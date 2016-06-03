@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using Nohros;
+using Nohros.Collections;
 
 namespace Nohros.Data
 {

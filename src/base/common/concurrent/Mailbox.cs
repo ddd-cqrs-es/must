@@ -52,10 +52,6 @@ namespace Nohros.Concurrent
 
     // True if the underlying queue is active, ie. when we are allowed to
     // read command from it.
-
-    // The synchronization context of the thread that creates the mailbox.
-    protected readonly SynchronizationContext synchronization_context_;
-
     volatile bool active_;
 
     /// <summary>
@@ -74,7 +70,6 @@ namespace Nohros.Concurrent
       mutex_ = new object();
       message_queue_ = new ConcurrentQueue<T>();
       callback_ = callback;
-      synchronization_context_ = SynchronizationContext.Current;
 
       // Get the pipe into passive state. That way, if the user starts by
       // polling on the associated queue, it will be woken up when
@@ -98,7 +93,10 @@ namespace Nohros.Concurrent
         lock (mutex_) {
           if (!active_) {
             active_ = true;
-            ThreadPool.QueueUserWorkItem(ThreadMain, synchronization_context_);
+
+            // The mailbox is dormat, we need to get a thread from thread pool
+            // to process our pending requests.
+            ThreadPool.QueueUserWorkItem(ThreadMain);
           }
         }
       }
@@ -114,18 +112,6 @@ namespace Nohros.Concurrent
       T message;
       while (GetMessage(out message)) {
         callback_(message);
-      }
-    }
-
-    /// <summary>
-    /// Receives messages from the mailbox and execute the receiver callback
-    /// using the context of the thread that creates the
-    /// <see cref="Mailbox{T}"/> object.
-    /// </summary>
-    void Receive(SynchronizationContext context) {
-      T message;
-      while (GetMessage(out message)) {
-        context.Send(state => callback_((T) state), message);
       }
     }
 
@@ -175,12 +161,7 @@ namespace Nohros.Concurrent
     }
 
     void ThreadMain(object obj) {
-      var context = (SynchronizationContext) obj;
-      if (context == null) {
-        Receive();
-      } else {
-        Receive(context);
-      }
+      Receive();
     }
 
     /// <summary>

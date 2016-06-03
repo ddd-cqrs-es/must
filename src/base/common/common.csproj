@@ -286,14 +286,16 @@
     <Compile Include="time\StrictDateRange.cs" />
     <Compile Include="type\collections\AbstractRingQueue.cs" />
     <Compile Include="type\collections\IForwardOnlyEnumerable.cs" />
+    <Compile Include="type\collections\IReadOnlyList.cs" />
     <Compile Include="type\collections\IRingQueue.cs" />
+    <Compile Include="type\collections\ReadOnlyCollection.cs" />
     <Compile Include="type\collections\RingQueue.cs" />
     <Compile Include="type\collections\Visitor.cs" />
     <Compile Include="type\collections\VisitorDelegate.cs" />
     <Compile Include="type\delegates\CallableDelegate.cs" />
     <Compile Include="type\collections\EventedSet.cs" />
     <Compile Include="type\Ensure.cs" />
-    <Compile Include="type\IReadOnlyCollection.cs" />
+    <Compile Include="type\collections\IReadOnlyCollection.cs" />
     <Compile Include="type\Reflect.cs" />
     <Compile Include="RuntimeTypeFactory.cs" />
     <Compile Include="Resources\Resources.Designer.cs">
