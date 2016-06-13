@@ -78,6 +78,7 @@
     <Compile Include="time\DateRangeTests.cs" />
     <Compile Include="type\collection\AndersonTreeTests.cs" />
     <Compile Include="type\collection\AbstractRingQueueTests.cs" />
+    <Compile Include="type\collection\ReadOnlyCollectionTests.cs" />
     <Compile Include="type\collection\RingQueueTests.cs" />
     <Compile Include="type\json\JSONReaderTests.cs" />
     <Compile Include="type\ParameterizedStringTests.cs" />
