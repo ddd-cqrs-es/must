@@ -4,10 +4,8 @@ using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Nohros.Dynamics;
 using Nohros.Extensions;
-using PropertyAttributes = System.Reflection.PropertyAttributes;
 using ConstantMap =
   System.Collections.Generic.KeyValuePair
     <Nohros.Data.ITypeMap, System.Reflection.PropertyInfo>;
@@ -130,130 +128,6 @@ namespace Nohros.Data
       links_ = new List<Action<IDataReader, T>>();
     }
 
-    /// <summary>
-    /// Builds a dynamic <see cref="DataReaderMapper{T}"/> for the type
-    /// <typeparamref source="T"/> using the specified
-    /// properties.
-    /// </summary>
-    /// <param name="mapping">
-    /// An <see cref="KeyValuePair{TKey,TValue}"/> containing the mapping
-    /// between source columns and destination properties.
-    /// </param>
-    /// <remarks>
-    /// The <see cref="KeyValuePair{TKey,TValue}.Value"/> is used as the source
-    /// column name and the <see cref="KeyValuePair{TKey,TValue}.Key"/> is
-    /// used as the destination property name.
-    /// </remarks>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(
-      IEnumerable<KeyValuePair<string, string>> mapping) {
-      foreach (KeyValuePair<string, string> map in mapping) {
-        Map(map.Key, map.Value);
-      }
-      return this;
-    }
-
-    /// <summary>
-    /// Builds a dynamic <see cref="DataReaderMapper{T}"/> for the type
-    /// <typeparamref source="T"/> using the specified
-    /// properties.
-    /// </summary>
-    /// <param name="mapping">
-    /// An <see cref="KeyValuePair{TKey,TValue}"/> containing the mapping
-    /// between source columns and destination properties.
-    /// </param>
-    /// <remarks>
-    /// The <see cref="KeyValuePair{TKey,TValue}.Value"/> is used as the source
-    /// column name and the <see cref="KeyValuePair{TKey,TValue}.Key"/> is
-    /// used as the destination property name.
-    /// </remarks>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(
-      IEnumerable<KeyValuePair<string, ITypeMap>> mapping) {
-      foreach (KeyValuePair<string, ITypeMap> map in mapping) {
-        Map(map.Key, map.Value);
-      }
-      return this;
-    }
-
-    /// <summary>
-    /// Maps the source column <paramref source="source"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="source">
-    /// The source of the source column.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the column
-    /// <paramref name="source"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
-    /// to the property named <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, string source) {
-      return Map(destination, source, null);
-    }
-
-    /// <summary>
-    /// Maps the source column <paramref source="source"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="source">
-    /// The source of the source column.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the column
-    /// <paramref name="source"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
-    /// to the property named <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map<TMap>(string destination,
-      string source) {
-      return Map(destination, source, typeof (TMap));
-    }
-
-    /// <summary>
-    /// Maps the source column <paramref source="source"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="source">
-    /// The source of the source column.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the column
-    /// <paramref name="source"/>.
-    /// </param>
-    /// <param name="type">
-    /// The type of source column.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the column <paramref source="source"/>
-    /// to the property named <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, string source,
-      Type type) {
-      return Map(destination, GetTypeMap(source, type));
-    }
-
     ITypeMap GetTypeMap(string source, Type type,
       LambdaExpression expression = null, bool optional = false) {
       if (source == null) {
@@ -264,131 +138,6 @@ namespace Nohros.Data
         RawType = type,
         Conversor = expression,
       };
-    }
-
-    /// <summary>
-    /// Maps the constant value <see cref="value"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="value">
-    /// The value that should be returned when by the interface property
-    /// <paramref name="destination"/>.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the value
-    /// <paramref name="value"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the constant value
-    /// <paramref source="value"/> to the property named
-    /// <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, int value) {
-      return Map(destination, TypeMaps.Integer(value));
-    }
-
-    /// <summary>
-    /// Maps the constant value <see cref="value"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="value">
-    /// The value that should be returned when by the interface property
-    /// <paramref name="destination"/>.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the value
-    /// <paramref name="value"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the constant value
-    /// <paramref source="value"/> to the property named
-    /// <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, short value) {
-      return Map(destination, TypeMaps.Short(value));
-    }
-
-    /// <summary>
-    /// Maps the constant value <see cref="value"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="value">
-    /// The value that should be returned when by the interface property
-    /// <paramref name="destination"/>.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the value
-    /// <paramref name="value"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the constant value
-    /// <paramref source="value"/> to the property named
-    /// <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, long value) {
-      return Map(destination, TypeMaps.Long(value));
-    }
-
-    /// <summary>
-    /// Maps the constant value <see cref="value"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="value">
-    /// The value that should be returned when by the interface property
-    /// <paramref name="destination"/>.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the value
-    /// <paramref name="value"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the constant value
-    /// <paramref source="value"/> to the property named
-    /// <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, float value) {
-      return Map(destination, TypeMaps.Float(value));
-    }
-
-    /// <summary>
-    /// Maps the constant value <see cref="value"/> to the interface
-    /// property <paramref source="destination"/>.
-    /// </summary>
-    /// <param name="value">
-    /// The value that should be returned when by the interface property
-    /// <paramref name="destination"/>.
-    /// </param>
-    /// <param name="destination">
-    /// The source of the property that will be mapped to the value
-    /// <paramref name="value"/>.
-    /// </param>
-    /// <returns>
-    /// A <see cref="DataReaderMapperBuilder{T}"/> that builds an object of type
-    /// <typeparamref source="T"/> and mapping the constant value
-    /// <paramref source="value"/> to the property named
-    /// <paramref source="destination"/>.
-    /// </returns>
-    [Obsolete(
-      "This method is obsolete. Use the Map method that receives a LINQ expression."
-      , true)]
-    public DataReaderMapperBuilder<T> Map(string destination, decimal value) {
-      return Map(destination, TypeMaps.Decimal(value));
     }
 
     /// <summary>
@@ -811,7 +560,6 @@ namespace Nohros.Data
 
       EmitConstructor(builder, result);
       EmitGetOrdinals(builder, result);
-      //EmitConversors(builder, result);
       EmitNewT(builder);
       EmitMapMethod(builder, result);
 
@@ -865,19 +613,6 @@ namespace Nohros.Data
       // return from the constructor
       il.Emit(OpCodes.Ret);
     }
-
-    /*void EmitConversors(TypeBuilder type, MappingResult result) {
-      for (int i = 0; i < result.OrdinalsMapping.Length; i++) {
-        ValueMap field = result.ValueMappings[i];
-        if (field.Conversor != null) {
-          MethodBuilder method =
-            type.DefineMethod("_Convert" + field.Value.Name,
-              MethodAttributes.Private | MethodAttributes.Static);
-          field.Conversor.CompileToMethod(method);
-          result.OrdinalsMapping[i].Conversor = method;
-        }
-      }
-    }*/
 
     void EmitNewT(TypeBuilder type) {
       MethodBuilder builder = type
@@ -961,31 +696,7 @@ namespace Nohros.Data
             MethodAttributes.Virtual, typeof(void),
           new Type[] {typeof (IDataReader), typeof (T)});
 
-      // define that the method is allowed to acess non-public members.
-      /*Type permission = typeof(ReflectionPermissionAttribute);
-      ConstructorInfo ctor =
-        permission
-          .GetConstructor(new[] { typeof(SecurityAction) });
-      PropertyInfo access = permission.GetProperty("Flags");
-      var reflection_permission_attribute =
-        new CustomAttributeBuilder(ctor, new object[] { SecurityAction.Demand },
-          new[] { access },
-          new object[] {
-            ReflectionPermissionFlag.MemberAccess |
-              ReflectionPermissionFlag.RestrictedMemberAccess
-          });
-
-      builder.SetCustomAttribute(reflection_permission_attribute);*/
       ILGenerator il = builder.GetILGenerator();
-
-      // Create a new instance of the T using the associated class loader and
-      // stores in a local variable.
-      //il.DeclareLocal(type_t_);
-      //MethodInfo callable = typeof (CallableDelegate<T>).GetMethod("Invoke");
-      //il.Emit(OpCodes.Ldarg_2);
-      //il.Emit(OpCodes.Ldfld, result.LoaderField);
-      //il.Emit(OpCodes.Callvirt, callable);
-      //il.Emit(OpCodes.Stloc_0);
 
       // Set the values of the properties of the newly created T object.
       OrdinalMap[] fields = result.OrdinalsMapping;

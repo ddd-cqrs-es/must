@@ -172,6 +172,7 @@
     <Compile Include="data\json\datafields\JsonDataFieldDateTime.cs" />
     <Compile Include="data\mappers\DataReaderMapper.cs" />
     <Compile Include="data\mappers\DataReaderMapperBuilder.cs" />
+    <Compile Include="data\mappers\DataReaderMapperBuilderObsolete.cs" />
     <Compile Include="data\mappers\FieldNameLookup.cs" />
     <Compile Include="data\mappers\IQueryExecutor.cs" />
     <Compile Include="data\mappers\IQueryMapper.cs" />
@@ -431,7 +432,7 @@
   -->
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" />
+      <UserProperties BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
